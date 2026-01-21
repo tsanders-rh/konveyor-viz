@@ -100,9 +100,9 @@ const ArchitectureGraph = ({ data, onNodeClick }) => {
   };
 
   return (
-    <Card>
+    <Card isRounded style={{ boxShadow: 'var(--pf-v5-global--BoxShadow--sm)' }}>
       <CardTitle>
-        <Title headingLevel="h2" size="lg">
+        <Title headingLevel="h2" size="xl" style={{ fontWeight: 'var(--pf-v5-global--FontWeight--bold)' }}>
           Application Architecture
         </Title>
       </CardTitle>

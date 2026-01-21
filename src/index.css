@@ -14,4 +14,14 @@ body {
   font-family: var(--pf-v5-global--FontFamily--sans-serif);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--pf-v5-global--BackgroundColor--200);
+}
+
+/* Page section styling */
+.pf-v5-c-page__main-section {
+  background-color: var(--pf-v5-global--BackgroundColor--100);
+}
+
+.pf-v5-c-page__main-section[class*="light"] {
+  background-color: var(--pf-v5-global--BackgroundColor--200);
 }

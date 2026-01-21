@@ -39,37 +39,42 @@ const MetricCard = ({ label, value, color, icon: Icon }) => {
 
   return (
     <Card
+      isRounded
       style={{
         background: style.background,
         borderLeft: `4px solid ${style.borderColor}`,
+        boxShadow: 'var(--pf-v5-global--BoxShadow--sm)',
+        minHeight: '120px',
+        display: 'flex',
+        flexDirection: 'column'
       }}
     >
-      <CardBody>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <span style={{
-              fontSize: 'var(--pf-v5-global--FontSize--sm)',
-              fontWeight: 'var(--pf-v5-global--FontWeight--semi-bold)',
-              color: style.textColor,
-              marginBottom: 'var(--pf-v5-global--spacer--sm)'
-            }}>
-              {label}
-            </span>
-            <span style={{
-              fontSize: '2rem',
-              fontWeight: 'var(--pf-v5-global--FontWeight--bold)',
-              color: style.valueColor
-            }}>
-              {value}
-            </span>
-          </div>
+      <CardBody style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flex: 1 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--pf-v5-global--spacer--md)' }}>
+          <span style={{
+            fontSize: 'var(--pf-v5-global--FontSize--sm)',
+            fontWeight: 'var(--pf-v5-global--FontWeight--semi-bold)',
+            color: style.textColor,
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px'
+          }}>
+            {label}
+          </span>
           {Icon && (
             <Icon
               size="lg"
-              style={{ color: style.textColor, opacity: 0.7 }}
+              style={{ color: style.textColor, opacity: 0.5 }}
             />
           )}
         </div>
+        <span style={{
+          fontSize: '2.5rem',
+          fontWeight: 'var(--pf-v5-global--FontWeight--bold)',
+          color: style.valueColor,
+          lineHeight: 1
+        }}>
+          {value}
+        </span>
       </CardBody>
     </Card>
   );

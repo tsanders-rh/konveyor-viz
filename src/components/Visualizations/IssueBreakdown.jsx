@@ -9,9 +9,9 @@ const IssueBreakdown = ({ issuesByType }) => {
   }));
 
   return (
-    <Card>
+    <Card isRounded style={{ boxShadow: 'var(--pf-v5-global--BoxShadow--sm)' }}>
       <CardTitle>
-        <Title headingLevel="h2" size="lg">
+        <Title headingLevel="h2" size="xl" style={{ fontWeight: 'var(--pf-v5-global--FontWeight--bold)' }}>
           Issues by Type
         </Title>
       </CardTitle>
