@@ -35,14 +35,6 @@ const ComponentDetail = ({ component, onClose }) => {
 
   return (
     <>
-      {/* Backdrop */}
-      <div
-        className={`fixed inset-0 bg-black transition-opacity duration-300 z-40 ${
-          isVisible ? 'bg-opacity-30' : 'bg-opacity-0 pointer-events-none'
-        }`}
-        onClick={handleClose}
-      />
-
       {/* Panel */}
       <div
         className={`fixed right-0 top-0 h-full w-full md:w-2/3 lg:w-1/2 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 overflow-y-auto ${

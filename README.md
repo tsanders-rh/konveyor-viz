@@ -191,10 +191,61 @@ The application loads sample data automatically from `src/data/sampleData.json`.
   - Info: Gray (#6c757d)
   - Good: Green (#95e1d3)
 
+## AI-Powered Insights
+
+The tool supports AI-generated insights using multiple LLM providers:
+
+### Supported Providers
+
+1. **Anthropic (Claude)** - Recommended
+2. **OpenAI (GPT-4)**
+3. **Ollama (Local)** - For offline/private deployments
+
+### Configuration
+
+1. Copy the environment template:
+```bash
+cp .env.example .env
+```
+
+2. Add your API key for at least one provider:
+```bash
+# For Anthropic (Claude)
+VITE_ANTHROPIC_API_KEY=sk-ant-xxxxx
+
+# For OpenAI (GPT)
+VITE_OPENAI_API_KEY=sk-xxxxx
+
+# For Ollama (Local)
+VITE_OLLAMA_BASE_URL=http://localhost:11434
+VITE_OLLAMA_MODEL=llama2
+```
+
+3. Restart the development server:
+```bash
+npm run dev
+```
+
+4. Click "Use AI" in the Insights panel to enable AI-powered recommendations
+
+### AI vs Rule-Based Analysis
+
+- **Without API key**: Uses rule-based algorithmic analysis
+- **With API key**: Toggle between AI-powered and rule-based insights
+- **AI Mode**: Provides context-aware, natural language recommendations
+- **Rule-Based Mode**: Fast, deterministic pattern detection
+
+### What AI Provides
+
+- Priority recommendations based on architectural impact
+- Risk assessment with nuanced understanding of issue context
+- Migration roadmap with phased approach
+- Pattern insights that go beyond simple counting
+
 ## Future Enhancements
 
+- [x] AI-generated insights and recommendations
 - [ ] Upload real Konveyor report files
-- [ ] AI-generated insights and recommendations
 - [ ] Microservices decomposition visualizer
 - [ ] Migration roadmap timeline
 - [ ] Export visualizations (PNG/PDF)

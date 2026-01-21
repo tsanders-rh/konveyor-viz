@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import MetricsOverview from './MetricsOverview';
 import TechnologyStack from './TechnologyStack';
+import AIInsights from './AIInsights';
 import ArchitectureGraph from '../Visualizations/ArchitectureGraph';
 import IssueBreakdown from '../Visualizations/IssueBreakdown';
+import MicroservicesDecomposition from '../Visualizations/MicroservicesDecomposition';
 import ComponentDetail from '../DetailPanel/ComponentDetail';
 import {
   parseGraphData,
@@ -34,6 +36,9 @@ const Dashboard = ({ data }) => {
         {/* Metrics Overview */}
         <MetricsOverview metrics={metrics} />
 
+        {/* AI Insights */}
+        <AIInsights data={data} />
+
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           {/* Architecture Graph - Takes 2 columns */}
@@ -49,6 +54,9 @@ const Dashboard = ({ data }) => {
 
         {/* Technology Stack */}
         <TechnologyStack technologies={technologies} />
+
+        {/* Microservices Decomposition */}
+        <MicroservicesDecomposition data={data} />
 
         {/* Component Detail Panel */}
         <ComponentDetail

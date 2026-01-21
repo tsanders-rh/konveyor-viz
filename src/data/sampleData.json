@@ -1,342 +1,563 @@
 {
-  "applicationName": "E-Commerce Platform",
-  "analysisDate": "2026-01-20",
+  "applicationName": "Coolstore (Konveyor Analysis)",
+  "analysisDate": "2026-01-21",
   "summary": {
     "totalComponents": 8,
-    "totalIssues": 237,
-    "linesOfCode": 85000
+    "totalIssues": 44,
+    "linesOfCode": 12400,
+    "critical": 28,
+    "warning": 13,
+    "info": 3
   },
   "components": [
     {
-      "id": "web-ui",
-      "name": "Web UI",
-      "type": "frontend",
-      "linesOfCode": 15000,
+      "id": "model",
+      "name": "Model",
+      "type": "backend",
+      "linesOfCode": 1200,
       "technology": {
-        "language": "JavaScript",
-        "framework": "React 16",
+        "language": "Java",
+        "framework": "Java EE 7 / JBoss EAP 7.4",
         "frameworkStatus": "outdated"
       },
       "issues": [
         {
           "id": "issue-1",
-          "title": "React 16 is outdated",
-          "type": "Deprecated APIs",
+          "title": "Implicit name determination for sequences and tables associated with identifier generation has changed",
+          "type": "Hibernate/Persistence",
           "severity": "warning",
-          "description": "React 16 reached end of life. Upgrade to React 18.",
-          "location": "package.json:12"
+          "description": "The way in which Hibernate determines implicit names for sequences and tables associated with identifier generation has changed in 6.0 which may affect migrating applications. \n As of 6.0, Hibernate by default creates a sequence per entity hierarchy instead of a single sequence hibernate_sequence. \n Due to this change, users that previously used `@GeneratedValue(strategy = GenerationStrategy.AUTO)` or simply `@GeneratedValue` (since `AUTO` is the default), need to ensure that the database now contains sequences for every entity, named `<entity name>_seq`. For an entity Person, a sequence person_seq is expected to exist. \n It’s best to run hbm2ddl (e.g. by temporarily setting `hbm2ddl.auto=create`) to obtain a list of DDL statements for the sequences.",
+          "location": "Order.java:24",
+          "effort": 3,
+          "ruleId": "hibernate-00005"
         },
         {
           "id": "issue-2",
-          "title": "Unsafe lifecycle methods used",
-          "type": "Deprecated APIs",
+          "title": "Implicit name determination for sequences and tables associated with identifier generation has changed",
+          "type": "Hibernate/Persistence",
           "severity": "warning",
-          "description": "componentWillMount and componentWillReceiveProps are deprecated.",
-          "location": "src/components/ProductList.jsx:45"
-        },
-        {
-          "id": "issue-3",
-          "title": "Missing PropTypes validation",
-          "type": "Code Quality",
-          "severity": "info",
-          "description": "Component props are not validated.",
-          "location": "src/components/Cart.jsx:12"
-        }
-      ],
-      "dependencies": ["order-controller", "user-controller"]
-    },
-    {
-      "id": "order-service",
-      "name": "Order Service",
-      "type": "backend",
-      "linesOfCode": 25000,
-      "technology": {
-        "language": "Java",
-        "version": "8",
-        "framework": "Spring Boot 1.5",
-        "frameworkStatus": "eol"
-      },
-      "issues": [
-        {
-          "id": "issue-10",
-          "title": "Java 8 is end of life",
-          "type": "Technology Upgrade",
-          "severity": "critical",
-          "description": "Java 8 is no longer supported. Upgrade to Java 11 or 17.",
-          "location": "pom.xml:8"
-        },
-        {
-          "id": "issue-11",
-          "title": "Spring Boot 1.5 is EOL",
-          "type": "Technology Upgrade",
-          "severity": "critical",
-          "description": "Spring Boot 1.5 reached end of life. Upgrade to 2.7 or 3.x.",
-          "location": "pom.xml:15"
-        },
-        {
-          "id": "issue-12",
-          "title": "Hardcoded database connection",
-          "type": "Configuration",
-          "severity": "critical",
-          "description": "Database URL is hardcoded. Should use environment variables.",
-          "location": "src/main/java/config/DatabaseConfig.java:42"
-        },
-        {
-          "id": "issue-13",
-          "title": "SQL injection vulnerability",
-          "type": "Security",
-          "severity": "critical",
-          "description": "Raw SQL query construction with user input.",
-          "location": "src/main/java/repository/OrderRepository.java:128"
-        },
-        {
-          "id": "issue-14",
-          "title": "Missing error handling",
-          "type": "Code Quality",
-          "severity": "warning",
-          "description": "Exception not properly caught and logged.",
-          "location": "src/main/java/service/OrderService.java:89"
-        },
-        {
-          "id": "issue-15",
-          "title": "Deprecated StringUtils.isEmpty()",
-          "type": "Deprecated APIs",
-          "severity": "warning",
-          "description": "Use StringUtils.hasText() instead.",
-          "location": "src/main/java/util/Validator.java:34"
-        }
-      ],
-      "dependencies": ["payment-service", "inventory-service", "database"]
-    },
-    {
-      "id": "payment-service",
-      "name": "Payment Service",
-      "type": "backend",
-      "linesOfCode": 8000,
-      "technology": {
-        "language": "Java",
-        "version": "11",
-        "framework": "Spring Boot 2.7",
-        "frameworkStatus": "current"
-      },
-      "issues": [
-        {
-          "id": "issue-50",
-          "title": "Missing input validation",
-          "type": "Security",
-          "severity": "warning",
-          "description": "Payment amount not validated on server side.",
-          "location": "src/main/java/payment/PaymentController.java:78"
-        },
-        {
-          "id": "issue-51",
-          "title": "Sensitive data in logs",
-          "type": "Security",
-          "severity": "critical",
-          "description": "Credit card numbers logged in plain text.",
-          "location": "src/main/java/payment/PaymentService.java:145"
-        },
-        {
-          "id": "issue-52",
-          "title": "High cyclomatic complexity",
-          "type": "Code Complexity",
-          "severity": "warning",
-          "description": "Method has complexity of 25, should be under 10.",
-          "location": "src/main/java/payment/PaymentProcessor.java:56"
-        }
-      ],
-      "dependencies": ["database", "notification-service"]
-    },
-    {
-      "id": "user-controller",
-      "name": "User Service",
-      "type": "backend",
-      "linesOfCode": 12000,
-      "technology": {
-        "language": "Java",
-        "version": "8",
-        "framework": "Spring Boot 1.5",
-        "frameworkStatus": "eol"
-      },
-      "issues": [
-        {
-          "id": "issue-60",
-          "title": "Java 8 is end of life",
-          "type": "Technology Upgrade",
-          "severity": "critical",
-          "description": "Java 8 is no longer supported. Upgrade to Java 11 or 17.",
-          "location": "pom.xml:8"
-        },
-        {
-          "id": "issue-61",
-          "title": "Weak password hashing",
-          "type": "Security",
-          "severity": "critical",
-          "description": "Using MD5 for password hashing. Use bcrypt or Argon2.",
-          "location": "src/main/java/user/PasswordService.java:23"
-        },
-        {
-          "id": "issue-62",
-          "title": "Missing authentication check",
-          "type": "Security",
-          "severity": "critical",
-          "description": "Endpoint allows unauthenticated access.",
-          "location": "src/main/java/user/UserController.java:67"
-        },
-        {
-          "id": "issue-63",
-          "title": "Deprecated @RequestMapping",
-          "type": "Deprecated APIs",
-          "severity": "info",
-          "description": "Use @GetMapping or @PostMapping instead.",
-          "location": "src/main/java/user/UserController.java:45"
-        }
-      ],
-      "dependencies": ["database"]
-    },
-    {
-      "id": "inventory-service",
-      "name": "Inventory Service",
-      "type": "backend",
-      "linesOfCode": 10000,
-      "technology": {
-        "language": "Java",
-        "version": "8",
-        "framework": "Spring Boot 1.5",
-        "frameworkStatus": "eol"
-      },
-      "issues": [
-        {
-          "id": "issue-70",
-          "title": "Java 8 is end of life",
-          "type": "Technology Upgrade",
-          "severity": "critical",
-          "description": "Java 8 is no longer supported. Upgrade to Java 11 or 17.",
-          "location": "pom.xml:8"
-        },
-        {
-          "id": "issue-71",
-          "title": "Race condition in stock update",
-          "type": "Code Quality",
-          "severity": "critical",
-          "description": "Concurrent stock updates may cause data inconsistency.",
-          "location": "src/main/java/inventory/StockManager.java:112"
-        },
-        {
-          "id": "issue-72",
-          "title": "Missing transaction boundary",
-          "type": "Configuration",
-          "severity": "warning",
-          "description": "Database operations not wrapped in transaction.",
-          "location": "src/main/java/inventory/InventoryService.java:89"
-        }
-      ],
-      "dependencies": ["database"]
-    },
-    {
-      "id": "notification-service",
-      "name": "Notification Service",
-      "type": "backend",
-      "linesOfCode": 6000,
-      "technology": {
-        "language": "Python",
-        "version": "3.7",
-        "framework": "Flask 1.1",
-        "frameworkStatus": "outdated"
-      },
-      "issues": [
-        {
-          "id": "issue-80",
-          "title": "Python 3.7 approaching EOL",
-          "type": "Technology Upgrade",
-          "severity": "warning",
-          "description": "Python 3.7 will reach end of life soon. Upgrade to 3.11+.",
-          "location": "requirements.txt:1"
-        },
-        {
-          "id": "issue-81",
-          "title": "Flask 1.1 is outdated",
-          "type": "Technology Upgrade",
-          "severity": "warning",
-          "description": "Flask 1.1 has known vulnerabilities. Upgrade to 2.x or 3.x.",
-          "location": "requirements.txt:5"
-        },
-        {
-          "id": "issue-82",
-          "title": "Email credentials in code",
-          "type": "Security",
-          "severity": "critical",
-          "description": "SMTP credentials hardcoded in source file.",
-          "location": "notification/email_sender.py:18"
+          "description": "The way in which Hibernate determines implicit names for sequences and tables associated with identifier generation has changed in 6.0 which may affect migrating applications. \n As of 6.0, Hibernate by default creates a sequence per entity hierarchy instead of a single sequence hibernate_sequence. \n Due to this change, users that previously used `@GeneratedValue(strategy = GenerationStrategy.AUTO)` or simply `@GeneratedValue` (since `AUTO` is the default), need to ensure that the database now contains sequences for every entity, named `<entity name>_seq`. For an entity Person, a sequence person_seq is expected to exist. \n It’s best to run hbm2ddl (e.g. by temporarily setting `hbm2ddl.auto=create`) to obtain a list of DDL statements for the sequences.",
+          "location": "OrderItem.java:18",
+          "effort": 3,
+          "ruleId": "hibernate-00005"
         }
       ],
       "dependencies": []
     },
     {
-      "id": "order-controller",
-      "name": "API Gateway",
-      "type": "middleware",
-      "linesOfCode": 4000,
+      "id": "webapp",
+      "name": "Webapp",
+      "type": "frontend",
+      "linesOfCode": 1100,
       "technology": {
-        "language": "Node.js",
-        "version": "14",
-        "framework": "Express 4.17",
+        "language": "XML",
+        "framework": "Java EE 7 / JBoss EAP 7.4",
         "frameworkStatus": "outdated"
       },
       "issues": [
         {
-          "id": "issue-90",
-          "title": "Node.js 14 is EOL",
-          "type": "Technology Upgrade",
-          "severity": "critical",
-          "description": "Node.js 14 reached end of life. Upgrade to 18 LTS or 20 LTS.",
-          "location": "package.json:3"
-        },
-        {
-          "id": "issue-91",
-          "title": "Missing rate limiting",
-          "type": "Security",
+          "id": "issue-3",
+          "title": "`beans.xml` descriptor content is ignored",
+          "type": "CDI Changes",
           "severity": "warning",
-          "description": "API endpoints lack rate limiting, vulnerable to DDoS.",
-          "location": "routes/orders.js:12"
-        },
-        {
-          "id": "issue-92",
-          "title": "CORS misconfiguration",
-          "type": "Security",
-          "severity": "warning",
-          "description": "CORS allows all origins (*), should be restricted.",
-          "location": "app.js:23"
+          "description": "`beans.xml` descriptor content is ignored and it could be removed from the application. \n Refer to the guide referenced below to check the supported CDI feature in Quarkus.",
+          "location": "beans.xml:18",
+          "effort": 3,
+          "ruleId": "cdi-to-quarkus-00030"
         }
       ],
-      "dependencies": ["order-service", "user-controller"]
+      "dependencies": []
     },
     {
-      "id": "database",
-      "name": "Database Layer",
-      "type": "data",
-      "linesOfCode": 5000,
+      "id": "persistence",
+      "name": "Persistence",
+      "type": "backend",
+      "linesOfCode": 1200,
       "technology": {
-        "type": "PostgreSQL",
-        "version": "9.6",
-        "status": "outdated"
+        "language": "Java",
+        "framework": "Java EE 7 / JBoss EAP 7.4",
+        "frameworkStatus": "outdated"
       },
       "issues": [
         {
-          "id": "issue-100",
-          "title": "PostgreSQL 9.6 approaching EOL",
-          "type": "Technology Upgrade",
+          "id": "issue-4",
+          "title": "Producer annotation no longer required",
+          "type": "CDI Changes",
           "severity": "warning",
-          "description": "PostgreSQL 9.6 will reach end of life soon. Plan upgrade to 14+.",
-          "location": "docker-compose.yml:15"
+          "description": "In Quarkus, you can skip the @Produces annotation completely if the producer method is annotated with a scope annotation, a stereotype or a qualifier..\n This field could be accessed using a `@Named` getter method instead.",
+          "location": "Resources.java:14",
+          "effort": 1,
+          "ruleId": "cdi-to-quarkus-00040"
         },
         {
-          "id": "issue-101",
-          "title": "Missing database indexes",
-          "type": "Performance",
+          "id": "issue-41",
+          "title": "@Produces cannot annotate an EntityManager",
+          "type": "Persistence",
           "severity": "warning",
-          "description": "Foreign key columns lack indexes, causing slow queries.",
-          "location": "migrations/001_initial_schema.sql:45"
+          "description": "In JavaEE/JakartaEE, using `@PersistenceContext` was needed in order to inject a data source. Quarkus, on the other hand,\n will create the bean automatically just by correctly setting up your datasource, so the `@PersistenceContext` annotation can be removed. \nThis also makes having a `@Produces` annotation\n on the `EntityManager` illegal in Quarkus.\n \n If you are using a `@Produces` annotation for your EntityManager, and it is not needed after configuring your datasource, remove it and `@Inject` the EntityManager.\n Otherwise, if the producer is still needed, please create a qualification for your produced `EntityManager`, as well as every injection point for the EM.\n \n For instance, you can create an `ExtendedContext` qualifier:\n ```\n @Qualifier\n @Target()\n @Retention(RetentionPolicy.RUNTIME)\n public @interface ExtendedContext \n ```\n and then inject your entity managers:\n ```\n @ExtendedContext\n public EntityManager getEm() \n ```",
+          "location": "Resources.java:5",
+          "effort": 1,
+          "ruleId": "persistence-to-quarkus-00011"
+        }
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "utils",
+      "name": "Utils",
+      "type": "backend",
+      "linesOfCode": 1100,
+      "technology": {
+        "language": "Java",
+        "framework": "Java EE 7 / JBoss EAP 7.4",
+        "frameworkStatus": "outdated"
+      },
+      "issues": [
+        {
+          "id": "issue-5",
+          "title": "Producer annotation no longer required",
+          "type": "CDI Changes",
+          "severity": "warning",
+          "description": "In Quarkus, you can skip the @Produces annotation completely if the producer method is annotated with a scope annotation, a stereotype or a qualifier..\n This field could be accessed using a `@Named` getter method instead.",
+          "location": "Producers.java:12",
+          "effort": 1,
+          "ruleId": "cdi-to-quarkus-00040"
+        }
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "service",
+      "name": "Service",
+      "type": "backend",
+      "linesOfCode": 3200,
+      "technology": {
+        "language": "Java",
+        "framework": "Java EE 7 / JBoss EAP 7.4",
+        "frameworkStatus": "outdated"
+      },
+      "issues": [
+        {
+          "id": "issue-6",
+          "title": "@Stateless annotation must be replaced",
+          "type": "Java EE to CDI",
+          "severity": "warning",
+          "description": "Stateless EJBs can be converted to a CDI bean by replacing the `@Stateless` annotation with a scope eg `@ApplicationScoped`",
+          "location": "CatalogService.java:17",
+          "effort": 1,
+          "ruleId": "ee-to-quarkus-00000"
+        },
+        {
+          "id": "issue-7",
+          "title": "@Stateless annotation must be replaced",
+          "type": "Java EE to CDI",
+          "severity": "warning",
+          "description": "Stateless EJBs can be converted to a CDI bean by replacing the `@Stateless` annotation with a scope eg `@ApplicationScoped`",
+          "location": "OrderService.java:20",
+          "effort": 1,
+          "ruleId": "ee-to-quarkus-00000"
+        },
+        {
+          "id": "issue-8",
+          "title": "@Stateless annotation must be replaced",
+          "type": "Java EE to CDI",
+          "severity": "warning",
+          "description": "Stateless EJBs can be converted to a CDI bean by replacing the `@Stateless` annotation with a scope eg `@ApplicationScoped`",
+          "location": "ProductService.java:14",
+          "effort": 1,
+          "ruleId": "ee-to-quarkus-00000"
+        },
+        {
+          "id": "issue-9",
+          "title": "@Stateless annotation must be replaced",
+          "type": "Java EE to CDI",
+          "severity": "warning",
+          "description": "Stateless EJBs can be converted to a CDI bean by replacing the `@Stateless` annotation with a scope eg `@ApplicationScoped`",
+          "location": "ShippingService.java:11",
+          "effort": 1,
+          "ruleId": "ee-to-quarkus-00000"
+        },
+        {
+          "id": "issue-10",
+          "title": "@Stateless annotation must be replaced",
+          "type": "Java EE to CDI",
+          "severity": "warning",
+          "description": "Stateless EJBs can be converted to a CDI bean by replacing the `@Stateless` annotation with a scope eg `@ApplicationScoped`",
+          "location": "ShoppingCartOrderProcessor.java:13",
+          "effort": 1,
+          "ruleId": "ee-to-quarkus-00000"
+        },
+        {
+          "id": "issue-11",
+          "title": "@Stateful annotation must be replaced",
+          "type": "Java EE to CDI",
+          "severity": "critical",
+          "description": "Stateful EJBs can be converted to a CDI bean by replacing the `@Stateful` annotation with a bean-defining annotation\n that encompasses the appropriate scope (e.g., `@ApplicationScoped`). `@Stateful` EJBs often translate to `@SessionScoped`\n beans (a scope which requires activating the `quarkus-undertow` extension), but the appropriate scope may differ based\n on your application architecture. Review your application's requirements to determine the appropriate scope.\n\n Note that it is recommended, as a good practice, to keep state external from the service in Quarkus.",
+          "location": "ShoppingCartService.java:16",
+          "effort": 3,
+          "ruleId": "ee-to-quarkus-00010"
+        },
+        {
+          "id": "issue-27",
+          "title": "@MessageDriven - EJBs are not supported in Quarkus",
+          "type": "Messaging",
+          "severity": "critical",
+          "description": "Enterprise Java Beans (EJBs) are not supported in Quarkus. CDI must be used.\n Please replace the `@MessageDriven` annotation with a CDI scope annotation like `@ApplicationScoped`.",
+          "location": "OrderServiceMDB.java:14",
+          "effort": 3,
+          "ruleId": "jms-to-reactive-quarkus-00010"
+        },
+        {
+          "id": "issue-28",
+          "title": "Configure message listener method with @Incoming",
+          "type": "Messaging",
+          "severity": "critical",
+          "description": "The `destinationLookup` property can be migrated by annotating a message handler method (potentially `onMessage`) with the\n `org.eclipse.microprofile.reactive.messaging.Incoming` annotation, indicating the name of the queue as a value:\n \n Before:\n ```\n @MessageDriven(name = \"HelloWorldQueueMDB\", activationConfig = \n public class MessageListenerImpl implements MessageListener \n }}\n ```\n \n After:\n ```\n public class MessageListenerImpl implements MessageListener \n }}\n ```",
+          "location": "OrderServiceMDB.java:15",
+          "effort": 3,
+          "ruleId": "jms-to-reactive-quarkus-00020"
+        },
+        {
+          "id": "issue-29",
+          "title": "Configure message listener method with @Incoming",
+          "type": "Messaging",
+          "severity": "critical",
+          "description": "The `destinationLookup` property can be migrated by annotating a message handler method (potentially `onMessage`) with the\n `org.eclipse.microprofile.reactive.messaging.Incoming` annotation, indicating the name of the queue as a value:\n \n Before:\n ```\n @MessageDriven(name = \"HelloWorldQueueMDB\", activationConfig = \n public class MessageListenerImpl implements MessageListener \n }}\n ```\n \n After:\n ```\n public class MessageListenerImpl implements MessageListener \n }}\n ```",
+          "location": "OrderServiceMDB.java:16",
+          "effort": 3,
+          "ruleId": "jms-to-reactive-quarkus-00020"
+        },
+        {
+          "id": "issue-30",
+          "title": "Configure message listener method with @Incoming",
+          "type": "Messaging",
+          "severity": "critical",
+          "description": "The `destinationLookup` property can be migrated by annotating a message handler method (potentially `onMessage`) with the\n `org.eclipse.microprofile.reactive.messaging.Incoming` annotation, indicating the name of the queue as a value:\n \n Before:\n ```\n @MessageDriven(name = \"HelloWorldQueueMDB\", activationConfig = \n public class MessageListenerImpl implements MessageListener \n }}\n ```\n \n After:\n ```\n public class MessageListenerImpl implements MessageListener \n }}\n ```",
+          "location": "OrderServiceMDB.java:17",
+          "effort": 3,
+          "ruleId": "jms-to-reactive-quarkus-00020"
+        },
+        {
+          "id": "issue-31",
+          "title": "JMS' Topic must be replaced with an Emitter",
+          "type": "Messaging",
+          "severity": "critical",
+          "description": "JMS `Topic`s should be replaced with MicroProfile `Emitter`s feeding a Channel. See the following example of migrating\n a Topic to an Emitter:\n \n Before:\n ```\n @Resource(lookup = \"java:/topic/HELLOWORLDMDBTopic\")\n private Topic topic;\n ```\n \n After:\n ```\n @Inject\n @Channel(\"HELLOWORLDMDBTopic\")\n Emitter<String> topicEmitter;\n ```",
+          "location": "ShoppingCartOrderProcessor.java:8",
+          "effort": 3,
+          "ruleId": "jms-to-reactive-quarkus-00040"
+        },
+        {
+          "id": "issue-32",
+          "title": "JMS' Topic must be replaced with an Emitter",
+          "type": "Messaging",
+          "severity": "critical",
+          "description": "JMS `Topic`s should be replaced with MicroProfile `Emitter`s feeding a Channel. See the following example of migrating\n a Topic to an Emitter:\n \n Before:\n ```\n @Resource(lookup = \"java:/topic/HELLOWORLDMDBTopic\")\n private Topic topic;\n ```\n \n After:\n ```\n @Inject\n @Channel(\"HELLOWORLDMDBTopic\")\n Emitter<String> topicEmitter;\n ```",
+          "location": "ShoppingCartOrderProcessor.java:24",
+          "effort": 3,
+          "ruleId": "jms-to-reactive-quarkus-00040"
+        },
+        {
+          "id": "issue-33",
+          "title": "JMS is not supported in Quarkus",
+          "type": "Messaging",
+          "severity": "critical",
+          "description": "References to JavaEE/JakartaEE JMS elements should be removed and replaced with their Quarkus SmallRye/Microprofile equivalents.",
+          "location": "InventoryNotificationMDB.java:7",
+          "effort": 5,
+          "ruleId": "jms-to-reactive-quarkus-00050"
+        },
+        {
+          "id": "issue-34",
+          "title": "JMS is not supported in Quarkus",
+          "type": "Messaging",
+          "severity": "critical",
+          "description": "References to JavaEE/JakartaEE JMS elements should be removed and replaced with their Quarkus SmallRye/Microprofile equivalents.",
+          "location": "OrderServiceMDB.java:6",
+          "effort": 5,
+          "ruleId": "jms-to-reactive-quarkus-00050"
+        },
+        {
+          "id": "issue-35",
+          "title": "JMS is not supported in Quarkus",
+          "type": "Messaging",
+          "severity": "critical",
+          "description": "References to JavaEE/JakartaEE JMS elements should be removed and replaced with their Quarkus SmallRye/Microprofile equivalents.",
+          "location": "OrderServiceMDB.java:7",
+          "effort": 5,
+          "ruleId": "jms-to-reactive-quarkus-00050"
+        },
+        {
+          "id": "issue-36",
+          "title": "JMS is not supported in Quarkus",
+          "type": "Messaging",
+          "severity": "critical",
+          "description": "References to JavaEE/JakartaEE JMS elements should be removed and replaced with their Quarkus SmallRye/Microprofile equivalents.",
+          "location": "OrderServiceMDB.java:8",
+          "effort": 5,
+          "ruleId": "jms-to-reactive-quarkus-00050"
+        },
+        {
+          "id": "issue-37",
+          "title": "JMS is not supported in Quarkus",
+          "type": "Messaging",
+          "severity": "critical",
+          "description": "References to JavaEE/JakartaEE JMS elements should be removed and replaced with their Quarkus SmallRye/Microprofile equivalents.",
+          "location": "OrderServiceMDB.java:9",
+          "effort": 5,
+          "ruleId": "jms-to-reactive-quarkus-00050"
+        },
+        {
+          "id": "issue-38",
+          "title": "JMS is not supported in Quarkus",
+          "type": "Messaging",
+          "severity": "critical",
+          "description": "References to JavaEE/JakartaEE JMS elements should be removed and replaced with their Quarkus SmallRye/Microprofile equivalents.",
+          "location": "ShoppingCartOrderProcessor.java:7",
+          "effort": 5,
+          "ruleId": "jms-to-reactive-quarkus-00050"
+        },
+        {
+          "id": "issue-39",
+          "title": "JMS is not supported in Quarkus",
+          "type": "Messaging",
+          "severity": "critical",
+          "description": "References to JavaEE/JakartaEE JMS elements should be removed and replaced with their Quarkus SmallRye/Microprofile equivalents.",
+          "location": "ShoppingCartOrderProcessor.java:8",
+          "effort": 5,
+          "ruleId": "jms-to-reactive-quarkus-00050"
+        },
+        {
+          "id": "issue-42",
+          "title": "@Produces cannot annotate an EntityManager",
+          "type": "Persistence",
+          "severity": "warning",
+          "description": "In JavaEE/JakartaEE, using `@PersistenceContext` was needed in order to inject a data source. Quarkus, on the other hand,\n will create the bean automatically just by correctly setting up your datasource, so the `@PersistenceContext` annotation can be removed. \nThis also makes having a `@Produces` annotation\n on the `EntityManager` illegal in Quarkus.\n \n If you are using a `@Produces` annotation for your EntityManager, and it is not needed after configuring your datasource, remove it and `@Inject` the EntityManager.\n Otherwise, if the producer is still needed, please create a qualification for your produced `EntityManager`, as well as every injection point for the EM.\n \n For instance, you can create an `ExtendedContext` qualifier:\n ```\n @Qualifier\n @Target()\n @Retention(RetentionPolicy.RUNTIME)\n public @interface ExtendedContext \n ```\n and then inject your entity managers:\n ```\n @ExtendedContext\n public EntityManager getEm() \n ```",
+          "location": "CatalogService.java:13",
+          "effort": 1,
+          "ruleId": "persistence-to-quarkus-00011"
+        },
+        {
+          "id": "issue-43",
+          "title": "@Produces cannot annotate an EntityManager",
+          "type": "Persistence",
+          "severity": "warning",
+          "description": "In JavaEE/JakartaEE, using `@PersistenceContext` was needed in order to inject a data source. Quarkus, on the other hand,\n will create the bean automatically just by correctly setting up your datasource, so the `@PersistenceContext` annotation can be removed. \nThis also makes having a `@Produces` annotation\n on the `EntityManager` illegal in Quarkus.\n \n If you are using a `@Produces` annotation for your EntityManager, and it is not needed after configuring your datasource, remove it and `@Inject` the EntityManager.\n Otherwise, if the producer is still needed, please create a qualification for your produced `EntityManager`, as well as every injection point for the EM.\n \n For instance, you can create an `ExtendedContext` qualifier:\n ```\n @Qualifier\n @Target()\n @Retention(RetentionPolicy.RUNTIME)\n public @interface ExtendedContext \n ```\n and then inject your entity managers:\n ```\n @ExtendedContext\n public EntityManager getEm() \n ```",
+          "location": "OrderService.java:15",
+          "effort": 1,
+          "ruleId": "persistence-to-quarkus-00011"
+        },
+        {
+          "id": "issue-44",
+          "title": "Remote EJBs are not supported in Quarkus",
+          "type": "Java EE to CDI",
+          "severity": "critical",
+          "description": "Remote EJBs are not supported in Quarkus, and therefore its use must be removed and replaced with REST functionality. In order to do this:\n 1. Replace the `@Remote` annotation on the class with a `@jakarta.ws.rs.Path(\"<endpoint>\")` annotation. An endpoint must be added to the annotation in place of `<endpoint>` to specify the actual path to the REST service.\n 2. Remove `@Stateless` annotations if present. Given that REST services are stateless by nature, it makes it unnecessary.\n 3. For every public method on the EJB being converted, do the following:\n - In case the method has no input parameters, annotate the method with `@jakarta.ws.rs.GET`; otherwise annotate it with `@jakarta.ws.rs.POST` instead.\n - Annotate the method with `@jakarta.ws.rs.Path(\"<endpoint>\")` and give it a proper endpoint path. As a rule of thumb, the method name can be used as endpoint, for instance:\n ```\n @Path(\"/increment\")\n public void increment() \n ```\n - Add `@jakarta.ws.rs.QueryParam(\"<param-name>\")` to any method parameters if needed, where `<param-name>` is a name for the parameter.",
+          "location": "ShippingService.java:12",
+          "effort": 1,
+          "ruleId": "remote-ejb-to-quarkus-00000"
+        }
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "build-config",
+      "name": "Build-config",
+      "type": "infrastructure",
+      "linesOfCode": 2300,
+      "technology": {
+        "language": "XML",
+        "framework": "Java EE 7 / JBoss EAP 7.4",
+        "frameworkStatus": "outdated"
+      },
+      "issues": [
+        {
+          "id": "issue-12",
+          "title": "The expected project artifact's extension is `jar`",
+          "type": "Build Configuration",
+          "severity": "critical",
+          "description": "The project artifact's current extension (i.e. `<packaging>` tag value) is `` but the expected value should be `jar`",
+          "location": "pom.xml:9",
+          "effort": 1,
+          "ruleId": "javaee-pom-to-quarkus-00000"
+        },
+        {
+          "id": "issue-13",
+          "title": "Adopt Quarkus BOM",
+          "type": "Build Configuration",
+          "severity": "critical",
+          "description": "Use the Quarkus BOM to omit the version of the different Quarkus dependencies. \n Add the following sections to the `pom.xml` file: \n\n ```xml\n <properties> \n <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id> \n <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id> \n <quarkus.platform.version>3.1.0.Final</quarkus.platform.version>\n </properties> \n <dependencyManagement> \n <dependencies> \n <dependency> \n <groupId>$</groupId> \n <artifactId>$</artifactId> \n <version>$</version> \n <type>pom</type> \n <scope>import</scope> \n </dependency> \n </dependencies> \n </dependencyManagement> \n ```\n Check the latest Quarkus version available from the `Quarkus - Releases` link below.",
+          "location": "pom.xml:5",
+          "effort": 1,
+          "ruleId": "javaee-pom-to-quarkus-00010"
+        },
+        {
+          "id": "issue-14",
+          "title": "Adopt Quarkus BOM",
+          "type": "Build Configuration",
+          "severity": "critical",
+          "description": "Use the Quarkus BOM to omit the version of the different Quarkus dependencies. \n Add the following sections to the `pom.xml` file: \n\n ```xml\n <properties> \n <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id> \n <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id> \n <quarkus.platform.version>3.1.0.Final</quarkus.platform.version>\n </properties> \n <dependencyManagement> \n <dependencies> \n <dependency> \n <groupId>$</groupId> \n <artifactId>$</artifactId> \n <version>$</version> \n <type>pom</type> \n <scope>import</scope> \n </dependency> \n </dependencies> \n </dependencyManagement> \n ```\n Check the latest Quarkus version available from the `Quarkus - Releases` link below.",
+          "location": "pom.xml:5",
+          "effort": 1,
+          "ruleId": "javaee-pom-to-quarkus-00010"
+        },
+        {
+          "id": "issue-15",
+          "title": "Adopt Quarkus Maven plugin",
+          "type": "Build Configuration",
+          "severity": "critical",
+          "description": "Use the Quarkus Maven plugin adding the following sections to the `pom.xml` file: \n\n ```xml\n <properties> \n <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id> \n <quarkus.platform.version>3.1.0.Final</quarkus.platform.version>\n </properties> \n <build>\n <plugins>\n <plugin>\n <groupId>$</groupId>\n <artifactId>quarkus-maven-plugin</artifactId>\n <version>$</version>\n <extensions>true</extensions>\n <executions>\n <execution>\n <goals>\n <goal>build</goal>\n <goal>generate-code</goal>\n <goal>generate-code-tests</goal>\n </goals>\n </execution>\n </executions>\n </plugin>\n </plugins>\n </build>\n ```",
+          "location": "pom.xml:5",
+          "effort": 1,
+          "ruleId": "javaee-pom-to-quarkus-00020"
+        },
+        {
+          "id": "issue-16",
+          "title": "Adopt Quarkus Maven plugin",
+          "type": "Build Configuration",
+          "severity": "critical",
+          "description": "Use the Quarkus Maven plugin adding the following sections to the `pom.xml` file: \n\n ```xml\n <properties> \n <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id> \n <quarkus.platform.version>3.1.0.Final</quarkus.platform.version>\n </properties> \n <build>\n <plugins>\n <plugin>\n <groupId>$</groupId>\n <artifactId>quarkus-maven-plugin</artifactId>\n <version>$</version>\n <extensions>true</extensions>\n <executions>\n <execution>\n <goals>\n <goal>build</goal>\n <goal>generate-code</goal>\n <goal>generate-code-tests</goal>\n </goals>\n </execution>\n </executions>\n </plugin>\n </plugins>\n </build>\n ```",
+          "location": "pom.xml:5",
+          "effort": 1,
+          "ruleId": "javaee-pom-to-quarkus-00020"
+        },
+        {
+          "id": "issue-17",
+          "title": "Adopt Maven Compiler plugin",
+          "type": "Build Configuration",
+          "severity": "critical",
+          "description": "Use the Maven Compiler plugin adding the following sections to the `pom.xml` file: \n\n ```xml\n <properties> \n <compiler-plugin.version>3.10.1</compiler-plugin.version>\n <maven.compiler.release>11</maven.compiler.release>\n </properties> \n <build>\n <plugins>\n <plugin>\n <artifactId>maven-compiler-plugin</artifactId>\n <version>$</version>\n <configuration>\n <compilerArgs>\n <arg>-parameters</arg>\n </compilerArgs>\n </configuration>\n </plugin>\n </plugins>\n </build>\n ```",
+          "location": "pom.xml:5",
+          "effort": 1,
+          "ruleId": "javaee-pom-to-quarkus-00030"
+        },
+        {
+          "id": "issue-18",
+          "title": "Adopt Maven Compiler plugin",
+          "type": "Build Configuration",
+          "severity": "critical",
+          "description": "Use the Maven Compiler plugin adding the following sections to the `pom.xml` file: \n\n ```xml\n <properties> \n <compiler-plugin.version>3.10.1</compiler-plugin.version>\n <maven.compiler.release>11</maven.compiler.release>\n </properties> \n <build>\n <plugins>\n <plugin>\n <artifactId>maven-compiler-plugin</artifactId>\n <version>$</version>\n <configuration>\n <compilerArgs>\n <arg>-parameters</arg>\n </compilerArgs>\n </configuration>\n </plugin>\n </plugins>\n </build>\n ```",
+          "location": "pom.xml:5",
+          "effort": 1,
+          "ruleId": "javaee-pom-to-quarkus-00030"
+        },
+        {
+          "id": "issue-19",
+          "title": "Adopt Maven Surefire plugin",
+          "type": "Build Configuration",
+          "severity": "critical",
+          "description": "Use the Maven Surefire plugin adding the following sections to the `pom.xml` file: \n\n ```xml\n <properties> \n <surefire-plugin.version>3.0.0</compiler-plugin.version>\n </properties> \n <build>\n <plugins>\n <plugin>\n <artifactId>maven-surefire-plugin</artifactId>\n <version>$</version>\n <configuration>\n <systemPropertyVariables>\n <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>\n <maven.home>$</maven.home>\n </systemPropertyVariables>\n </configuration>\n </plugin>\n </plugins>\n </build>\n ```",
+          "location": "pom.xml:5",
+          "effort": 1,
+          "ruleId": "javaee-pom-to-quarkus-00040"
+        },
+        {
+          "id": "issue-20",
+          "title": "Adopt Maven Surefire plugin",
+          "type": "Build Configuration",
+          "severity": "critical",
+          "description": "Use the Maven Surefire plugin adding the following sections to the `pom.xml` file: \n\n ```xml\n <properties> \n <surefire-plugin.version>3.0.0</compiler-plugin.version>\n </properties> \n <build>\n <plugins>\n <plugin>\n <artifactId>maven-surefire-plugin</artifactId>\n <version>$</version>\n <configuration>\n <systemPropertyVariables>\n <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>\n <maven.home>$</maven.home>\n </systemPropertyVariables>\n </configuration>\n </plugin>\n </plugins>\n </build>\n ```",
+          "location": "pom.xml:5",
+          "effort": 1,
+          "ruleId": "javaee-pom-to-quarkus-00040"
+        },
+        {
+          "id": "issue-21",
+          "title": "Adopt Maven Failsafe plugin",
+          "type": "Build Configuration",
+          "severity": "critical",
+          "description": "Use the Maven Failsafe plugin adding the following sections to the `pom.xml` file: \n\n ```xml\n <properties> \n <surefire-plugin.version>3.0.0</compiler-plugin.version>\n </properties> \n <build>\n <plugins>\n <plugin>\n <artifactId>maven-failsafe-plugin</artifactId>\n <version>$</version>\n <executions>\n <execution>\n <goals>\n <goals>integration-test</goal>\n <goals>verify</goal>\n </goals>\n <configuration>\n <systemPropertyVariables>\n <native.image.path>$/$-runner</native.image.path>\n <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>\n <maven.home>$</maven.home>\n </systemPropertyVariables>\n </configuration>\n </execution>\n </executions>\n </plugin>\n </plugins>\n </build>\n ```",
+          "location": "pom.xml:5",
+          "effort": 1,
+          "ruleId": "javaee-pom-to-quarkus-00050"
+        },
+        {
+          "id": "issue-22",
+          "title": "Adopt Maven Failsafe plugin",
+          "type": "Build Configuration",
+          "severity": "critical",
+          "description": "Use the Maven Failsafe plugin adding the following sections to the `pom.xml` file: \n\n ```xml\n <properties> \n <surefire-plugin.version>3.0.0</compiler-plugin.version>\n </properties> \n <build>\n <plugins>\n <plugin>\n <artifactId>maven-failsafe-plugin</artifactId>\n <version>$</version>\n <executions>\n <execution>\n <goals>\n <goals>integration-test</goal>\n <goals>verify</goal>\n </goals>\n <configuration>\n <systemPropertyVariables>\n <native.image.path>$/$-runner</native.image.path>\n <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>\n <maven.home>$</maven.home>\n </systemPropertyVariables>\n </configuration>\n </execution>\n </executions>\n </plugin>\n </plugins>\n </build>\n ```",
+          "location": "pom.xml:5",
+          "effort": 1,
+          "ruleId": "javaee-pom-to-quarkus-00050"
+        },
+        {
+          "id": "issue-23",
+          "title": "Add Maven profile to run the Quarkus native build",
+          "type": "Build Configuration",
+          "severity": "critical",
+          "description": "Leverage a Maven profile to run the Quarkus native build adding the following section to the `pom.xml` file: \n\n ```xml\n <profiles>\n <profile>\n <id>native</id>\n <activation>\n <property>\n <name>native</name>\n </property>\n </activation>\n <properties>\n <skipITs>false</skipITs>\n <quarkus.package.type>native</quarkus.package.type>\n </properties>\n </profile>\n </profiles>\n ```",
+          "location": "pom.xml:5",
+          "effort": 1,
+          "ruleId": "javaee-pom-to-quarkus-00060"
+        },
+        {
+          "id": "issue-24",
+          "title": "Add Maven profile to run the Quarkus native build",
+          "type": "Build Configuration",
+          "severity": "critical",
+          "description": "Leverage a Maven profile to run the Quarkus native build adding the following section to the `pom.xml` file: \n\n ```xml\n <profiles>\n <profile>\n <id>native</id>\n <activation>\n <property>\n <name>native</name>\n </property>\n </activation>\n <properties>\n <skipITs>false</skipITs>\n <quarkus.package.type>native</quarkus.package.type>\n </properties>\n </profile>\n </profiles>\n ```",
+          "location": "pom.xml:5",
+          "effort": 1,
+          "ruleId": "javaee-pom-to-quarkus-00060"
+        }
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "rest",
+      "name": "Rest",
+      "type": "middleware",
+      "linesOfCode": 1200,
+      "technology": {
+        "language": "Java",
+        "framework": "Java EE 7 / JBoss EAP 7.4",
+        "frameworkStatus": "outdated"
+      },
+      "issues": [
+        {
+          "id": "issue-25",
+          "title": "JAX-RS activation is no longer necessary",
+          "type": "REST/JAX-RS",
+          "severity": "info",
+          "description": "JAX-RS activation is no longer necessary. You can set a root path like this but you don't have to.",
+          "location": "RestApplication.java:7",
+          "effort": 1,
+          "ruleId": "jaxrs-to-quarkus-00020"
+        },
+        {
+          "id": "issue-26",
+          "title": "JAX-RS activation is no longer necessary",
+          "type": "REST/JAX-RS",
+          "severity": "info",
+          "description": "JAX-RS activation is no longer necessary. You can set a root path like this but you don't have to.",
+          "location": "RestApplication.java:8",
+          "effort": 1,
+          "ruleId": "jaxrs-to-quarkus-00020"
+        }
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "core",
+      "name": "Core",
+      "type": "backend",
+      "linesOfCode": 1100,
+      "technology": {
+        "language": "XML",
+        "framework": "Java EE 7 / JBoss EAP 7.4",
+        "frameworkStatus": "outdated"
+      },
+      "issues": [
+        {
+          "id": "issue-40",
+          "title": "Move persistence config to a properties file",
+          "type": "Persistence",
+          "severity": "info",
+          "description": "It is recommended to move persistence related configuration from an XML file to a properties one.\n This allows centralization of the configuration in Quarkus. Check the link for more information.\n \n \n Datasource and persistence configurations in XML can be substituted with a single centralized properties file. Here is an example of a translation:\n \n The following datasource configuration:\n ```\n <datasources xmlns=\"http://www.jboss.org/ironjacamar/schema\"\n xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n xsi:schemaLocation=\"http://www.jboss.org/ironjacamar/schema http://docs.jboss.org/ironjacamar/schema/datasources_1_0.xsd\">\n <!-- The datasource is bound into JNDI at this location. We reference\n this in META-INF/persistence.xml -->\n <datasource jndi-name=\"java:jboss/datasources/TasksJsfQuickstartDS\"\n pool-name=\"tasks-jsf-quickstart\" enabled=\"true\"\n use-java-context=\"true\">\n <connection-url>jdbc:h2:mem:tasks-jsf-quickstart;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1</connection-url>\n <driver>h2</driver>\n <security>\n <user-name>sa</user-name>\n <password>sa</password>\n </security>\n </datasource>\n </datasources>\n ```\n along with the following persistence configuration:\n ```\n <persistence version=\"2.1\"\n xmlns=\"http://xmlns.jcp.org/xml/ns/persistence\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n xsi:schemaLocation=\"\n http://xmlns.jcp.org/xml/ns/persistence\n http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd\">\n <persistence-unit name=\"primary\">\n <!-- We use a different datasource for tests, so as to not overwrite\n production data. This is an unmanaged data source, backed by H2, an in memory\n database. Production applications should use a managed datasource. -->\n <!-- The datasource is deployed as WEB-INF/test-ds.xml,\n you can find it in the source at src/test/resources/test-ds.xml -->\n <jta-data-source>java:jboss/datasources/TasksJsfQuickstartDS</jta-data-source>\n <properties>\n <!-- Properties for Hibernate -->\n <property name=\"hibernate.hbm2ddl.auto\" value=\"create-drop\" />\n <property name=\"hibernate.show_sql\" value=\"false\" />\n </properties>\n </persistence-unit>\n </persistence>\n ```\n can be translated to:\n ```\n quarkus.datasource.jdbc.url=jdbc:h2:mem:tasks-jsf-quickstart;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1\n quarkus.datasource.db-kind=h2\n quarkus.datasource.username=sa\n quarkus.datasource.password=sa\n\n quarkus.hibernate-orm.database.generation=drop-and-create\n ```",
+          "location": "persistence.xml",
+          "effort": 1,
+          "ruleId": "persistence-to-quarkus-00000"
         }
       ],
       "dependencies": []
@@ -344,59 +565,54 @@
   ],
   "dependencies": [
     {
-      "source": "web-ui",
-      "target": "order-controller",
+      "source": "webapp",
+      "target": "rest",
       "type": "http"
     },
     {
-      "source": "web-ui",
-      "target": "user-controller",
-      "type": "http"
-    },
-    {
-      "source": "order-controller",
-      "target": "order-service",
+      "source": "rest",
+      "target": "service",
       "type": "internal"
     },
     {
-      "source": "order-controller",
-      "target": "user-controller",
+      "source": "service",
+      "target": "model",
       "type": "internal"
     },
     {
-      "source": "order-service",
-      "target": "payment-service",
+      "source": "service",
+      "target": "persistence",
       "type": "internal"
     },
     {
-      "source": "order-service",
-      "target": "inventory-service",
+      "source": "persistence",
+      "target": "model",
       "type": "internal"
     },
     {
-      "source": "order-service",
-      "target": "database",
-      "type": "jdbc"
+      "source": "service",
+      "target": "utils",
+      "type": "internal"
     },
     {
-      "source": "payment-service",
-      "target": "database",
-      "type": "jdbc"
+      "source": "persistence",
+      "target": "utils",
+      "type": "internal"
     },
     {
-      "source": "payment-service",
-      "target": "notification-service",
-      "type": "http"
+      "source": "service",
+      "target": "core",
+      "type": "internal"
     },
     {
-      "source": "user-controller",
-      "target": "database",
-      "type": "jdbc"
+      "source": "rest",
+      "target": "core",
+      "type": "internal"
     },
     {
-      "source": "inventory-service",
-      "target": "database",
-      "type": "jdbc"
+      "source": "build-config",
+      "target": "webapp",
+      "type": "build"
     }
   ]
 }
