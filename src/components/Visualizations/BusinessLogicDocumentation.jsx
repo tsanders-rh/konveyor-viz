@@ -1,3 +1,16 @@
+import {
+  Card,
+  CardTitle,
+  CardBody,
+  Title,
+  Label,
+  Alert,
+  Grid,
+  GridItem,
+  List,
+  ListItem
+} from '@patternfly/react-core';
+
 const BusinessLogicDocumentation = ({ businessLogic }) => {
   if (!businessLogic || businessLogic.length === 0) {
     return null;
@@ -6,123 +19,142 @@ const BusinessLogicDocumentation = ({ businessLogic }) => {
   const getComplexityColor = (complexity) => {
     switch (complexity?.toLowerCase()) {
       case 'low':
-        return 'bg-green-100 text-green-800 border-green-300';
+        return 'green';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+        return 'orange';
       case 'high':
-        return 'bg-red-100 text-red-800 border-red-300';
+        return 'red';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-300';
+        return 'grey';
     }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+    <Card>
+      <CardTitle>
+        <Title headingLevel="h2" size="xl">
           📊 Discovered Business Logic
-        </h2>
-        <p className="text-gray-600 text-sm">
+        </Title>
+      </CardTitle>
+      <CardBody>
+        <div style={{ marginBottom: 'var(--pf-v5-global--spacer--lg)', color: 'var(--pf-v5-global--Color--200)' }}>
           Reverse-engineered business capabilities from legacy code analysis. This documentation helps teams with zero domain knowledge understand what the application does.
-        </p>
-      </div>
+        </div>
 
-      <div className="space-y-6">
-        {businessLogic.map((domain, idx) => (
-          <div key={idx} className="border border-gray-300 rounded-lg p-5 hover:shadow-lg transition-shadow bg-gradient-to-r from-blue-50 to-white">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">{domain.domain}</h3>
-                <p className="text-sm text-gray-600 mt-1">{domain.description}</p>
-              </div>
-              <span className={`px-3 py-1 text-xs font-medium rounded-full border ${getComplexityColor(domain.complexity)}`}>
-                {domain.complexity} Complexity
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              {/* Business Operations */}
-              {domain.operations && domain.operations.length > 0 && (
-                <div>
-                  <p className="text-xs font-semibold text-gray-700 mb-2">🔧 Business Operations</p>
-                  <ul className="space-y-1">
-                    {domain.operations.map((op, i) => (
-                      <li key={i} className="text-sm text-gray-700 flex items-start">
-                        <span className="text-blue-500 mr-2">•</span>
-                        {op}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Business Entities */}
-              {domain.entities && domain.entities.length > 0 && (
-                <div>
-                  <p className="text-xs font-semibold text-gray-700 mb-2">📦 Domain Entities</p>
-                  <div className="flex flex-wrap gap-2">
-                    {domain.entities.map((entity, i) => (
-                      <span key={i} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded border border-blue-300">
-                        {entity}
-                      </span>
-                    ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--pf-v5-global--spacer--lg)' }}>
+          {businessLogic.map((domain, idx) => (
+            <Card key={idx} isCompact>
+              <CardBody>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--pf-v5-global--spacer--md)' }}>
+                  <div style={{ flex: 1 }}>
+                    <Title headingLevel="h3" size="lg">
+                      {domain.domain}
+                    </Title>
+                    <div style={{ fontSize: 'var(--pf-v5-global--FontSize--sm)', color: 'var(--pf-v5-global--Color--200)', marginTop: 'var(--pf-v5-global--spacer--xs)' }}>
+                      {domain.description}
+                    </div>
                   </div>
+                  <Label color={getComplexityColor(domain.complexity)}>
+                    {domain.complexity} Complexity
+                  </Label>
                 </div>
-              )}
-            </div>
 
-            {/* Business Rules */}
-            {domain.rules && domain.rules.length > 0 && (
-              <div className="mb-4 bg-yellow-50 border border-yellow-200 rounded p-3">
-                <p className="text-xs font-semibold text-yellow-900 mb-2">⚠️ Business Rules & Validations</p>
-                <ul className="space-y-1">
-                  {domain.rules.map((rule, i) => (
-                    <li key={i} className="text-sm text-yellow-800">
-                      → {rule}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+                <Grid hasGutter style={{ marginBottom: 'var(--pf-v5-global--spacer--md)' }}>
+                  {/* Business Operations */}
+                  {domain.operations && domain.operations.length > 0 && (
+                    <GridItem md={6}>
+                      <div>
+                        <div style={{ fontSize: 'var(--pf-v5-global--FontSize--xs)', fontWeight: 'var(--pf-v5-global--FontWeight--semi-bold)', marginBottom: 'var(--pf-v5-global--spacer--sm)' }}>
+                          🔧 Business Operations
+                        </div>
+                        <List isPlain>
+                          {domain.operations.map((op, i) => (
+                            <ListItem key={i} style={{ fontSize: 'var(--pf-v5-global--FontSize--sm)' }}>
+                              • {op}
+                            </ListItem>
+                          ))}
+                        </List>
+                      </div>
+                    </GridItem>
+                  )}
 
-            {/* Critical Logic */}
-            {domain.criticalLogic && (
-              <div className="mb-4 bg-red-50 border border-red-200 rounded p-3">
-                <p className="text-xs font-semibold text-red-900 mb-1">🔥 Critical Logic (Must Preserve)</p>
-                <p className="text-sm text-red-800">{domain.criticalLogic}</p>
-              </div>
-            )}
+                  {/* Business Entities */}
+                  {domain.entities && domain.entities.length > 0 && (
+                    <GridItem md={6}>
+                      <div>
+                        <div style={{ fontSize: 'var(--pf-v5-global--FontSize--xs)', fontWeight: 'var(--pf-v5-global--FontWeight--semi-bold)', marginBottom: 'var(--pf-v5-global--spacer--sm)' }}>
+                          📦 Domain Entities
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--pf-v5-global--spacer--xs)' }}>
+                          {domain.entities.map((entity, i) => (
+                            <Label key={i} color="blue" isCompact>
+                              {entity}
+                            </Label>
+                          ))}
+                        </div>
+                      </div>
+                    </GridItem>
+                  )}
+                </Grid>
 
-            {/* Migration Mapping */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-gray-200">
-              <div>
-                <p className="text-xs font-semibold text-gray-700 mb-2">📂 Source Components</p>
-                <div className="flex flex-wrap gap-1">
-                  {domain.sourceComponents.map((comp, i) => (
-                    <span key={i} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded font-mono">
-                      {comp}
-                    </span>
-                  ))}
-                </div>
-              </div>
+                {/* Business Rules */}
+                {domain.rules && domain.rules.length > 0 && (
+                  <Alert variant="warning" isInline title="⚠️ Business Rules & Validations" style={{ marginBottom: 'var(--pf-v5-global--spacer--md)' }}>
+                    <List isPlain>
+                      {domain.rules.map((rule, i) => (
+                        <ListItem key={i} style={{ fontSize: 'var(--pf-v5-global--FontSize--sm)' }}>
+                          → {rule}
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Alert>
+                )}
 
-              <div>
-                <p className="text-xs font-semibold text-gray-700 mb-2">🎯 Target Microservice</p>
-                <span className="inline-block px-3 py-1 bg-green-100 text-green-800 text-sm rounded border border-green-300 font-medium">
-                  {domain.targetService}
-                </span>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+                {/* Critical Logic */}
+                {domain.criticalLogic && (
+                  <Alert variant="danger" isInline title="🔥 Critical Logic (Must Preserve)" style={{ marginBottom: 'var(--pf-v5-global--spacer--md)' }}>
+                    {domain.criticalLogic}
+                  </Alert>
+                )}
 
-      <div className="mt-6 bg-blue-50 border border-blue-200 rounded p-4">
-        <p className="text-sm text-blue-900">
-          <span className="font-semibold">💡 Migration Guidance:</span> Use this business logic documentation to ensure all critical functionality is preserved when migrating from monolith to microservices. Each domain represents a bounded context that should be implemented in its target microservice.
-        </p>
-      </div>
-    </div>
+                {/* Migration Mapping */}
+                <Grid hasGutter style={{ paddingTop: 'var(--pf-v5-global--spacer--md)', borderTop: '1px solid var(--pf-v5-global--BorderColor--100)' }}>
+                  <GridItem md={6}>
+                    <div>
+                      <div style={{ fontSize: 'var(--pf-v5-global--FontSize--xs)', fontWeight: 'var(--pf-v5-global--FontWeight--semi-bold)', marginBottom: 'var(--pf-v5-global--spacer--sm)' }}>
+                        📂 Source Components
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--pf-v5-global--spacer--xs)' }}>
+                        {domain.sourceComponents.map((comp, i) => (
+                          <Label key={i} isCompact>
+                            <code>{comp}</code>
+                          </Label>
+                        ))}
+                      </div>
+                    </div>
+                  </GridItem>
+
+                  <GridItem md={6}>
+                    <div>
+                      <div style={{ fontSize: 'var(--pf-v5-global--FontSize--xs)', fontWeight: 'var(--pf-v5-global--FontWeight--semi-bold)', marginBottom: 'var(--pf-v5-global--spacer--sm)' }}>
+                        🎯 Target Microservice
+                      </div>
+                      <Label color="green">
+                        {domain.targetService}
+                      </Label>
+                    </div>
+                  </GridItem>
+                </Grid>
+              </CardBody>
+            </Card>
+          ))}
+        </div>
+
+        <Alert variant="info" isInline title="💡 Migration Guidance" style={{ marginTop: 'var(--pf-v5-global--spacer--lg)' }}>
+          Use this business logic documentation to ensure all critical functionality is preserved when migrating from monolith to microservices. Each domain represents a bounded context that should be implemented in its target microservice.
+        </Alert>
+      </CardBody>
+    </Card>
   );
 };
 
