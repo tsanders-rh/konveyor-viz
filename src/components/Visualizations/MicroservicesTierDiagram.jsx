@@ -284,7 +284,7 @@ const MicroservicesTierDiagram = ({ microservices }) => {
   }
 
   return (
-    <Card style={{ marginTop: 'var(--pf-v5-global--spacer--lg)' }}>
+    <Card style={{ marginTop: '24px' }}>
       <CardTitle>
         <Title headingLevel="h3" size="lg">
           🏗️ Proposed Architecture
@@ -294,22 +294,22 @@ const MicroservicesTierDiagram = ({ microservices }) => {
         <div style={{ overflowX: 'auto' }}>
           <svg ref={svgRef} style={{ margin: '0 auto', display: 'block' }}></svg>
         </div>
-        <div style={{ marginTop: 'var(--pf-v5-global--spacer--md)', display: 'flex', flexWrap: 'wrap', gap: 'var(--pf-v5-global--spacer--md)', justifyContent: 'center', fontSize: 'var(--pf-v5-global--FontSize--sm)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--xs)' }}>
-            <div style={{ width: '16px', height: '16px', backgroundColor: '#8b5cf6', borderRadius: 'var(--pf-v5-global--BorderRadius--sm)' }}></div>
-            <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>Gateway</span>
+        <div style={{ marginTop: '16px', display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center', fontSize: '0.875rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <div style={{ width: '16px', height: '16px', backgroundColor: '#8b5cf6', borderRadius: '4px' }}></div>
+            <span style={{ color: '#151515' }}>Gateway</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--xs)' }}>
-            <div style={{ width: '16px', height: '16px', backgroundColor: '#3b82f6', borderRadius: 'var(--pf-v5-global--BorderRadius--sm)' }}></div>
-            <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>API Service</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <div style={{ width: '16px', height: '16px', backgroundColor: '#3b82f6', borderRadius: '4px' }}></div>
+            <span style={{ color: '#151515' }}>API Service</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--xs)' }}>
-            <div style={{ width: '16px', height: '16px', backgroundColor: '#10b981', borderRadius: 'var(--pf-v5-global--BorderRadius--sm)' }}></div>
-            <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>Worker</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <div style={{ width: '16px', height: '16px', backgroundColor: '#10b981', borderRadius: '4px' }}></div>
+            <span style={{ color: '#151515' }}>Worker</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--xs)' }}>
-            <div style={{ width: '16px', height: '16px', backgroundColor: '#f59e0b', borderRadius: 'var(--pf-v5-global--BorderRadius--sm)' }}></div>
-            <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>Data Service</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <div style={{ width: '16px', height: '16px', backgroundColor: '#f59e0b', borderRadius: '4px' }}></div>
+            <span style={{ color: '#151515' }}>Data Service</span>
           </div>
         </div>
       </CardBody>

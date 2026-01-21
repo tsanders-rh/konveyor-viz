@@ -25,9 +25,9 @@ const IssueList = ({ issues }) => {
   if (!issues || issues.length === 0) {
     return (
       <div style={{
-        color: 'var(--pf-v5-global--Color--200)',
+        color: '#6a6e73',
         textAlign: 'center',
-        padding: 'var(--pf-v5-global--spacer--xl)'
+        padding: '24px'
       }}>
         No issues found
       </div>
@@ -42,28 +42,28 @@ const IssueList = ({ issues }) => {
             <DataListItemCells
               dataListCells={[
                 <DataListCell key="content" width={5}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--pf-v5-global--spacer--sm)' }}>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--pf-v5-global--spacer--sm)' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
                       <strong style={{ flex: 1 }}>{issue.title}</strong>
                       <Label color={getSeverityColor(issue.severity)}>
                         {issue.severity}
                       </Label>
                     </div>
                     <div style={{
-                      fontSize: 'var(--pf-v5-global--FontSize--sm)',
-                      color: 'var(--pf-v5-global--Color--200)'
+                      fontSize: '0.875rem',
+                      color: '#6a6e73'
                     }}>
                       {issue.description}
                     </div>
                     <div style={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 'var(--pf-v5-global--spacer--xs)',
-                      fontSize: 'var(--pf-v5-global--FontSize--xs)',
-                      color: 'var(--pf-v5-global--Color--200)'
+                      gap: '4px',
+                      fontSize: '0.75rem',
+                      color: '#6a6e73'
                     }}>
                       <FileCodeIcon size="sm" />
-                      <code style={{ fontSize: 'var(--pf-v5-global--FontSize--xs)' }}>
+                      <code style={{ fontSize: '0.75rem' }}>
                         {issue.location}
                       </code>
                     </div>

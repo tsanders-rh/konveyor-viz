@@ -50,9 +50,9 @@ const SpecKitExportButton = ({ service, businessLogic, decomposition, data }) =>
       </Button>
       {error && (
         <div style={{
-          fontSize: 'var(--pf-v5-global--FontSize--xs)',
+          fontSize: '0.75rem',
           color: 'var(--pf-v5-global--danger-color--100)',
-          marginTop: 'var(--pf-v5-global--spacer--xs)'
+          marginTop: '4px'
         }}>
           {error}
         </div>

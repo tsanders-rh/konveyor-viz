@@ -9,9 +9,9 @@ const IssueBreakdown = ({ issuesByType }) => {
   }));
 
   return (
-    <Card isRounded style={{ boxShadow: 'var(--pf-v5-global--BoxShadow--sm)' }}>
+    <Card>
       <CardTitle>
-        <Title headingLevel="h2" size="xl" style={{ fontWeight: 'var(--pf-v5-global--FontWeight--bold)' }}>
+        <Title headingLevel="h2" size="lg">
           Issues by Type
         </Title>
       </CardTitle>
@@ -31,11 +31,11 @@ const IssueBreakdown = ({ issuesByType }) => {
             contentStyle={{
               backgroundColor: 'rgba(255, 255, 255, 0.95)',
               border: '1px solid #ddd',
-              borderRadius: '8px',
+              borderRadius: '4px',
             }}
           />
           <Legend />
-          <Bar dataKey="count" fill="#3b82f6" name="Issues" radius={[8, 8, 0, 0]} />
+          <Bar dataKey="count" fill="#0066cc" name="Issues" radius={[4, 4, 0, 0]} />
         </BarChart>
         </ResponsiveContainer>
       </CardBody>
