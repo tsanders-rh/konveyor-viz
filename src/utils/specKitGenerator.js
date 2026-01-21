@@ -211,6 +211,110 @@ ${safeArray(service.components).map(comp => `- \`${comp}\``).join('\n')}
 - **Service Name**: ${service.name}
 - **Service Type**: ${safeString(service.type)}
 
+${(() => {
+  // Check if this service has frontend components with frontend context
+  if (!data || !data.components || !service.components) {
+    return '';
+  }
+
+  // Find components that belong to this service and have frontend context
+  const frontendComponents = data.components.filter(c =>
+    safeArray(service.components).includes(c.name) && c.frontendContext
+  );
+
+  if (frontendComponents.length === 0) {
+    return '';
+  }
+
+  // Aggregate frontend context from all frontend components
+  const allFrameworks = [...new Set(frontendComponents.map(c => c.frontendContext.stack.framework).filter(Boolean))];
+  const allLibraries = [...new Set(frontendComponents.flatMap(c => c.frontendContext.stack.library))];
+  const allStyling = [...new Set(frontendComponents.flatMap(c => c.frontendContext.stack.styling))];
+  const allStateManagement = [...new Set(frontendComponents.map(c => c.frontendContext.stack.stateManagement).filter(Boolean))];
+  const allRouters = [...new Set(frontendComponents.map(c => c.frontendContext.stack.router).filter(Boolean))];
+  const allUIComponents = [...new Set(frontendComponents.flatMap(c => c.frontendContext.uiComponents))];
+  const allRoutes = frontendComponents.flatMap(c => c.frontendContext.routes);
+  const hasResponsive = frontendComponents.some(c => c.frontendContext.styling.responsive);
+  const themeSystem = frontendComponents.find(c => c.frontendContext.styling.themeSystem)?.frontendContext.styling.themeSystem;
+
+  let uiSection = `\n## UI/UX Specification\n\n`;
+  uiSection += `### Technology Stack\n\n`;
+  uiSection += `**Framework**: ${allFrameworks.join(', ') || 'Not detected'}\n\n`;
+
+  if (allLibraries.length > 0) {
+    uiSection += `**UI Component Libraries**:\n${allLibraries.map(lib => `- ${lib}`).join('\n')}\n\n`;
+  }
+
+  if (allStyling.length > 0) {
+    uiSection += `**Styling Approach**:\n${allStyling.map(style => `- ${style}`).join('\n')}\n\n`;
+  }
+
+  if (allStateManagement.length > 0) {
+    uiSection += `**State Management**: ${allStateManagement.join(', ')}\n\n`;
+  }
+
+  if (allRouters.length > 0) {
+    uiSection += `**Routing**: ${allRouters.join(', ')}\n\n`;
+  }
+
+  uiSection += `**Responsive Design**: ${hasResponsive ? 'Yes' : 'No'}\n\n`;
+
+  if (themeSystem) {
+    uiSection += `**Theme System**: ${themeSystem}\n\n`;
+  }
+
+  if (allUIComponents.length > 0) {
+    uiSection += `### UI Component Inventory\n\n`;
+    uiSection += `The following UI components were detected in the legacy code:\n\n`;
+    uiSection += `${allUIComponents.slice(0, 30).map(comp => `- ${comp}`).join('\n')}`;
+    if (allUIComponents.length > 30) {
+      uiSection += `\n- *...and ${allUIComponents.length - 30} more components*`;
+    }
+    uiSection += `\n\n`;
+  }
+
+  if (allRoutes.length > 0) {
+    uiSection += `### Pages & Routes\n\n`;
+    uiSection += `The following pages/routes were identified:\n\n`;
+    const uniqueRoutes = [...new Map(allRoutes.map(r => [r.path, r])).values()];
+    uiSection += `${uniqueRoutes.slice(0, 20).map(route => `- \`${route.path}\` (${route.type})`).join('\n')}`;
+    if (uniqueRoutes.length > 20) {
+      uiSection += `\n- *...and ${uniqueRoutes.length - 20} more routes*`;
+    }
+    uiSection += `\n\n`;
+  }
+
+  uiSection += `### UI/UX Requirements\n\n`;
+  uiSection += `#### User Interface\n`;
+  uiSection += `- Maintain consistent design language across all pages\n`;
+  uiSection += `- Implement component-based architecture for reusability\n`;
+  uiSection += `- Follow accessibility standards (WCAG 2.1 Level AA minimum)\n`;
+  if (hasResponsive) {
+    uiSection += `- Ensure responsive design for mobile, tablet, and desktop viewports\n`;
+  }
+  uiSection += `\n`;
+
+  uiSection += `#### User Experience\n`;
+  uiSection += `- Optimize page load performance (< 3s initial load)\n`;
+  uiSection += `- Implement loading states and error handling\n`;
+  uiSection += `- Provide clear user feedback for all interactions\n`;
+  uiSection += `- Support browser back/forward navigation\n`;
+  uiSection += `\n`;
+
+  uiSection += `#### Design System\n`;
+  if (allLibraries.length > 0) {
+    uiSection += `- Adopt ${allLibraries[0]} or equivalent component library\n`;
+  }
+  if (themeSystem) {
+    uiSection += `- Implement theming system for brand customization\n`;
+  }
+  uiSection += `- Define color palette, typography, and spacing scales\n`;
+  uiSection += `- Create reusable UI component library\n`;
+  uiSection += `\n`;
+
+  return uiSection;
+})()}
+
 ## Communication Requirements
 
 ${safeString(service.communication)}
