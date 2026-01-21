@@ -5,8 +5,7 @@ import {
   Drawer,
   DrawerContent,
   DrawerContentBody,
-  Title,
-  TextContent
+  Title
 } from '@patternfly/react-core';
 import MetricsOverview from './MetricsOverview';
 import TechnologyStack from './TechnologyStack';
@@ -52,12 +51,10 @@ const Dashboard = ({ data, activeView }) => {
       {activeView === 'overview' && (
         <>
           <PageSection variant={PageSectionVariants.light}>
-            <TextContent>
-              <Title headingLevel="h1">Application Overview</Title>
-              <p>
-                Comprehensive analysis of your application's architecture, issues, and migration readiness.
-              </p>
-            </TextContent>
+            <Title headingLevel="h1">Application Overview</Title>
+            <p style={{ color: 'var(--pf-v5-global--Color--200)', marginTop: 'var(--pf-v5-global--spacer--sm)' }}>
+              Comprehensive analysis of your application's architecture, issues, and migration readiness.
+            </p>
           </PageSection>
           <PageSection variant={PageSectionVariants.light}>
             <MetricsOverview metrics={metrics} />
@@ -75,12 +72,10 @@ const Dashboard = ({ data, activeView }) => {
       {activeView === 'components' && (
         <>
           <PageSection variant={PageSectionVariants.light}>
-            <TextContent>
-              <Title headingLevel="h1">Components</Title>
-              <p>
-                Browse and filter all application components with detailed analysis.
-              </p>
-            </TextContent>
+            <Title headingLevel="h1">Components</Title>
+            <p style={{ color: 'var(--pf-v5-global--Color--200)', marginTop: 'var(--pf-v5-global--spacer--sm)' }}>
+              Browse and filter all application components with detailed analysis.
+            </p>
           </PageSection>
           <PageSection>
             <div style={{ textAlign: 'center', padding: '3rem' }}>
@@ -96,12 +91,10 @@ const Dashboard = ({ data, activeView }) => {
       {activeView === 'analysis' && (
         <>
           <PageSection variant={PageSectionVariants.light}>
-            <TextContent>
-              <Title headingLevel="h1">Analysis</Title>
-              <p>
-                Detailed breakdown of issues and technology stack analysis.
-              </p>
-            </TextContent>
+            <Title headingLevel="h1">Analysis</Title>
+            <p style={{ color: 'var(--pf-v5-global--Color--200)', marginTop: 'var(--pf-v5-global--spacer--sm)' }}>
+              Detailed breakdown of issues and technology stack analysis.
+            </p>
           </PageSection>
           <PageSection variant={PageSectionVariants.light}>
             <IssueBreakdown issuesByType={issuesByType} />
@@ -116,12 +109,10 @@ const Dashboard = ({ data, activeView }) => {
       {activeView === 'microservices' && (
         <>
           <PageSection variant={PageSectionVariants.light}>
-            <TextContent>
-              <Title headingLevel="h1">Microservices Decomposition</Title>
-              <p>
-                AI-powered analysis to break down your monolith into microservices using Kubernetes best practices.
-              </p>
-            </TextContent>
+            <Title headingLevel="h1">Microservices Decomposition</Title>
+            <p style={{ color: 'var(--pf-v5-global--Color--200)', marginTop: 'var(--pf-v5-global--spacer--sm)' }}>
+              AI-powered analysis to break down your monolith into microservices using Kubernetes best practices.
+            </p>
           </PageSection>
           <PageSection>
             <MicroservicesDecomposition data={data} />
@@ -133,12 +124,10 @@ const Dashboard = ({ data, activeView }) => {
       {activeView === 'ai-insights' && (
         <>
           <PageSection variant={PageSectionVariants.light}>
-            <TextContent>
-              <Title headingLevel="h1">AI Insights</Title>
-              <p>
-                Intelligent recommendations for migration priorities, patterns, risks, and quick wins.
-              </p>
-            </TextContent>
+            <Title headingLevel="h1">AI Insights</Title>
+            <p style={{ color: 'var(--pf-v5-global--Color--200)', marginTop: 'var(--pf-v5-global--spacer--sm)' }}>
+              Intelligent recommendations for migration priorities, patterns, risks, and quick wins.
+            </p>
           </PageSection>
           <PageSection>
             <AIInsights data={data} />
