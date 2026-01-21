@@ -158,6 +158,31 @@ kantra-output/
 - Try re-running kantra analysis
 - Check for file corruption
 
+## GitHub Integration
+
+### Configuring GitHub Repository
+
+To enable clickable links from issue locations to your source code in GitHub:
+
+1. Click the **Settings** button in the top toolbar
+2. Enter your GitHub repository URL (e.g., `https://github.com/owner/repo`)
+3. Click **Save**
+
+### Using GitHub Links
+
+Once configured:
+- Click on any file location in issue lists (e.g., `Order.java:24`)
+- Opens the file in GitHub in a new tab
+- Jumps directly to the specific line number
+
+### Supported URL Formats
+
+- `https://github.com/owner/repo` - Uses default branch (main)
+- `https://github.com/owner/repo/tree/branch-name` - Uses specific branch
+- `https://github.com/owner/repo/blob/main` - Explicit blob path
+
+**Note:** If you don't configure a GitHub URL, file locations will display as plain text.
+
 ## Tech Stack
 
 - **React 19** - UI framework
@@ -448,10 +473,10 @@ npm run dev
 - [x] PatternFly console UI migration (OpenShift/OKD style)
 - [x] Visual component type icons in architecture graph
 - [x] State persistence across navigation
+- [x] Integration with GitHub for code browsing
 - [ ] Upload real Konveyor report files
 - [ ] Migration roadmap timeline visualization
 - [ ] Export visualizations (PNG/PDF)
-- [ ] Integration with GitHub for code browsing
 - [ ] Search and filter functionality
 - [ ] Comparison between multiple analysis runs
 - [ ] Real-time collaboration features

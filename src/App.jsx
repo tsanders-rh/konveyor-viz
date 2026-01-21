@@ -22,6 +22,8 @@ import { BarsIcon, ChartPieIcon, CubeIcon, SearchIcon, CogIcon, BrainIcon, Wrenc
 import Dashboard from './components/Dashboard/Dashboard';
 import LoadReportButton from './components/LoadReport/LoadReportButton';
 import LoadReportModal from './components/LoadReport/LoadReportModal';
+import SettingsButton from './components/Settings/SettingsButton';
+import SettingsModal from './components/Settings/SettingsModal';
 import sampleData from './data/sampleData.json';
 
 function App() {
@@ -30,6 +32,7 @@ function App() {
   const [analysisData, setAnalysisData] = useState(sampleData);
   const [dataSource, setDataSource] = useState('sample'); // 'sample' or 'custom'
   const [isLoadModalOpen, setIsLoadModalOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
 
   const masthead = (
@@ -73,6 +76,7 @@ function App() {
             <Label color="grey">Sample Data</Label>
           )}
           <LoadReportButton onClick={() => setIsLoadModalOpen(true)} />
+          <SettingsButton onClick={() => setIsSettingsModalOpen(true)} />
         </div>
       </MastheadContent>
     </Masthead>
@@ -171,6 +175,10 @@ function App() {
         onClose={() => setIsLoadModalOpen(false)}
         onLoadSuccess={handleLoadSuccess}
         onLoadError={handleLoadError}
+      />
+      <SettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
       />
     </Page>
   );

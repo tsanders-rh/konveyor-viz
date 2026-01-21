@@ -6,7 +6,8 @@ import {
   DataListCell,
   Label
 } from '@patternfly/react-core';
-import { FileCodeIcon } from '@patternfly/react-icons';
+import { FileCodeIcon, ExternalLinkAltIcon } from '@patternfly/react-icons';
+import githubConfig from '../../config/githubConfig';
 
 const getSeverityColor = (severity) => {
   switch (severity) {
@@ -18,6 +19,40 @@ const getSeverityColor = (severity) => {
       return 'blue';
     default:
       return 'grey';
+  }
+};
+
+const renderLocation = (location) => {
+  const githubUrl = githubConfig.getFileUrl(location);
+
+  if (githubUrl) {
+    // Clickable link to GitHub
+    return (
+      <a
+        href={githubUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          color: '#06c',
+          textDecoration: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px',
+          fontSize: '0.75rem'
+        }}
+        title={`Open ${location} in GitHub`}
+      >
+        <code style={{ fontSize: '0.75rem' }}>{location}</code>
+        <ExternalLinkAltIcon size="sm" />
+      </a>
+    );
+  } else {
+    // Plain text if GitHub not configured
+    return (
+      <code style={{ fontSize: '0.75rem' }}>
+        {location}
+      </code>
+    );
   }
 };
 
@@ -63,9 +98,7 @@ const IssueList = ({ issues }) => {
                       color: '#6a6e73'
                     }}>
                       <FileCodeIcon size="sm" />
-                      <code style={{ fontSize: '0.75rem' }}>
-                        {issue.location}
-                      </code>
+                      {renderLocation(issue.location)}
                     </div>
                     {issue.type && (
                       <div>
