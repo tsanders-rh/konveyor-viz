@@ -52,6 +52,7 @@ This tool addresses the challenge of digesting lengthy Konveyor analysis reports
 ### 5. AI-Powered Microservices Decomposition
 - **Intelligent Service Boundaries**: AI analyzes component relationships to identify natural bounded contexts
 - **Business Logic Discovery**: Extracts business capabilities from legacy code (operations, entities, rules, workflows)
+- **Frontend/UI Analysis**: Language-agnostic detection of UI frameworks, components, routes, and design systems (React, Vue, Django, Rails, JSP, etc.)
 - **Architecture Patterns**: Recommends proven patterns (Circuit Breaker, Saga, API Gateway, Outbox, etc.)
 - **Tiered Architecture Diagram**: Visual representation of proposed microservices organized by tier (Gateway → API → Worker → Data-Service)
 - **Migration Strategy**: Phased approach using Strangler Fig pattern with specific services per phase
@@ -67,7 +68,7 @@ Export executable specifications following the [GitHub Spec-Kit](https://github.
 
 Each export includes:
 - **constitution.md**: Development principles, architecture patterns, testing standards, K8s deployment rules
-- **spec.md**: Business capabilities, operations, entities, rules, migration compliance requirements with Konveyor violations
+- **spec.md**: Business capabilities, operations, entities, rules, UI/UX specifications (for frontend services), migration compliance requirements with Konveyor violations
 - **plan.md**: Technical implementation plan, architecture patterns, technical debt assessment with effort breakdown
 - **tasks.md**: Phased task breakdown with actionable items per Konveyor rule violation
 
@@ -400,6 +401,78 @@ The tool uses a **3-tier system** for extracting business logic from legacy code
   - Business calculations and formulas from actual code
 
 **Recommendation**: Use **Tier 3** for production migration projects. Configure your GitHub URL in Settings to enable full source code analysis.
+
+### Frontend/UI Analysis (Language-Agnostic)
+
+The tool automatically detects and analyzes frontend components across **any technology stack**, providing UI specifications in Spec-Kit files.
+
+#### Supported Frontend Technologies
+
+**JavaScript Frameworks**:
+- React (JSX/TSX)
+- Vue.js
+- Angular
+- Svelte
+
+**Server-Side Templates**:
+- Django Templates (Python)
+- Jinja2 (Python)
+- ERB (Ruby on Rails)
+- Thymeleaf (Java/Spring)
+- JSP (Java Server Pages)
+- JSF (JavaServer Faces)
+- Razor (ASP.NET/C#)
+- Laravel Blade (PHP)
+- Twig (Symfony/PHP)
+- Handlebars
+
+**What Frontend Analysis Provides**:
+- **Technology Stack Detection**: Framework, UI libraries, styling approach, state management, routing
+- **UI Component Inventory**: Lists all detected UI components from the legacy code
+- **Page/Route Structure**: Documents all routes and navigation patterns
+- **Design System Analysis**: Identifies CSS approach, theme systems, responsive patterns
+- **UX Requirements**: Generates accessibility, performance, and responsive design requirements
+- **UI Specifications in Spec-Kit**: Each frontend service gets a dedicated "UI/UX Specification" section in `spec.md`
+
+**How It Works**:
+1. **Automatic Detection**: Analyzes code snippets and file extensions to identify frontend technology
+2. **Pattern Matching**: Extracts UI components, routes, styling patterns (framework-agnostic)
+3. **Aggregation**: Combines analysis from all frontend components into service specifications
+4. **Spec-Kit Export**: Includes comprehensive UI/UX section with technology stack, component inventory, and requirements
+
+**Example Output** (in `spec.md`):
+```markdown
+## UI/UX Specification
+
+### Technology Stack
+**Framework**: React
+**UI Component Libraries**: Material-UI, Bootstrap
+**Styling Approach**: CSS Modules, Sass/SCSS
+**State Management**: Redux
+**Routing**: React Router
+
+### UI Component Inventory
+- Header, Footer, Navbar
+- ProductList, ProductCard, ProductDetail
+- ShoppingCart, CheckoutForm
+- UserProfile, LoginForm
+(... and 45 more components)
+
+### Pages & Routes
+- `/` (React Router)
+- `/products` (React Router)
+- `/cart` (React Router)
+- `/checkout` (React Router)
+
+### UI/UX Requirements
+#### User Interface
+- Maintain consistent design language across all pages
+- Implement component-based architecture for reusability
+- Follow accessibility standards (WCAG 2.1 Level AA minimum)
+- Ensure responsive design for mobile, tablet, and desktop viewports
+```
+
+**Works with all Tiers**: Frontend analysis works at Tier 2 (code snippets) and Tier 3 (full source), providing progressively better detail.
 
 ### Using Microservices Decomposition
 
