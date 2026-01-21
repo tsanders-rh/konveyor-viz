@@ -379,30 +379,43 @@ Using Domain-Driven Design principles, proven microservices patterns, and Kubern
 1. EXTRACT BUSINESS LOGIC FROM LEGACY CODE (Critical for teams with zero domain knowledge)
    ${hasFullSource ? `
    - USE COMPLETE SOURCE CODE ABOVE: You have full method implementations
-   - Extract EXACT business operations from method bodies (e.g., calculateDiscount logic, order validation rules)
-   - Identify ALL business entities with complete field definitions and annotations
+   - POPULATE businessLogic ARRAY WITH SPECIFIC DETAILS EXTRACTED FROM CODE:
+     * operations: List actual method names from code (e.g., ["calculateTotalPrice()", "applyDiscount()", "validateOrder()"])
+     * entities: List entity classes with key fields (e.g., ["Order (orderId, customerId, totalAmount, status)", "Customer (customerId, name, email, membershipLevel)"])
+     * rules: Extract specific business rules from if/switch statements (e.g., ["Discount applies only if membershipLevel >= GOLD", "Tax rate = 0.08 * subtotal", "Order requires approval if totalAmount > $10000"])
+     * criticalLogic: Document exact implementation logic (e.g., "calculateTotalPrice: subtotal = items.sum(price * quantity), tax = subtotal * 0.08, total = subtotal + tax - discount")
+   - Extract EXACT business operations from method bodies with their implementation details
+   - Identify ALL business entities with complete field definitions and JPA annotations
    - Extract PRECISE business rules from if/switch statements and validation code
    - Map complete database schemas from JPA entity definitions
    - Identify workflows from complete service method implementations
-   - Extract API contracts from complete REST controller method signatures and request/response objects
-   - Document business calculations and formulas from actual implementation code
-   - THIS IS SUFFICIENT FOR PRODUCTION IMPLEMENTATION - Be precise and thorough
+   - Extract API contracts from complete REST controller method signatures
+   - Document business calculations and formulas from actual code
+   - THIS IS PRODUCTION-QUALITY DATA - Be specific, not generic
    ` : hasCodeSnippets ? `
    - USE CODE SNIPPETS ABOVE: Analyze actual class names, method signatures, and imports
+   - POPULATE businessLogic ARRAY WITH DETAILS FROM CODE SNIPPETS:
+     * operations: Extract method names visible in snippets
+     * entities: List class names from code (e.g., "OrderDataBean", "CustomerEntity")
+     * rules: Infer validation rules from visible patterns and imports
+     * criticalLogic: Describe patterns observed in code snippets
    - Identify business operations from method names in code (e.g., calculateDiscount, validateOrder)
-   - Extract business entities from class definitions (e.g., Order, Customer, Invoice)
+   - Extract business entities from class definitions
    - Infer business rules from validation patterns in code snippets
    - Map database entities from JPA/Hibernate annotations in imports
-   - Identify service responsibilities from class structure and dependencies
-   - Note: Limited to visible snippets - some inference required
+   - Note: Limited to visible snippets - be specific where code is available, infer where needed
    ` : `
    - Analyze component/class names to infer business capabilities (limited context)
-   - Identify business operations from file names and patterns
-   - Extract business entities from model/persistence component structures
-   - Document business workflows from component dependencies
-   - Note: Significant inference required - recommend configuring GitHub URL for better results
+   - POPULATE businessLogic ARRAY WITH INFERRED DETAILS (mark as inferred):
+     * operations: Guess from file/component names
+     * entities: Infer from model/persistence component names
+     * rules: Generic assumptions based on domain
+     * criticalLogic: Note that full source needed for specifics
+   - Note: Significant inference required - results will be generic
+   - RECOMMEND: Configure GitHub URL in Settings for production-quality extraction
    `}
    - Map source components to business domains
+   - ENSURE businessLogic array has detailed operations, entities, and rules arrays (not empty or generic)
 
 2. IDENTIFY BOUNDED CONTEXTS
    - Analyze component relationships and identify natural service boundaries
@@ -507,7 +520,34 @@ Rules for JSON:
 - No trailing commas
 - Escape special characters properly
 - Keep descriptions concise (under 200 chars each)
-- Return pure JSON only, no markdown formatting`;
+- Return pure JSON only, no markdown formatting
+
+CRITICAL QUALITY CHECK - businessLogic Array:
+${hasFullSource ? `
+- TIER 3: Each businessLogic entry MUST have:
+  * operations array with 3-8 SPECIFIC method names from actual code
+  * entities array with 2-6 SPECIFIC entity classes with field names from code
+  * rules array with 2-5 SPECIFIC business rules extracted from if/switch statements
+  * criticalLogic with DETAILED implementation description from actual method bodies
+  * Do NOT use generic placeholders - extract REAL details from the source code provided
+` : hasCodeSnippets ? `
+- TIER 2: Each businessLogic entry MUST have:
+  * operations array with ACTUAL method/class names visible in code snippets
+  * entities array with SPECIFIC class names from snippets
+  * rules array with inferred rules based on code patterns
+  * criticalLogic describing what you can see in the snippets
+  * Use real code details where available, infer only where necessary
+` : `
+- TIER 1: Each businessLogic entry should have:
+  * operations array (inferred from component names)
+  * entities array (inferred from model components)
+  * rules array (generic domain assumptions)
+  * criticalLogic noting that GitHub URL needed for specifics
+  * Mark inferred items clearly
+`}
+- businessLogic array should have ${hasFullSource || hasCodeSnippets ? '4-8' : '2-4'} entries covering major domains
+- NEVER return empty arrays for operations, entities, or rules - extract or infer based on available data
+- Spec-Kit files depend on this data - make it actionable for developers`;
 }
 
 // Call Anthropic API
