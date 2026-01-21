@@ -13,17 +13,21 @@ import { transformKantraReport } from './kantraTransformer.js';
  * @throws {Error} If loading or parsing fails
  */
 export async function loadKantraFromDirectory(files, onProgress = null) {
+  console.log('loadKantraFromDirectory called with', files.length, 'files');
+
   // Find output.yaml or output.yml
   let outputFile = null;
   let directoryName = '';
 
   for (const file of files) {
     const fileName = file.name.toLowerCase();
+    console.log('Checking file:', fileName);
     if (fileName === 'output.yaml' || fileName === 'output.yml') {
       outputFile = file;
       // Extract directory name from file path
       const pathParts = file.webkitRelativePath?.split('/') || [];
       directoryName = pathParts[0] || 'Konveyor Analysis';
+      console.log('Found output file:', fileName, 'in directory:', directoryName);
       break;
     }
   }
@@ -47,7 +51,9 @@ export async function loadKantraFromDirectory(files, onProgress = null) {
   }
 
   // Read the file
+  console.log('Reading file, size:', fileSizeMB.toFixed(2), 'MB');
   const yamlContent = await readFileAsText(outputFile);
+  console.log('File read successfully, content length:', yamlContent.length);
 
   if (onProgress) {
     onProgress({ stage: 'parsing', percent: 50 });
@@ -55,10 +61,13 @@ export async function loadKantraFromDirectory(files, onProgress = null) {
 
   // Transform to visualization format
   try {
+    console.log('Transforming kantra report...');
     const transformedData = transformKantraReport(yamlContent, {
       applicationName: `${directoryName} (Konveyor Analysis)`,
       analysisDate: new Date().toISOString().split('T')[0],
     });
+
+    console.log('Transform successful:', transformedData);
 
     if (onProgress) {
       onProgress({ stage: 'complete', percent: 100 });
@@ -66,6 +75,7 @@ export async function loadKantraFromDirectory(files, onProgress = null) {
 
     return transformedData;
   } catch (error) {
+    console.error('Transform failed:', error);
     throw new Error(`Failed to parse kantra report: ${error.message}`);
   }
 }
@@ -119,9 +129,20 @@ export function createDirectoryInput(onChange) {
  */
 export function selectDirectory() {
   return new Promise((resolve, reject) => {
+    let cleanedUp = false;
+    let resolved = false;
+
+    const cleanup = () => {
+      if (!cleanedUp && input.parentNode) {
+        cleanedUp = true;
+        document.body.removeChild(input);
+      }
+    };
+
     const input = createDirectoryInput((files) => {
+      resolved = true;
+      cleanup();
       resolve(files);
-      document.body.removeChild(input);
     });
 
     // Add to DOM (required for click to work)
@@ -130,17 +151,17 @@ export function selectDirectory() {
     // Trigger click
     input.click();
 
-    // Handle cancel (no files selected)
+    // Handle cancel - wait longer and check if resolved
     const handleCancel = () => {
       setTimeout(() => {
-        if (input.parentNode) {
-          document.body.removeChild(input);
+        if (!resolved && !cleanedUp) {
+          cleanup();
           reject(new Error('Directory selection cancelled'));
         }
-      }, 1000);
+      }, 3000); // Increased timeout to 3 seconds
     };
 
-    // Clean up on window blur (user might have cancelled)
+    // Clean up on window focus (user might have cancelled)
     window.addEventListener('focus', handleCancel, { once: true });
   });
 }
@@ -152,10 +173,14 @@ export function selectDirectory() {
  * @returns {Promise<Object>} Transformed analysis data
  */
 export async function loadKantraWithPicker(onProgress = null) {
+  console.log('loadKantraWithPicker called');
   try {
+    console.log('Calling selectDirectory...');
     const files = await selectDirectory();
+    console.log('Files selected:', files.length);
     return await loadKantraFromDirectory(files, onProgress);
   } catch (error) {
+    console.error('Error in loadKantraWithPicker:', error);
     if (error.message === 'Directory selection cancelled') {
       throw error;
     }

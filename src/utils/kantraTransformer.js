@@ -231,8 +231,9 @@ export function extractIssueType(violation, ruleId) {
  */
 export function createDependencies(componentsMap) {
   const dependencies = [];
+  const componentNames = Array.from(componentsMap.keys());
 
-  // Main application flow
+  // Java EE/Backend pattern: Main application flow
   if (componentsMap.has('webapp') && componentsMap.has('rest')) {
     dependencies.push({ source: 'webapp', target: 'rest', type: 'http' });
   }
@@ -249,28 +250,69 @@ export function createDependencies(componentsMap) {
     dependencies.push({ source: 'persistence', target: 'model', type: 'internal' });
   }
 
-  // Utils connections - typically used by service layer
-  if (componentsMap.has('service') && componentsMap.has('utils')) {
-    dependencies.push({ source: 'service', target: 'utils', type: 'internal' });
-  }
-  if (componentsMap.has('persistence') && componentsMap.has('utils')) {
-    dependencies.push({ source: 'persistence', target: 'utils', type: 'internal' });
+  // Frontend pattern: webapp → core (for React/Angular apps without backend layers)
+  if (componentsMap.has('webapp') && componentsMap.has('core') && !componentsMap.has('rest')) {
+    dependencies.push({ source: 'webapp', target: 'core', type: 'internal' });
   }
 
-  // Core connections - foundational component
+  // Core connections - foundational component used by others
   if (componentsMap.has('core')) {
+    // Backend uses core
     if (componentsMap.has('service')) {
       dependencies.push({ source: 'service', target: 'core', type: 'internal' });
     }
     if (componentsMap.has('rest')) {
       dependencies.push({ source: 'rest', target: 'core', type: 'internal' });
     }
+    // If no backend layers, connect other components to core
+    if (!componentsMap.has('service') && !componentsMap.has('rest')) {
+      componentNames.forEach(name => {
+        if (name !== 'core' && name !== 'utils' && name !== 'config' && name !== 'build-config') {
+          dependencies.push({ source: name, target: 'core', type: 'internal' });
+        }
+      });
+    }
   }
 
-  // Build config - connect to main entry point
-  if (componentsMap.has('build-config') && componentsMap.has('webapp')) {
-    dependencies.push({ source: 'build-config', target: 'webapp', type: 'build' });
+  // Utils connections - shared utilities used by multiple components
+  if (componentsMap.has('utils')) {
+    // Connect major components to utils
+    const majorComponents = ['webapp', 'service', 'rest', 'persistence', 'core'].filter(c =>
+      componentsMap.has(c) && c !== 'utils'
+    );
+
+    majorComponents.forEach(comp => {
+      dependencies.push({ source: comp, target: 'utils', type: 'internal' });
+    });
+
+    // If no major components, connect all to utils
+    if (majorComponents.length === 0) {
+      componentNames.forEach(name => {
+        if (name !== 'utils' && name !== 'config' && name !== 'build-config') {
+          dependencies.push({ source: name, target: 'utils', type: 'internal' });
+        }
+      });
+    }
   }
+
+  // Config connections - configuration used by other components
+  const configComponents = componentNames.filter(name =>
+    name === 'config' || name === 'build-config'
+  );
+
+  configComponents.forEach(configName => {
+    // Connect config to main entry points
+    const entryPoints = ['webapp', 'service', 'rest'].filter(c => componentsMap.has(c));
+
+    if (entryPoints.length > 0) {
+      entryPoints.forEach(entry => {
+        dependencies.push({ source: configName, target: entry, type: 'build' });
+      });
+    } else if (componentsMap.has('core')) {
+      // If no entry points, connect to core
+      dependencies.push({ source: configName, target: 'core', type: 'build' });
+    }
+  });
 
   return dependencies;
 }

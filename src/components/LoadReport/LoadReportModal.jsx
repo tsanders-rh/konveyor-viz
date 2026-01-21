@@ -59,15 +59,19 @@ const LoadReportModal = ({ isOpen, onClose, onLoadSuccess, onLoadError }) => {
   };
 
   const handleLoadFromUpload = async () => {
+    console.log('handleLoadFromUpload called');
     setLoading(true);
     setError(null);
     setLoadingMethod('upload');
 
     try {
+      console.log('Calling loadKantraWithPicker...');
       const data = await loadKantraWithPicker();
+      console.log('Data loaded:', data);
       onLoadSuccess(data);
       handleClose();
     } catch (err) {
+      console.error('Error in handleLoadFromUpload:', err);
       if (err.message !== 'Directory selection cancelled') {
         setError(err.message);
         if (onLoadError) {
@@ -135,8 +139,10 @@ const LoadReportModal = ({ isOpen, onClose, onLoadSuccess, onLoadError }) => {
           <FormGroup
             label="Load from Directory Path"
             fieldId="directory-path"
-            helperText="Enter the absolute path to your kantra output directory"
           >
+            <div style={{ fontSize: '0.875rem', color: 'var(--pf-v6-global--Color--200)', marginBottom: '0.5rem' }}>
+              Enter the absolute path to your kantra output directory
+            </div>
             <TextInput
               id="directory-path"
               type="text"
@@ -164,8 +170,10 @@ const LoadReportModal = ({ isOpen, onClose, onLoadSuccess, onLoadError }) => {
           <FormGroup
             label="Upload Directory"
             fieldId="directory-upload"
-            helperText="Select your kantra output directory using the file browser"
           >
+            <div style={{ fontSize: '0.875rem', color: 'var(--pf-v6-global--Color--200)', marginBottom: '0.5rem' }}>
+              Select your kantra output directory using the file browser
+            </div>
             <Button
               variant="secondary"
               onClick={handleLoadFromUpload}
