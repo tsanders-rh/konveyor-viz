@@ -256,7 +256,8 @@ function buildDecompositionPrompt(data) {
     dependencies: c.dependencies || [],
     issues: c.issues.length,
     issueTypes: [...new Set(c.issues.map(i => i.type))],
-    codeContext: c.codeContext || null
+    codeContext: c.codeContext || null,
+    frontendContext: c.frontendContext || null
   }));
 
   const dependencies = [];
@@ -355,6 +356,51 @@ You have access to code snippets showing imports, class definitions, and method 
 `;
   }
 
+  // Build frontend context section for UI/frontend components
+  const hasFrontendComponents = componentDetails.some(c => c.frontendContext);
+  let frontendContextSection = '';
+
+  if (hasFrontendComponents) {
+    frontendContextSection = `\n\nFRONTEND/UI CONTEXT (Language-Agnostic Analysis):
+${componentDetails.filter(c => c.frontendContext).map(c => {
+  const fe = c.frontendContext;
+  return `
+${c.name}:
+  Framework: ${fe.stack.framework || 'Not detected'}
+  UI Libraries: ${fe.stack.library.length > 0 ? fe.stack.library.join(', ') : 'none'}
+  Styling: ${fe.stack.styling.length > 0 ? fe.stack.styling.join(', ') : 'none'}
+  State Management: ${fe.stack.stateManagement || 'none detected'}
+  Router: ${fe.stack.router || 'none detected'}
+  Build Tool: ${fe.stack.buildTool || 'not detected'}
+
+  UI Components (${fe.stats.componentCount} detected):
+    ${fe.uiComponents.slice(0, 10).join(', ')}${fe.uiComponents.length > 10 ? ` (${fe.uiComponents.length - 10} more...)` : ''}
+
+  ${fe.styling.cssClasses.length > 0 ? `CSS Classes: ${fe.styling.cssClasses.slice(0, 15).join(', ')}${fe.styling.cssClasses.length > 15 ? '...' : ''}` : ''}
+  ${fe.styling.cssVariables.length > 0 ? `CSS Variables: ${fe.styling.cssVariables.slice(0, 10).join(', ')}${fe.styling.cssVariables.length > 10 ? '...' : ''}` : ''}
+  ${fe.styling.themeSystem ? `Theme System: ${fe.styling.themeSystem}` : ''}
+  Responsive Design: ${fe.styling.responsive ? 'Yes' : 'No'}
+
+  ${fe.routes.length > 0 ? `Routes/Pages (${fe.stats.routeCount} detected):
+    ${fe.routes.slice(0, 8).map(r => `${r.path} (${r.type})`).join(', ')}${fe.routes.length > 8 ? ` (${fe.routes.length - 8} more...)` : ''}` : ''}
+  `;
+}).join('\n')}
+
+FRONTEND ANALYSIS INSTRUCTIONS:
+For frontend services, extract and document:
+- **UI Component Hierarchy**: List major UI components and their organization
+- **Page/Route Structure**: Document all pages/routes and their purpose
+- **Design System**: Identify UI library, styling approach, and theme system
+- **State Management**: Document global state, local state, and data flow patterns
+- **API Integration**: How the frontend calls backend APIs (REST, GraphQL, WebSockets)
+- **User Flows**: Key user journeys and interactions
+- **Accessibility**: Document any accessibility patterns detected
+- **Responsive Patterns**: Mobile-first, breakpoints, adaptive layouts
+
+This analysis supports React, Vue, Angular, Svelte, Django Templates, Rails ERB, JSP, Thymeleaf, Razor, Laravel Blade, Twig, and more.
+`;
+  }
+
   return `You are an expert cloud-native architect specializing in microservices decomposition and Kubernetes best practices.
 
 Analyze this monolithic application and propose a microservices architecture strategy:
@@ -373,6 +419,7 @@ ${componentDetails.map(c =>
 DEPENDENCIES:
 ${dependencies.map(d => `${d.from} → ${d.to}`).join('\n')}
 ${codeContextSection}
+${frontendContextSection}
 
 Using Domain-Driven Design principles, proven microservices patterns, and Kubernetes best practices, provide a comprehensive decomposition strategy:
 
