@@ -1,5 +1,14 @@
 import { useState } from 'react';
-import { PageSection, PageSectionVariants, Drawer, DrawerContent, DrawerContentBody } from '@patternfly/react-core';
+import {
+  PageSection,
+  PageSectionVariants,
+  Drawer,
+  DrawerContent,
+  DrawerContentBody,
+  Title,
+  Text,
+  TextContent
+} from '@patternfly/react-core';
 import MetricsOverview from './MetricsOverview';
 import TechnologyStack from './TechnologyStack';
 import AIInsights from './AIInsights';
@@ -43,10 +52,18 @@ const Dashboard = ({ data, activeView }) => {
       {/* Overview View */}
       {activeView === 'overview' && (
         <>
-          <PageSection variant={PageSectionVariants.light} padding={{ default: 'padding' }}>
+          <PageSection variant={PageSectionVariants.light}>
+            <TextContent>
+              <Title headingLevel="h1">Application Overview</Title>
+              <Text component="p">
+                Comprehensive analysis of your application's architecture, issues, and migration readiness.
+              </Text>
+            </TextContent>
+          </PageSection>
+          <PageSection variant={PageSectionVariants.light}>
             <MetricsOverview metrics={metrics} />
           </PageSection>
-          <PageSection padding={{ default: 'padding' }}>
+          <PageSection>
             <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 'var(--pf-v5-global--spacer--lg)' }}>
               <ArchitectureGraph data={graphData} onNodeClick={handleNodeClick} />
               <IssueBreakdown issuesByType={issuesByType} />
@@ -57,17 +74,36 @@ const Dashboard = ({ data, activeView }) => {
 
       {/* Components View - Placeholder for future implementation */}
       {activeView === 'components' && (
-        <PageSection>
-          <div style={{ textAlign: 'center', padding: '3rem' }}>
-            <h2>Components List View</h2>
-            <p style={{ color: '#6c757d' }}>This view will show a table of all components</p>
-          </div>
-        </PageSection>
+        <>
+          <PageSection variant={PageSectionVariants.light}>
+            <TextContent>
+              <Title headingLevel="h1">Components</Title>
+              <Text component="p">
+                Browse and filter all application components with detailed analysis.
+              </Text>
+            </TextContent>
+          </PageSection>
+          <PageSection>
+            <div style={{ textAlign: 'center', padding: '3rem' }}>
+              <Text component="p" style={{ color: 'var(--pf-v5-global--Color--200)' }}>
+                This view will show a table of all components
+              </Text>
+            </div>
+          </PageSection>
+        </>
       )}
 
       {/* Analysis View */}
       {activeView === 'analysis' && (
         <>
+          <PageSection variant={PageSectionVariants.light}>
+            <TextContent>
+              <Title headingLevel="h1">Analysis</Title>
+              <Text component="p">
+                Detailed breakdown of issues and technology stack analysis.
+              </Text>
+            </TextContent>
+          </PageSection>
           <PageSection variant={PageSectionVariants.light}>
             <IssueBreakdown issuesByType={issuesByType} />
           </PageSection>
@@ -79,16 +115,36 @@ const Dashboard = ({ data, activeView }) => {
 
       {/* Microservices View */}
       {activeView === 'microservices' && (
-        <PageSection>
-          <MicroservicesDecomposition data={data} />
-        </PageSection>
+        <>
+          <PageSection variant={PageSectionVariants.light}>
+            <TextContent>
+              <Title headingLevel="h1">Microservices Decomposition</Title>
+              <Text component="p">
+                AI-powered analysis to break down your monolith into microservices using Kubernetes best practices.
+              </Text>
+            </TextContent>
+          </PageSection>
+          <PageSection>
+            <MicroservicesDecomposition data={data} />
+          </PageSection>
+        </>
       )}
 
       {/* AI Insights View */}
       {activeView === 'ai-insights' && (
-        <PageSection>
-          <AIInsights data={data} />
-        </PageSection>
+        <>
+          <PageSection variant={PageSectionVariants.light}>
+            <TextContent>
+              <Title headingLevel="h1">AI Insights</Title>
+              <Text component="p">
+                Intelligent recommendations for migration priorities, patterns, risks, and quick wins.
+              </Text>
+            </TextContent>
+          </PageSection>
+          <PageSection>
+            <AIInsights data={data} />
+          </PageSection>
+        </>
       )}
     </>
   );
