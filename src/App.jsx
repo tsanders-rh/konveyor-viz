@@ -1,16 +1,20 @@
-import Header from './components/Layout/Header';
+import { useState } from 'react';
+import { Page } from '@patternfly/react-core';
+import AppMasthead from './components/Layout/AppMasthead';
+import AppSidebar from './components/Layout/AppSidebar';
 import Dashboard from './components/Dashboard/Dashboard';
 import sampleData from './data/sampleData.json';
 
 function App() {
+  const [selectedNav, setSelectedNav] = useState('overview');
+
   return (
-    <div className="min-h-screen bg-background">
-      <Header
-        applicationName={sampleData.applicationName}
-        analysisDate={sampleData.analysisDate}
-      />
-      <Dashboard data={sampleData} />
-    </div>
+    <Page
+      header={<AppMasthead data={sampleData} />}
+      sidebar={<AppSidebar activeItem={selectedNav} onSelect={setSelectedNav} />}
+    >
+      <Dashboard data={sampleData} activeView={selectedNav} />
+    </Page>
   );
 }
 

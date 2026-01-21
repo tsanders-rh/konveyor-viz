@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PageSection, PageSectionVariants } from '@patternfly/react-core';
 import MetricsOverview from './MetricsOverview';
 import TechnologyStack from './TechnologyStack';
 import AIInsights from './AIInsights';
@@ -13,7 +14,7 @@ import {
   getTechnologies,
 } from '../../utils/dataParser';
 
-const Dashboard = ({ data }) => {
+const Dashboard = ({ data, activeView }) => {
   const [selectedComponent, setSelectedComponent] = useState(null);
 
   // Parse and calculate data for visualizations
@@ -31,40 +32,68 @@ const Dashboard = ({ data }) => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Metrics Overview */}
-        <MetricsOverview metrics={metrics} />
+    <>
+      {/* Overview View */}
+      {activeView === 'overview' && (
+        <>
+          <PageSection variant={PageSectionVariants.light}>
+            <MetricsOverview metrics={metrics} />
+          </PageSection>
+          <PageSection>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
+              <div>
+                <ArchitectureGraph data={graphData} onNodeClick={handleNodeClick} />
+              </div>
+              <div>
+                <IssueBreakdown issuesByType={issuesByType} />
+              </div>
+            </div>
+          </PageSection>
+        </>
+      )}
 
-        {/* AI Insights */}
-        <AIInsights data={data} />
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Architecture Graph - Takes 2 columns */}
-          <div className="lg:col-span-2">
-            <ArchitectureGraph data={graphData} onNodeClick={handleNodeClick} />
+      {/* Components View - Placeholder for future implementation */}
+      {activeView === 'components' && (
+        <PageSection>
+          <div style={{ textAlign: 'center', padding: '3rem' }}>
+            <h2>Components List View</h2>
+            <p style={{ color: '#6c757d' }}>This view will show a table of all components</p>
           </div>
+        </PageSection>
+      )}
 
-          {/* Issue Breakdown - Takes 1 column */}
-          <div>
+      {/* Analysis View */}
+      {activeView === 'analysis' && (
+        <>
+          <PageSection variant={PageSectionVariants.light}>
             <IssueBreakdown issuesByType={issuesByType} />
-          </div>
-        </div>
+          </PageSection>
+          <PageSection>
+            <TechnologyStack technologies={technologies} />
+          </PageSection>
+        </>
+      )}
 
-        {/* Technology Stack */}
-        <TechnologyStack technologies={technologies} />
+      {/* Microservices View */}
+      {activeView === 'microservices' && (
+        <PageSection>
+          <MicroservicesDecomposition data={data} />
+        </PageSection>
+      )}
 
-        {/* Microservices Decomposition */}
-        <MicroservicesDecomposition data={data} />
+      {/* AI Insights View */}
+      {activeView === 'ai-insights' && (
+        <PageSection>
+          <AIInsights data={data} />
+        </PageSection>
+      )}
 
-        {/* Component Detail Panel */}
-        <ComponentDetail
-          component={selectedComponent}
-          onClose={handleCloseDetail}
-        />
-      </div>
-    </div>
+      {/* Component Detail Panel - shown across all views */}
+      <ComponentDetail
+        component={selectedComponent}
+        onClose={handleCloseDetail}
+      />
+    </>
   );
 };
 
