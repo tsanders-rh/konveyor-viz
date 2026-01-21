@@ -57,6 +57,18 @@ export function detectFrontendStack(imports, snippets, files) {
   }
 
   // UI Component Libraries
+  if (allCode.includes('@patternfly/react-core') || allCode.includes('patternfly')) {
+    // Detect PatternFly version from package imports
+    if (allCode.includes('@patternfly/react-core/dist/esm') || allCode.includes('pf-v6')) {
+      stack.library.push('PatternFly 6');
+    } else if (allCode.includes('pf-v5') || allCode.includes('@patternfly/react-core/dist/js')) {
+      stack.library.push('PatternFly 5');
+    } else if (allCode.includes('pf-v4') || allCode.includes('@patternfly/react-core@4')) {
+      stack.library.push('PatternFly 4');
+    } else {
+      stack.library.push('PatternFly');
+    }
+  }
   if (allCode.includes('material-ui') || allCode.includes('@mui')) {
     stack.library.push('Material-UI');
   }
