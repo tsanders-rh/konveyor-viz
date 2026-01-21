@@ -43,17 +43,13 @@ const Dashboard = ({ data, activeView }) => {
       {/* Overview View */}
       {activeView === 'overview' && (
         <>
-          <PageSection variant={PageSectionVariants.light}>
+          <PageSection variant={PageSectionVariants.light} padding={{ default: 'padding' }}>
             <MetricsOverview metrics={metrics} />
           </PageSection>
-          <PageSection>
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1.5rem' }}>
-              <div>
-                <ArchitectureGraph data={graphData} onNodeClick={handleNodeClick} />
-              </div>
-              <div>
-                <IssueBreakdown issuesByType={issuesByType} />
-              </div>
+          <PageSection padding={{ default: 'padding' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 'var(--pf-v5-global--spacer--lg)' }}>
+              <ArchitectureGraph data={graphData} onNodeClick={handleNodeClick} />
+              <IssueBreakdown issuesByType={issuesByType} />
             </div>
           </PageSection>
         </>

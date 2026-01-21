@@ -4,8 +4,9 @@ import {
   Gallery,
   GalleryItem
 } from '@patternfly/react-core';
+import { ExclamationTriangleIcon, ExclamationCircleIcon, InfoCircleIcon, CheckCircleIcon } from '@patternfly/react-icons';
 
-const MetricCard = ({ label, value, color }) => {
+const MetricCard = ({ label, value, color, icon: Icon }) => {
   // Map colors to PatternFly-compatible styles
   const colorStyles = {
     blue: {
@@ -44,22 +45,30 @@ const MetricCard = ({ label, value, color }) => {
       }}
     >
       <CardBody>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <span style={{
-            fontSize: 'var(--pf-v5-global--FontSize--sm)',
-            fontWeight: 'var(--pf-v5-global--FontWeight--semi-bold)',
-            color: style.textColor,
-            marginBottom: 'var(--pf-v5-global--spacer--sm)'
-          }}>
-            {label}
-          </span>
-          <span style={{
-            fontSize: '2rem',
-            fontWeight: 'var(--pf-v5-global--FontWeight--bold)',
-            color: style.valueColor
-          }}>
-            {value}
-          </span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span style={{
+              fontSize: 'var(--pf-v5-global--FontSize--sm)',
+              fontWeight: 'var(--pf-v5-global--FontWeight--semi-bold)',
+              color: style.textColor,
+              marginBottom: 'var(--pf-v5-global--spacer--sm)'
+            }}>
+              {label}
+            </span>
+            <span style={{
+              fontSize: '2rem',
+              fontWeight: 'var(--pf-v5-global--FontWeight--bold)',
+              color: style.valueColor
+            }}>
+              {value}
+            </span>
+          </div>
+          {Icon && (
+            <Icon
+              size="lg"
+              style={{ color: style.textColor, opacity: 0.7 }}
+            />
+          )}
         </div>
       </CardBody>
     </Card>
@@ -74,6 +83,7 @@ const MetricsOverview = ({ metrics }) => {
           label="Total Issues"
           value={metrics.totalIssues}
           color="blue"
+          icon={InfoCircleIcon}
         />
       </GalleryItem>
       <GalleryItem>
@@ -81,6 +91,7 @@ const MetricsOverview = ({ metrics }) => {
           label="Critical"
           value={metrics.critical}
           color="red"
+          icon={ExclamationCircleIcon}
         />
       </GalleryItem>
       <GalleryItem>
@@ -88,6 +99,7 @@ const MetricsOverview = ({ metrics }) => {
           label="Warning"
           value={metrics.warning}
           color="yellow"
+          icon={ExclamationTriangleIcon}
         />
       </GalleryItem>
       <GalleryItem>
@@ -95,6 +107,7 @@ const MetricsOverview = ({ metrics }) => {
           label="Health Score"
           value={`${metrics.healthScore}/100`}
           color="green"
+          icon={CheckCircleIcon}
         />
       </GalleryItem>
     </Gallery>
