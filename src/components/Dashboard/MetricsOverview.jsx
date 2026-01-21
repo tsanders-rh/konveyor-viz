@@ -1,63 +1,103 @@
+import {
+  Card,
+  CardBody,
+  Gallery,
+  GalleryItem
+} from '@patternfly/react-core';
+
 const MetricCard = ({ label, value, color }) => {
-  const colorClasses = {
-    blue: 'bg-blue-50 border-blue-200',
-    red: 'bg-red-50 border-red-200',
-    yellow: 'bg-yellow-50 border-yellow-200',
-    green: 'bg-green-50 border-green-200',
+  // Map colors to PatternFly-compatible styles
+  const colorStyles = {
+    blue: {
+      background: 'var(--pf-v5-global--palette--blue-50)',
+      borderColor: 'var(--pf-v5-global--palette--blue-200)',
+      textColor: 'var(--pf-v5-global--palette--blue-600)',
+      valueColor: 'var(--pf-v5-global--palette--blue-700)'
+    },
+    red: {
+      background: 'var(--pf-v5-global--palette--red-50)',
+      borderColor: 'var(--pf-v5-global--palette--red-200)',
+      textColor: 'var(--pf-v5-global--danger-color--100)',
+      valueColor: 'var(--pf-v5-global--danger-color--200)'
+    },
+    yellow: {
+      background: 'var(--pf-v5-global--palette--gold-50)',
+      borderColor: 'var(--pf-v5-global--palette--gold-200)',
+      textColor: 'var(--pf-v5-global--warning-color--100)',
+      valueColor: 'var(--pf-v5-global--warning-color--200)'
+    },
+    green: {
+      background: 'var(--pf-v5-global--palette--green-50)',
+      borderColor: 'var(--pf-v5-global--palette--green-200)',
+      textColor: 'var(--pf-v5-global--success-color--100)',
+      valueColor: 'var(--pf-v5-global--success-color--200)'
+    },
   };
 
-  const textColorClasses = {
-    blue: 'text-blue-900',
-    red: 'text-red-900',
-    yellow: 'text-yellow-900',
-    green: 'text-green-900',
-  };
-
-  const labelColorClasses = {
-    blue: 'text-blue-600',
-    red: 'text-red-600',
-    yellow: 'text-yellow-600',
-    green: 'text-green-600',
-  };
+  const style = colorStyles[color] || colorStyles.blue;
 
   return (
-    <div className={`border-2 rounded-lg p-6 ${colorClasses[color]}`}>
-      <div className="flex flex-col">
-        <span className={`text-sm font-medium ${labelColorClasses[color]} mb-2`}>
-          {label}
-        </span>
-        <span className={`text-3xl font-bold ${textColorClasses[color]}`}>
-          {value}
-        </span>
-      </div>
-    </div>
+    <Card
+      style={{
+        background: style.background,
+        borderLeft: `4px solid ${style.borderColor}`,
+      }}
+    >
+      <CardBody>
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <span style={{
+            fontSize: 'var(--pf-v5-global--FontSize--sm)',
+            fontWeight: 'var(--pf-v5-global--FontWeight--semi-bold)',
+            color: style.textColor,
+            marginBottom: 'var(--pf-v5-global--spacer--sm)'
+          }}>
+            {label}
+          </span>
+          <span style={{
+            fontSize: '2rem',
+            fontWeight: 'var(--pf-v5-global--FontWeight--bold)',
+            color: style.valueColor
+          }}>
+            {value}
+          </span>
+        </div>
+      </CardBody>
+    </Card>
   );
 };
 
 const MetricsOverview = ({ metrics }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <MetricCard
-        label="Total Issues"
-        value={metrics.totalIssues}
-        color="blue"
-      />
-      <MetricCard
-        label="Critical"
-        value={metrics.critical}
-        color="red"
-      />
-      <MetricCard
-        label="Warning"
-        value={metrics.warning}
-        color="yellow"
-      />
-      <MetricCard
-        label="Health Score"
-        value={`${metrics.healthScore}/100`}
-        color="green"
-      />
-    </div>
+    <Gallery hasGutter minWidths={{ md: '250px' }}>
+      <GalleryItem>
+        <MetricCard
+          label="Total Issues"
+          value={metrics.totalIssues}
+          color="blue"
+        />
+      </GalleryItem>
+      <GalleryItem>
+        <MetricCard
+          label="Critical"
+          value={metrics.critical}
+          color="red"
+        />
+      </GalleryItem>
+      <GalleryItem>
+        <MetricCard
+          label="Warning"
+          value={metrics.warning}
+          color="yellow"
+        />
+      </GalleryItem>
+      <GalleryItem>
+        <MetricCard
+          label="Health Score"
+          value={`${metrics.healthScore}/100`}
+          color="green"
+        />
+      </GalleryItem>
+    </Gallery>
   );
 };
 
