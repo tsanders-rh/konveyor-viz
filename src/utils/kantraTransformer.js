@@ -161,6 +161,78 @@ export function extractFramework(labels = [], ruleId = '') {
 }
 
 /**
+ * Parse and clean code snippet from Kantra incident
+ * @param {string} codeSnip - Raw code snippet from Kantra
+ * @returns {string|null} Cleaned code snippet or null if empty
+ */
+export function parseCodeSnippet(codeSnip) {
+  if (!codeSnip || typeof codeSnip !== 'string') return null;
+
+  // Kantra code snippets come with line numbers and escaped newlines
+  // Example: " 25  import javax.servlet.ServletException;\n 26  import..."
+
+  // Clean up the snippet by removing line number prefixes
+  const lines = codeSnip.split('\n');
+  const cleanedLines = lines.map(line => {
+    // Remove leading line numbers (e.g., " 25  " or "125  ")
+    const match = line.match(/^\s*\d+\s{2,}(.*)$/);
+    return match ? match[1] : line;
+  }).filter(line => line.trim().length > 0); // Remove empty lines
+
+  const cleaned = cleanedLines.join('\n').trim();
+  return cleaned.length > 0 ? cleaned : null;
+}
+
+/**
+ * Extract imports from code snippet
+ * @param {string} codeSnip - Code snippet
+ * @returns {Array<string>} List of import statements
+ */
+export function extractImports(codeSnip) {
+  if (!codeSnip) return [];
+
+  const imports = [];
+  const lines = codeSnip.split('\n');
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    // Java imports
+    if (trimmed.startsWith('import ') && trimmed.endsWith(';')) {
+      imports.push(trimmed);
+    }
+    // JavaScript/TypeScript imports
+    else if (trimmed.startsWith('import ') || trimmed.startsWith('import{')) {
+      imports.push(trimmed);
+    }
+    // Python imports
+    else if (trimmed.startsWith('from ') && trimmed.includes('import')) {
+      imports.push(trimmed);
+    }
+  }
+
+  return imports;
+}
+
+/**
+ * Extract class/interface names from code snippet
+ * @param {string} codeSnip - Code snippet
+ * @returns {Array<string>} List of class/interface names
+ */
+export function extractClassNames(codeSnip) {
+  if (!codeSnip) return [];
+
+  const classes = [];
+  const classPattern = /\b(?:public\s+)?(?:class|interface|enum)\s+(\w+)/g;
+
+  let match;
+  while ((match = classPattern.exec(codeSnip)) !== null) {
+    classes.push(match[1]);
+  }
+
+  return classes;
+}
+
+/**
  * Extract issue type from violation data
  * @param {Object} violation - Violation object
  * @param {string} ruleId - Rule identifier
@@ -363,7 +435,14 @@ export function transformToVizFormat(kantraData, options = {}) {
               frameworkStatus
             },
             issues: [],
-            dependencies: []
+            dependencies: [],
+            // Code context for business logic extraction
+            codeContext: {
+              snippets: [],
+              allImports: new Set(),
+              allClassNames: new Set(),
+              files: new Set()
+            }
           });
         }
 
@@ -372,6 +451,11 @@ export function transformToVizFormat(kantraData, options = {}) {
         // Extract base filename from path
         const pathParts = filePath.split('/');
         const fileName = pathParts[pathParts.length - 1] || filePath;
+
+        // Parse code snippet if available
+        const codeSnippet = parseCodeSnippet(incident.codeSnip);
+        const imports = codeSnippet ? extractImports(codeSnippet) : [];
+        const classNames = codeSnippet ? extractClassNames(codeSnippet) : [];
 
         // Create issue
         const issue = {
@@ -382,19 +466,54 @@ export function transformToVizFormat(kantraData, options = {}) {
           description: incident.message || violation.description || '',
           location: `${fileName}${incident.lineNumber ? `:${incident.lineNumber}` : ''}`,
           effort: effort,
-          ruleId: ruleId
+          ruleId: ruleId,
+          // Code context for enhanced business logic analysis
+          codeSnippet: codeSnippet,
+          imports: imports,
+          classNames: classNames
         };
 
         component.issues.push(issue);
         allIssues.push(issue);
+
+        // Update component code context
+        if (codeSnippet) {
+          component.codeContext.snippets.push({
+            file: fileName,
+            snippet: codeSnippet,
+            ruleId: ruleId
+          });
+        }
+        if (imports.length > 0) {
+          imports.forEach(imp => component.codeContext.allImports.add(imp));
+        }
+        if (classNames.length > 0) {
+          classNames.forEach(cls => component.codeContext.allClassNames.add(cls));
+        }
+        component.codeContext.files.add(fileName);
       });
     });
   });
 
-  // Calculate lines of code estimates (rough estimate based on issues)
+  // Calculate lines of code estimates and finalize code context
   components.forEach(component => {
     // Rough estimate: 100 LOC per issue + base 1000
     component.linesOfCode = 1000 + (component.issues.length * 100);
+
+    // Convert Sets to arrays for JSON serialization
+    component.codeContext = {
+      snippets: component.codeContext.snippets,
+      allImports: Array.from(component.codeContext.allImports),
+      allClassNames: Array.from(component.codeContext.allClassNames),
+      files: Array.from(component.codeContext.files),
+      // Add statistics
+      stats: {
+        totalSnippets: component.codeContext.snippets.length,
+        totalImports: component.codeContext.allImports.size,
+        totalClasses: component.codeContext.allClassNames.size,
+        totalFiles: component.codeContext.files.size
+      }
+    };
   });
 
   // Create dependencies

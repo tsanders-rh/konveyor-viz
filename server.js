@@ -255,7 +255,8 @@ function buildDecompositionPrompt(data) {
     linesOfCode: c.linesOfCode || 0,
     dependencies: c.dependencies || [],
     issues: c.issues.length,
-    issueTypes: [...new Set(c.issues.map(i => i.type))]
+    issueTypes: [...new Set(c.issues.map(i => i.type))],
+    codeContext: c.codeContext || null
   }));
 
   const dependencies = [];
@@ -266,6 +267,42 @@ function buildDecompositionPrompt(data) {
       });
     }
   });
+
+  // Determine analysis tier based on available data
+  const hasCodeSnippets = componentDetails.some(c => c.codeContext && c.codeContext.stats.totalSnippets > 0);
+  const analysisTier = hasCodeSnippets ? 'Tier 2: Code Snippets' : 'Tier 1: Structure Only';
+
+  // Build code context section if snippets are available
+  let codeContextSection = '';
+  if (hasCodeSnippets) {
+    codeContextSection = `\n\nCODE CONTEXT (Tier 2 - Enhanced Analysis):
+${componentDetails.map(c => {
+  if (!c.codeContext || c.codeContext.stats.totalSnippets === 0) return '';
+
+  return `
+${c.name}:
+  Files: ${c.codeContext.stats.totalFiles}
+  Classes: ${c.codeContext.allClassNames.join(', ') || 'none identified'}
+  Key Imports: ${c.codeContext.allImports.slice(0, 10).join(', ')}${c.codeContext.allImports.length > 10 ? ` (${c.codeContext.allImports.length - 10} more...)` : ''}
+
+  Sample Code Snippets (${c.codeContext.snippets.length} total):
+${c.codeContext.snippets.slice(0, 3).map((s) => `
+    [${s.file}]
+${s.snippet.split('\n').slice(0, 15).map(line => `    ${line}`).join('\n')}
+    ${s.snippet.split('\n').length > 15 ? '    ...(truncated)' : ''}
+`).join('\n')}
+  `;
+}).filter(Boolean).join('\n')}
+
+ANALYSIS TIER: ${analysisTier}
+You have access to actual code snippets showing imports, class definitions, and method signatures. Use this to:
+- Infer business logic from method names and class structures
+- Identify domain entities from class names and imports
+- Understand service responsibilities from code organization
+- Map database/persistence patterns from imports (JPA, Hibernate, etc.)
+- Detect API patterns from REST/JAX-RS annotations in imports
+`;
+  }
 
   return `You are an expert cloud-native architect specializing in microservices decomposition and Kubernetes best practices.
 
@@ -284,15 +321,25 @@ ${componentDetails.map(c =>
 
 DEPENDENCIES:
 ${dependencies.map(d => `${d.from} → ${d.to}`).join('\n')}
+${codeContextSection}
 
 Using Domain-Driven Design principles, proven microservices patterns, and Kubernetes best practices, provide a comprehensive decomposition strategy:
 
 1. EXTRACT BUSINESS LOGIC FROM LEGACY CODE (Critical for teams with zero domain knowledge)
-   - Analyze component/class names to infer business capabilities
-   - Identify business operations from method names and patterns
-   - Extract business entities from model/persistence layers
+   ${hasCodeSnippets ? `
+   - USE CODE SNIPPETS ABOVE: Analyze actual class names, method signatures, and imports
+   - Identify business operations from method names in code (e.g., calculateDiscount, validateOrder)
+   - Extract business entities from class definitions (e.g., Order, Customer, Invoice)
+   - Infer business rules from validation patterns in code snippets
+   - Map database entities from JPA/Hibernate annotations in imports
+   - Identify service responsibilities from class structure and dependencies
+   ` : `
+   - Analyze component/class names to infer business capabilities (limited context)
+   - Identify business operations from file names and patterns
+   - Extract business entities from model/persistence component structures
    - Document business workflows from component dependencies
-   - Identify business rules, validations, and calculations in code
+   - Note: Limited inference without source code access
+   `}
    - Map source components to business domains
 
 2. IDENTIFY BOUNDED CONTEXTS
