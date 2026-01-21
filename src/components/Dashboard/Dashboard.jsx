@@ -10,6 +10,7 @@ import {
 import MetricsOverview from './MetricsOverview';
 import TechnologyStack from './TechnologyStack';
 import AIInsights from './AIInsights';
+import ComponentsTable from './ComponentsTable';
 import ArchitectureGraph from '../Visualizations/ArchitectureGraph';
 import IssueBreakdown from '../Visualizations/IssueBreakdown';
 import MicroservicesDecomposition from '../Visualizations/MicroservicesDecomposition';
@@ -70,18 +71,14 @@ const Dashboard = ({ data, activeView }) => {
         </>
       )}
 
-      {/* Components View - Placeholder for future implementation */}
+      {/* Components View */}
       {activeView === 'components' && (
         <>
           <PageSection variant={PageSectionVariants.light}>
             <Title headingLevel="h1" size="2xl">Components</Title>
           </PageSection>
           <PageSection>
-            <div style={{ textAlign: 'center', padding: '3rem' }}>
-              <p style={{ color: '#6a6e73' }}>
-                This view will show a table of all components
-              </p>
-            </div>
+            <ComponentsTable data={data} onComponentClick={handleNodeClick} />
           </PageSection>
         </>
       )}
