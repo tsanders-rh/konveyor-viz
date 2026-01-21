@@ -1,4 +1,6 @@
 import { getActiveProvider, LLM_PROVIDERS } from '../config/llmConfig';
+import githubConfig from '../config/githubConfig.js';
+import githubSourceFetcher from '../utils/githubSourceFetcher.js';
 
 /**
  * LLM Service - Calls backend proxy to generate AI insights
@@ -43,6 +45,55 @@ class LLMService {
   }
 
   /**
+   * Enhance analysis data with GitHub source code (Tier 3)
+   * @param {Object} analysisData - Konveyor analysis data
+   * @returns {Promise<Object>} Enhanced data with full source code
+   */
+  async enhanceWithGitHubSource(analysisData) {
+    // Check if GitHub is configured
+    if (!githubConfig.isConfigured()) {
+      console.log('[LLM Service] GitHub not configured, using Tier 2 (snippets only)');
+      return analysisData;
+    }
+
+    try {
+      console.log('[LLM Service] GitHub configured, fetching source files for Tier 3 analysis...');
+
+      // Extract all unique file paths
+      const filePaths = githubSourceFetcher.extractFilePaths(analysisData);
+      console.log(`[LLM Service] Found ${filePaths.length} unique files to fetch`);
+
+      // Fetch source files (with caching and concurrency control)
+      const sourceMap = await githubSourceFetcher.fetchSourceFiles(filePaths, {
+        concurrency: 3, // Conservative to avoid rate limits
+        timeout: 10000
+      });
+
+      console.log(`[LLM Service] Successfully fetched ${sourceMap.size}/${filePaths.length} files`);
+
+      // Enhance components with full source
+      const enhancedData = { ...analysisData };
+      enhancedData.components = analysisData.components.map(component =>
+        githubSourceFetcher.enhanceComponentWithSource(component, sourceMap)
+      );
+
+      // Add metadata
+      enhancedData._enhancementStats = {
+        tier: 'Tier 3: Full Source',
+        filesRequested: filePaths.length,
+        filesFetched: sourceMap.size,
+        ...githubSourceFetcher.getStats()
+      };
+
+      return enhancedData;
+
+    } catch (error) {
+      console.warn('[LLM Service] GitHub source fetch failed, falling back to Tier 2:', error);
+      return analysisData; // Graceful fallback
+    }
+  }
+
+  /**
    * Generate microservices decomposition strategy
    */
   async generateMicroservicesDecomposition(analysisData) {
@@ -53,14 +104,21 @@ class LLMService {
     }
 
     try {
+      // Enhance with GitHub source if configured (Tier 3)
+      const enhancedData = await this.enhanceWithGitHubSource(analysisData);
+
       console.log('Calling backend API for microservices decomposition');
+      if (enhancedData._enhancementStats) {
+        console.log(`Analysis Tier: ${enhancedData._enhancementStats.tier}`);
+        console.log(`Files fetched: ${enhancedData._enhancementStats.filesFetched}/${enhancedData._enhancementStats.filesRequested}`);
+      }
 
       const response = await fetch(`${API_BASE_URL}/api/decomposition`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ analysisData })
+        body: JSON.stringify({ analysisData: enhancedData })
       });
 
       if (!response.ok) {

@@ -255,7 +255,8 @@ function buildDecompositionPrompt(data) {
     linesOfCode: c.linesOfCode || 0,
     dependencies: c.dependencies || [],
     issues: c.issues.length,
-    issueTypes: [...new Set(c.issues.map(i => i.type))]
+    issueTypes: [...new Set(c.issues.map(i => i.type))],
+    codeContext: c.codeContext || null
   }));
 
   const dependencies = [];
@@ -266,6 +267,93 @@ function buildDecompositionPrompt(data) {
       });
     }
   });
+
+  // Determine analysis tier based on available data
+  const hasFullSource = componentDetails.some(c =>
+    c.codeContext && c.codeContext.fullSource && c.codeContext.fullSource.length > 0
+  );
+  const hasCodeSnippets = componentDetails.some(c =>
+    c.codeContext && c.codeContext.stats.totalSnippets > 0
+  );
+
+  let analysisTier;
+  if (hasFullSource) {
+    analysisTier = 'Tier 3: Full Source';
+  } else if (hasCodeSnippets) {
+    analysisTier = 'Tier 2: Code Snippets';
+  } else {
+    analysisTier = 'Tier 1: Structure Only';
+  }
+
+  // Build code context section based on tier
+  let codeContextSection = '';
+
+  if (hasFullSource) {
+    // TIER 3: Full Source Code Available
+    codeContextSection = `\n\nCODE CONTEXT (Tier 3 - FULL SOURCE ANALYSIS):
+${componentDetails.map(c => {
+  if (!c.codeContext || !c.codeContext.fullSource || c.codeContext.fullSource.length === 0) return '';
+
+  return `
+${c.name}:
+  Full Source Files: ${c.codeContext.stats.totalSourceFiles}
+  Total Source Lines: ${c.codeContext.stats.totalSourceLines}
+  Classes: ${c.codeContext.allClassNames.join(', ') || 'none identified'}
+
+  COMPLETE SOURCE CODE (${c.codeContext.fullSource.length} files):
+${c.codeContext.fullSource.slice(0, 5).map((src) => `
+    ========================================
+    FILE: ${src.file} (${src.lines} lines)
+    ========================================
+${src.source.split('\n').slice(0, 100).map(line => `    ${line}`).join('\n')}
+    ${src.lines > 100 ? `    ...(${src.lines - 100} more lines)` : ''}
+`).join('\n')}
+  ${c.codeContext.fullSource.length > 5 ? `  ...and ${c.codeContext.fullSource.length - 5} more files` : ''}
+  `;
+}).filter(Boolean).join('\n')}
+
+ANALYSIS TIER: ${analysisTier}
+You have COMPLETE SOURCE CODE access. Use this to:
+- Extract EXACT business logic, rules, and calculations from method implementations
+- Identify ALL business entities with complete field definitions and relationships
+- Understand FULL workflows and process flows from complete method bodies
+- Map database schemas from complete JPA/Hibernate entity definitions
+- Extract API contracts from complete REST controller implementations
+- Identify business validations and constraints from actual code
+- Discover domain events and messaging patterns from full implementation
+- THIS IS PRODUCTION-QUALITY EXTRACTION - You can provide precise, actionable specifications
+`;
+  } else if (hasCodeSnippets) {
+    // TIER 2: Code Snippets Available
+    codeContextSection = `\n\nCODE CONTEXT (Tier 2 - Code Snippets):
+${componentDetails.map(c => {
+  if (!c.codeContext || c.codeContext.stats.totalSnippets === 0) return '';
+
+  return `
+${c.name}:
+  Files: ${c.codeContext.stats.totalFiles}
+  Classes: ${c.codeContext.allClassNames.join(', ') || 'none identified'}
+  Key Imports: ${c.codeContext.allImports.slice(0, 10).join(', ')}${c.codeContext.allImports.length > 10 ? ` (${c.codeContext.allImports.length - 10} more...)` : ''}
+
+  Sample Code Snippets (${c.codeContext.snippets.length} total):
+${c.codeContext.snippets.slice(0, 3).map((s) => `
+    [${s.file}]
+${s.snippet.split('\n').slice(0, 15).map(line => `    ${line}`).join('\n')}
+    ${s.snippet.split('\n').length > 15 ? '    ...(truncated)' : ''}
+`).join('\n')}
+  `;
+}).filter(Boolean).join('\n')}
+
+ANALYSIS TIER: ${analysisTier}
+You have access to code snippets showing imports, class definitions, and method signatures. Use this to:
+- Infer business logic from method names and class structures
+- Identify domain entities from class names and imports
+- Understand service responsibilities from code organization
+- Map database/persistence patterns from imports (JPA, Hibernate, etc.)
+- Detect API patterns from REST/JAX-RS annotations in imports
+- Note: Limited context - infer where needed, recommend GitHub URL for Tier 3 full source
+`;
+  }
 
   return `You are an expert cloud-native architect specializing in microservices decomposition and Kubernetes best practices.
 
@@ -284,15 +372,36 @@ ${componentDetails.map(c =>
 
 DEPENDENCIES:
 ${dependencies.map(d => `${d.from} → ${d.to}`).join('\n')}
+${codeContextSection}
 
 Using Domain-Driven Design principles, proven microservices patterns, and Kubernetes best practices, provide a comprehensive decomposition strategy:
 
 1. EXTRACT BUSINESS LOGIC FROM LEGACY CODE (Critical for teams with zero domain knowledge)
-   - Analyze component/class names to infer business capabilities
-   - Identify business operations from method names and patterns
-   - Extract business entities from model/persistence layers
+   ${hasFullSource ? `
+   - USE COMPLETE SOURCE CODE ABOVE: You have full method implementations
+   - Extract EXACT business operations from method bodies (e.g., calculateDiscount logic, order validation rules)
+   - Identify ALL business entities with complete field definitions and annotations
+   - Extract PRECISE business rules from if/switch statements and validation code
+   - Map complete database schemas from JPA entity definitions
+   - Identify workflows from complete service method implementations
+   - Extract API contracts from complete REST controller method signatures and request/response objects
+   - Document business calculations and formulas from actual implementation code
+   - THIS IS SUFFICIENT FOR PRODUCTION IMPLEMENTATION - Be precise and thorough
+   ` : hasCodeSnippets ? `
+   - USE CODE SNIPPETS ABOVE: Analyze actual class names, method signatures, and imports
+   - Identify business operations from method names in code (e.g., calculateDiscount, validateOrder)
+   - Extract business entities from class definitions (e.g., Order, Customer, Invoice)
+   - Infer business rules from validation patterns in code snippets
+   - Map database entities from JPA/Hibernate annotations in imports
+   - Identify service responsibilities from class structure and dependencies
+   - Note: Limited to visible snippets - some inference required
+   ` : `
+   - Analyze component/class names to infer business capabilities (limited context)
+   - Identify business operations from file names and patterns
+   - Extract business entities from model/persistence component structures
    - Document business workflows from component dependencies
-   - Identify business rules, validations, and calculations in code
+   - Note: Significant inference required - recommend configuring GitHub URL for better results
+   `}
    - Map source components to business domains
 
 2. IDENTIFY BOUNDED CONTEXTS
