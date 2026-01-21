@@ -2,15 +2,16 @@
 
 An interactive web-based visualization tool that transforms Konveyor static analysis reports into visual, easy-to-understand representations.
 
-![Konveyor Viz](https://img.shields.io/badge/React-18-blue) ![Vite](https://img.shields.io/badge/Vite-5-purple) ![TailwindCSS](https://img.shields.io/badge/Tailwind-3-cyan)
+![Konveyor Viz](https://img.shields.io/badge/React-19-blue) ![Vite](https://img.shields.io/badge/Vite-7-purple) ![PatternFly](https://img.shields.io/badge/PatternFly-6-red)
 
 ## Overview
 
-This tool addresses the challenge of digesting lengthy Konveyor analysis reports (often 50+ pages) by providing:
+This tool addresses the challenge of digesting lengthy Konveyor analysis reports (often 50+ pages) by providing a professional **OpenShift/OKD-style console interface** with:
 
-- **Interactive Architecture Graph**: Force-directed network visualization showing application components and their dependencies
-- **Issue Dashboard**: Visual metrics and breakdowns of issues by type and severity
-- **Component Details**: Detailed view of each component with issue lists and technology stack
+- **Console-Style Navigation**: Dark masthead and sidebar with tabbed navigation between Overview, Components, Analysis, Microservices, and AI Insights
+- **Interactive Architecture Graph**: Force-directed network visualization with visual component type icons (globe, layers, diamond, database, cube)
+- **Issue Dashboard**: Visual metrics and breakdowns of issues by type and severity using PatternFly design system
+- **Component Details**: PatternFly Drawer panel with detailed view of each component including issue lists and technology stack
 - **Technology Status**: At-a-glance view of technology stack health (EOL/Outdated/Current)
 - **AI-Powered Microservices Decomposition**: Intelligent analysis of monolithic applications with recommendations for breaking them into microservices
 - **Business Logic Extraction**: Reverse-engineering of business capabilities from legacy code for teams with zero domain knowledge
@@ -20,22 +21,28 @@ This tool addresses the challenge of digesting lengthy Konveyor analysis reports
 
 ### 1. Application Architecture Graph
 - Force-directed network layout showing component relationships
-- Color-coded nodes by issue severity:
-  - 🔴 Red (Critical): >20 issues
-  - 🟡 Yellow (Warning): 5-20 issues
-  - 🟢 Green (Good): <5 issues
+- Visual component type icons:
+  - 🌐 Frontend (globe icon)
+  - ≡ Backend (server layers icon)
+  - ◆ Middleware (diamond icon)
+  - ⛁ Data (database cylinder icon)
+  - ▣ Infrastructure (3D cube icon)
+- Color-coded border rings by issue severity:
+  - 🔴 Red (Critical): >20 issues (#c9190b)
+  - 🟡 Orange (Warning): 5-20 issues (#f0ab00)
+  - 🟢 Green (Good): <5 issues (#3e8635)
 - Node size proportional to lines of code
 - Interactive: Click to view details, zoom/pan to explore
 
 ### 2. Issue Dashboard
-- Total issues, critical count, warnings, and health score metrics
+- PatternFly metric cards showing total issues, critical count, warnings, and health score
 - Bar chart showing issue breakdown by type
 - Visual indicators for problem areas
 
 ### 3. Component Detail Panel
-- Slides in from right on component click
-- Shows issue summary, technology stack, and full issue list
-- Each issue includes severity, description, and code location
+- PatternFly Drawer component slides in from right on component click
+- Shows issue summary, technology stack, and full issue list using PatternFly DataList
+- Each issue includes severity label, description, and code location
 
 ### 4. Technology Stack Status
 - Organized by status: EOL, Outdated, Current
@@ -75,12 +82,12 @@ Each export includes:
 
 ## Tech Stack
 
-- **React** - UI framework
-- **Vite** - Build tool and dev server
-- **D3.js** - Data visualization
-- **React Force Graph** - Network graph visualization
+- **React 19** - UI framework
+- **Vite 7** - Build tool and dev server
+- **PatternFly 6** - Design system and component library (OpenShift/OKD console style)
+- **D3.js 7** - Data visualization
+- **React Force Graph 2D** - Network graph visualization
 - **Recharts** - Charts and metrics
-- **Tailwind CSS** - Styling
 - **JSZip** - ZIP file generation for Spec-Kit export
 - **Express** - Backend proxy for LLM API calls
 
@@ -142,22 +149,23 @@ konveyor-viz/
 ├── src/
 │   ├── components/
 │   │   ├── Dashboard/
-│   │   │   ├── Dashboard.jsx                    # Main container
-│   │   │   ├── MetricsOverview.jsx              # Metrics cards
+│   │   │   ├── Dashboard.jsx                    # Main container with navigation
+│   │   │   ├── MetricsOverview.jsx              # PatternFly metric cards
 │   │   │   ├── AIInsights.jsx                   # AI-powered recommendations
 │   │   │   └── TechnologyStack.jsx              # Tech status grid
 │   │   ├── Visualizations/
-│   │   │   ├── ArchitectureGraph.jsx            # Force-directed graph
+│   │   │   ├── ArchitectureGraph.jsx            # Force-directed graph with visual icons
 │   │   │   ├── IssueBreakdown.jsx               # Bar chart
 │   │   │   ├── MicroservicesDecomposition.jsx   # AI microservices strategy
 │   │   │   ├── MicroservicesTierDiagram.jsx     # D3 tier visualization
 │   │   │   ├── BusinessLogicDocumentation.jsx   # Business logic extraction
 │   │   │   └── SpecKitExportButton.jsx          # Spec-Kit download button
 │   │   ├── DetailPanel/
-│   │   │   ├── ComponentDetail.jsx              # Slide-in panel
-│   │   │   └── IssueList.jsx                    # Issue list
+│   │   │   ├── ComponentDetail.jsx              # PatternFly Drawer panel
+│   │   │   └── IssueList.jsx                    # PatternFly DataList
 │   │   └── Layout/
-│   │       └── Header.jsx                       # App header
+│   │       ├── AppMasthead.jsx                  # Dark masthead header
+│   │       └── AppSidebar.jsx                   # Dark sidebar navigation
 │   ├── data/
 │   │   └── sampleData.json                      # Mock Konveyor report
 │   ├── services/
@@ -165,11 +173,12 @@ konveyor-viz/
 │   ├── config/
 │   │   └── llmConfig.js                         # LLM provider configuration
 │   ├── utils/
-│   │   ├── colorUtils.js                        # Severity colors
+│   │   ├── colorUtils.js                        # PatternFly severity colors
 │   │   ├── dataParser.js                        # Data transformations
 │   │   ├── specKitGenerator.js                  # Spec-Kit file generation
 │   │   └── downloadUtils.js                     # ZIP creation and download
-│   ├── App.jsx
+│   ├── App.jsx                                  # PatternFly Page layout
+│   ├── index.css                                # PatternFly CSS imports
 │   └── main.jsx
 ├── server.js                                    # Express backend for LLM calls
 ├── package.json
@@ -247,18 +256,19 @@ The application loads sample data automatically from `src/data/sampleData.json`.
 ### Understanding the Metrics
 
 - **Health Score**: Calculated as `100 - (critical×2 + warning×1 + info×0.5) / totalComponents`
-- **Color Coding**: Consistent across all visualizations
-  - Critical issues: Red (#ff6b6b)
-  - Warnings: Yellow (#ffd93d)
-  - Info: Gray (#6c757d)
-  - Good: Green (#95e1d3)
+- **Color Coding**: Consistent across all visualizations using PatternFly status colors
+  - Critical issues: Red (#c9190b) - PatternFly danger
+  - Warnings: Orange (#f0ab00) - PatternFly warning
+  - Info: Blue (#0066cc) - PatternFly info
+  - Good: Green (#3e8635) - PatternFly success
 
 ### Using Microservices Decomposition
 
 1. **Configure AI Provider**: Set up API key in `.env` file (Anthropic, OpenAI, or Ollama)
-2. **Navigate to Decomposition Tab**: Click "Microservices Decomposition" in the dashboard
+2. **Navigate to Microservices Tab**: Click "Microservices" in the sidebar navigation
 3. **Generate Strategy**: Click "Generate Microservices Strategy" button
-4. **Review Results**:
+4. **Navigate Freely**: Generated decomposition persists across tab navigation - you can switch to other views and return without losing your data
+5. **Review Results**:
    - **Strategy Overview**: High-level summary of the recommended approach
    - **Discovered Business Logic**: Reverse-engineered business capabilities from code
    - **Proposed Architecture**: Interactive tier diagram showing service relationships
@@ -267,7 +277,7 @@ The application loads sample data automatically from `src/data/sampleData.json`.
    - **Kubernetes Recommendations**: Deployment best practices
    - **Data Management Strategy**: Database and event-driven architecture guidance
 
-5. **Export Spec-Kits**:
+6. **Export Spec-Kits**:
    - **Individual Service**: Click "Spec-Kit" button on any microservice card
    - **All Services**: Click "Download All Spec-Kits" button at the bottom
    - Each export contains 4 markdown files + README ready for AI coding agents
@@ -357,6 +367,9 @@ npm run dev
 - [x] Business logic extraction from legacy code
 - [x] Spec-Kit export for AI-driven implementation
 - [x] Integration of Konveyor rule violations into implementation tasks
+- [x] PatternFly console UI migration (OpenShift/OKD style)
+- [x] Visual component type icons in architecture graph
+- [x] State persistence across navigation
 - [ ] Upload real Konveyor report files
 - [ ] Migration roadmap timeline visualization
 - [ ] Export visualizations (PNG/PDF)
