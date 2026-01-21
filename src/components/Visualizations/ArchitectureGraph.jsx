@@ -38,49 +38,179 @@ const ArchitectureGraph = ({ data, onNodeClick }) => {
     }
   };
 
-  // Get icon for component type
-  const getTypeIcon = (type) => {
-    const icons = {
-      frontend: '🌐',
-      backend: '⚙️',
-      middleware: '🔌',
-      data: '💾',
-      infrastructure: '🔧'
-    };
-    return icons[type] || '📦';
+  // Draw icon based on component type (matching SVG legend)
+  const drawTypeIcon = (ctx, x, y, type, size) => {
+    // Scale factor to match SVG viewBox (24x24 with 12 center)
+    const scale = size / 12;
+
+    switch(type) {
+      case 'frontend':
+        // Globe icon - circle with cross lines (matching SVG)
+        ctx.save();
+        ctx.strokeStyle = '#151515';
+        ctx.lineWidth = 0.7;
+        ctx.fillStyle = 'transparent';
+
+        ctx.beginPath();
+        ctx.arc(x, y, 8 * scale, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(x, y - 8 * scale);
+        ctx.lineTo(x, y + 8 * scale);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(x - 8 * scale, y);
+        ctx.lineTo(x + 8 * scale, y);
+        ctx.stroke();
+        ctx.restore();
+        break;
+
+      case 'backend':
+        // Server/layers icon - stacked rectangles (matching SVG)
+        ctx.save();
+        ctx.fillStyle = '#151515';
+        const rectWidth = 14 * scale;
+        const rectHeight = 2.5 * scale;
+        ctx.fillRect(x - rectWidth/2, y - 5 * scale, rectWidth, rectHeight);
+        ctx.fillRect(x - rectWidth/2, y - 1 * scale, rectWidth, rectHeight);
+        ctx.fillRect(x - rectWidth/2, y + 3 * scale, rectWidth, rectHeight);
+        ctx.restore();
+        break;
+
+      case 'middleware':
+        // Diamond icon (matching SVG) - STROKE ONLY, NO FILL
+        ctx.save();
+        ctx.strokeStyle = '#151515';
+        ctx.lineWidth = 0.7;
+        ctx.fillStyle = 'transparent';
+
+        ctx.beginPath();
+        ctx.moveTo(x, y - 8 * scale);
+        ctx.lineTo(x + 8 * scale, y);
+        ctx.lineTo(x, y + 8 * scale);
+        ctx.lineTo(x - 8 * scale, y);
+        ctx.lineTo(x, y - 8 * scale);
+        ctx.stroke();
+        ctx.restore();
+        break;
+
+      case 'data':
+        // Database cylinder icon (matching SVG)
+        ctx.save();
+        ctx.strokeStyle = '#151515';
+        ctx.lineWidth = 0.7;
+        ctx.fillStyle = 'transparent';
+
+        ctx.beginPath();
+        ctx.ellipse(x, y - 4 * scale, 6 * scale, 2.5 * scale, 0, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(x - 6 * scale, y - 4 * scale);
+        ctx.lineTo(x - 6 * scale, y + 4 * scale);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(x + 6 * scale, y - 4 * scale);
+        ctx.lineTo(x + 6 * scale, y + 4 * scale);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.ellipse(x, y + 4 * scale, 6 * scale, 2.5 * scale, 0, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.restore();
+        break;
+
+      case 'infrastructure':
+        // 3D Cube icon (matching SVG) - STROKE ONLY
+        ctx.save();
+        ctx.strokeStyle = '#151515';
+        ctx.lineWidth = 0.7;
+        ctx.fillStyle = 'transparent';
+
+        // Front face
+        ctx.beginPath();
+        ctx.moveTo(x - 4 * scale, y - 2 * scale);
+        ctx.lineTo(x + 4 * scale, y - 2 * scale);
+        ctx.lineTo(x + 4 * scale, y + 6 * scale);
+        ctx.lineTo(x - 4 * scale, y + 6 * scale);
+        ctx.lineTo(x - 4 * scale, y - 2 * scale);
+        ctx.stroke();
+
+        // Top face
+        ctx.beginPath();
+        ctx.moveTo(x - 4 * scale, y - 2 * scale);
+        ctx.lineTo(x, y - 6 * scale);
+        ctx.lineTo(x + 8 * scale, y - 6 * scale);
+        ctx.lineTo(x + 4 * scale, y - 2 * scale);
+        ctx.stroke();
+
+        // Side face
+        ctx.beginPath();
+        ctx.moveTo(x + 4 * scale, y - 2 * scale);
+        ctx.lineTo(x + 8 * scale, y - 6 * scale);
+        ctx.lineTo(x + 8 * scale, y + 2 * scale);
+        ctx.lineTo(x + 4 * scale, y + 6 * scale);
+        ctx.stroke();
+        ctx.restore();
+        break;
+
+      default:
+        // Generic component icon - simple square with corner
+        ctx.save();
+        ctx.strokeStyle = '#151515';
+        ctx.lineWidth = 0.7;
+        ctx.fillStyle = '#151515';
+
+        ctx.strokeRect(x - 6 * scale, y - 6 * scale, 12 * scale, 12 * scale);
+        ctx.beginPath();
+        ctx.moveTo(x + 6 * scale, y - 6 * scale);
+        ctx.lineTo(x + 2 * scale, y - 6 * scale);
+        ctx.lineTo(x + 6 * scale, y - 2 * scale);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+    }
   };
 
   // Custom node rendering with labels
   const nodeCanvasObject = (node, ctx, globalScale) => {
     const label = node.name;
     const fontSize = 12 / globalScale;
-    const iconSize = 16 / globalScale;
     const nodeRadius = Math.sqrt(Math.max(1, node.linesOfCode / 5000)) * 8;
+    const borderWidth = 3 / globalScale;
+    const iconSize = 12 / globalScale;
 
-    // Draw node circle
+    // Draw white background circle
     ctx.beginPath();
     ctx.arc(node.x, node.y, nodeRadius, 0, 2 * Math.PI, false);
-    ctx.fillStyle = getNodeColor(node.issues);
+    ctx.fillStyle = '#ffffff';
     ctx.fill();
 
-    // Draw icon in the center of the node
-    ctx.font = `${iconSize}px Sans-Serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(getTypeIcon(node.type), node.x, node.y);
+    // Draw colored border ring
+    ctx.beginPath();
+    ctx.arc(node.x, node.y, nodeRadius, 0, 2 * Math.PI, false);
+    ctx.strokeStyle = getNodeColor(node.issues);
+    ctx.lineWidth = borderWidth;
+    ctx.stroke();
+
+    // Draw type icon in the center of the node
+    drawTypeIcon(ctx, node.x, node.y, node.type, iconSize);
 
     // Prepare label text
     const labelY = node.y + nodeRadius + fontSize * 1.5;
     const issueLabelY = node.y + nodeRadius + fontSize * 2.8;
 
     // Draw white background for label (to prevent overlap issues)
-    ctx.font = `${fontSize}px Sans-Serif`;
+    ctx.font = `${fontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
     const labelWidth = ctx.measureText(label).width;
     const issueText = `${node.issues} issues`;
     const issueWidth = ctx.measureText(issueText).width;
     const maxWidth = Math.max(labelWidth, issueWidth);
 
-    ctx.fillStyle = 'rgba(249, 250, 251, 0.95)'; // Match background with slight transparency
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
     ctx.fillRect(
       node.x - maxWidth / 2 - 4,
       labelY - fontSize / 2 - 2,
@@ -91,23 +221,25 @@ const ArchitectureGraph = ({ data, onNodeClick }) => {
     // Draw label text
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#1f2937';
+    ctx.fillStyle = '#151515';
+    ctx.font = `600 ${fontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
     ctx.fillText(label, node.x, labelY);
 
     // Draw issue count
-    ctx.fillStyle = '#6b7280';
+    ctx.fillStyle = '#6a6e73';
+    ctx.font = `${fontSize}px -apple-system, BlinkMacSystemFont, sans-serif`;
     ctx.fillText(issueText, node.x, issueLabelY);
   };
 
   return (
-    <Card isRounded style={{ boxShadow: 'var(--pf-v5-global--BoxShadow--sm)' }}>
+    <Card>
       <CardTitle>
-        <Title headingLevel="h2" size="xl" style={{ fontWeight: 'var(--pf-v5-global--FontWeight--bold)' }}>
+        <Title headingLevel="h2" size="lg">
           Application Architecture
         </Title>
       </CardTitle>
       <CardBody>
-        <div ref={containerRef} style={{ position: 'relative', backgroundColor: 'var(--pf-v5-global--BackgroundColor--200)', borderRadius: 'var(--pf-v5-global--BorderRadius--sm)' }}>
+        <div ref={containerRef} style={{ position: 'relative', backgroundColor: '#ffffff', borderRadius: '4px', border: '1px solid #d2d2d2' }}>
         {data.nodes && data.nodes.length > 0 ? (
           <ForceGraph2D
             ref={fgRef}
@@ -135,7 +267,7 @@ const ArchitectureGraph = ({ data, onNodeClick }) => {
             onEngineStop={() => fgRef.current?.zoomToFit(400, 80)}
             enableZoomInteraction={true}
             enablePanInteraction={true}
-            backgroundColor="#f9fafb"
+            backgroundColor="#ffffff"
           />
         ) : (
           <div
@@ -143,7 +275,7 @@ const ArchitectureGraph = ({ data, onNodeClick }) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: 'var(--pf-v5-global--Color--200)',
+              color: '#6a6e73',
               height: dimensions.height
             }}
           >
@@ -153,48 +285,76 @@ const ArchitectureGraph = ({ data, onNodeClick }) => {
         </div>
 
         {/* Legends */}
-        <div style={{ marginTop: 'var(--pf-v5-global--spacer--md)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--sm)' }}>
+        <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
           {/* Color Legend */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--lg)', fontSize: 'var(--pf-v5-global--FontSize--sm)' }}>
-            <span style={{ color: 'var(--pf-v5-global--Color--200)', fontWeight: 'var(--pf-v5-global--FontWeight--semi-bold)', marginRight: 'var(--pf-v5-global--spacer--xs)' }}>Issue Severity:</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '24px', fontSize: '0.875rem' }}>
+            <span style={{ color: '#6a6e73', fontWeight: '600', marginRight: '4px' }}>Issue Severity:</span>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div
-                style={{ width: '16px', height: '16px', borderRadius: '50%', marginRight: 'var(--pf-v5-global--spacer--xs)', backgroundColor: '#ff6b6b' }}
+                style={{ width: '16px', height: '16px', borderRadius: '50%', marginRight: '4px', backgroundColor: '#c9190b' }}
               ></div>
-              <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>&gt;20 issues</span>
+              <span style={{ color: '#151515' }}>&gt;20 issues</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div
-                style={{ width: '16px', height: '16px', borderRadius: '50%', marginRight: 'var(--pf-v5-global--spacer--xs)', backgroundColor: '#ffd93d' }}
+                style={{ width: '16px', height: '16px', borderRadius: '50%', marginRight: '4px', backgroundColor: '#f0ab00' }}
               ></div>
-              <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>5-20 issues</span>
+              <span style={{ color: '#151515' }}>5-20 issues</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div
-                style={{ width: '16px', height: '16px', borderRadius: '50%', marginRight: 'var(--pf-v5-global--spacer--xs)', backgroundColor: '#95e1d3' }}
+                style={{ width: '16px', height: '16px', borderRadius: '50%', marginRight: '4px', backgroundColor: '#3e8635' }}
               ></div>
-              <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>&lt;5 issues</span>
+              <span style={{ color: '#151515' }}>&lt;5 issues</span>
             </div>
           </div>
 
-          {/* Icon Legend */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--lg)', fontSize: 'var(--pf-v5-global--FontSize--sm)' }}>
-            <span style={{ color: 'var(--pf-v5-global--Color--200)', fontWeight: 'var(--pf-v5-global--FontWeight--semi-bold)', marginRight: 'var(--pf-v5-global--spacer--xs)' }}>Component Type:</span>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <span style={{ marginRight: 'var(--pf-v5-global--spacer--xs)' }}>🌐</span>
-              <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>Frontend</span>
+          {/* Type Legend */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '24px', fontSize: '0.875rem' }}>
+            <span style={{ color: '#6a6e73', fontWeight: '600', marginRight: '4px' }}>Component Type:</span>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="8" fill="none" stroke="#151515" strokeWidth="1.0"/>
+                <line x1="12" y1="4" x2="12" y2="20" stroke="#151515" strokeWidth="1.0"/>
+                <line x1="4" y1="12" x2="20" y2="12" stroke="#151515" strokeWidth="1.0"/>
+              </svg>
+              <span style={{ color: '#151515' }}>Frontend</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <span style={{ marginRight: 'var(--pf-v5-global--spacer--xs)' }}>⚙️</span>
-              <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>Backend</span>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24">
+                <rect x="5" y="7" width="14" height="2.5" fill="#151515"/>
+                <rect x="5" y="11" width="14" height="2.5" fill="#151515"/>
+                <rect x="5" y="15" width="14" height="2.5" fill="#151515"/>
+              </svg>
+              <span style={{ color: '#151515' }}>Backend</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <span style={{ marginRight: 'var(--pf-v5-global--spacer--xs)' }}>🔌</span>
-              <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>Middleware</span>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24">
+                <path d="M 12 4 L 20 12 L 12 20 L 4 12 Z" fill="none" stroke="#151515" strokeWidth="1.0"/>
+              </svg>
+              <span style={{ color: '#151515' }}>Middleware</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <span style={{ marginRight: 'var(--pf-v5-global--spacer--xs)' }}>🔧</span>
-              <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>Infrastructure</span>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24">
+                <ellipse cx="12" cy="8" rx="6" ry="2.5" fill="none" stroke="#151515" strokeWidth="1.0"/>
+                <line x1="6" y1="8" x2="6" y2="16" stroke="#151515" strokeWidth="1.0"/>
+                <line x1="18" y1="8" x2="18" y2="16" stroke="#151515" strokeWidth="1.0"/>
+                <ellipse cx="12" cy="16" rx="6" ry="2.5" fill="none" stroke="#151515" strokeWidth="1.0"/>
+              </svg>
+              <span style={{ color: '#151515' }}>Data</span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24">
+                <path d="M 8 10 L 16 10 L 16 18 L 8 18 Z" fill="none" stroke="#151515" strokeWidth="1.0"/>
+                <path d="M 8 10 L 12 6 L 20 6 L 16 10" fill="none" stroke="#151515" strokeWidth="1.0"/>
+                <path d="M 16 10 L 20 6 L 20 14 L 16 18" fill="none" stroke="#151515" strokeWidth="1.0"/>
+              </svg>
+              <span style={{ color: '#151515' }}>Infrastructure</span>
             </div>
           </div>
         </div>

@@ -51,16 +51,13 @@ const Dashboard = ({ data, activeView }) => {
       {activeView === 'overview' && (
         <>
           <PageSection variant={PageSectionVariants.light}>
-            <Title headingLevel="h1">Application Overview</Title>
-            <p style={{ color: 'var(--pf-v5-global--Color--200)', marginTop: 'var(--pf-v5-global--spacer--sm)' }}>
-              Comprehensive analysis of your application's architecture, issues, and migration readiness.
-            </p>
+            <Title headingLevel="h1" size="2xl">Application Overview</Title>
           </PageSection>
           <PageSection variant={PageSectionVariants.light}>
             <MetricsOverview metrics={metrics} />
           </PageSection>
           <PageSection>
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 'var(--pf-v5-global--spacer--lg)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
               <ArchitectureGraph data={graphData} onNodeClick={handleNodeClick} />
               <IssueBreakdown issuesByType={issuesByType} />
             </div>
@@ -72,14 +69,11 @@ const Dashboard = ({ data, activeView }) => {
       {activeView === 'components' && (
         <>
           <PageSection variant={PageSectionVariants.light}>
-            <Title headingLevel="h1">Components</Title>
-            <p style={{ color: 'var(--pf-v5-global--Color--200)', marginTop: 'var(--pf-v5-global--spacer--sm)' }}>
-              Browse and filter all application components with detailed analysis.
-            </p>
+            <Title headingLevel="h1" size="2xl">Components</Title>
           </PageSection>
           <PageSection>
             <div style={{ textAlign: 'center', padding: '3rem' }}>
-              <p style={{ color: 'var(--pf-v5-global--Color--200)' }}>
+              <p style={{ color: '#6a6e73' }}>
                 This view will show a table of all components
               </p>
             </div>
@@ -91,10 +85,7 @@ const Dashboard = ({ data, activeView }) => {
       {activeView === 'analysis' && (
         <>
           <PageSection variant={PageSectionVariants.light}>
-            <Title headingLevel="h1">Analysis</Title>
-            <p style={{ color: 'var(--pf-v5-global--Color--200)', marginTop: 'var(--pf-v5-global--spacer--sm)' }}>
-              Detailed breakdown of issues and technology stack analysis.
-            </p>
+            <Title headingLevel="h1" size="2xl">Analysis</Title>
           </PageSection>
           <PageSection variant={PageSectionVariants.light}>
             <IssueBreakdown issuesByType={issuesByType} />
@@ -109,10 +100,7 @@ const Dashboard = ({ data, activeView }) => {
       {activeView === 'microservices' && (
         <>
           <PageSection variant={PageSectionVariants.light}>
-            <Title headingLevel="h1">Microservices Decomposition</Title>
-            <p style={{ color: 'var(--pf-v5-global--Color--200)', marginTop: 'var(--pf-v5-global--spacer--sm)' }}>
-              AI-powered analysis to break down your monolith into microservices using Kubernetes best practices.
-            </p>
+            <Title headingLevel="h1" size="2xl">Microservices Decomposition</Title>
           </PageSection>
           <PageSection>
             <MicroservicesDecomposition data={data} />
@@ -124,10 +112,7 @@ const Dashboard = ({ data, activeView }) => {
       {activeView === 'ai-insights' && (
         <>
           <PageSection variant={PageSectionVariants.light}>
-            <Title headingLevel="h1">AI Insights</Title>
-            <p style={{ color: 'var(--pf-v5-global--Color--200)', marginTop: 'var(--pf-v5-global--spacer--sm)' }}>
-              Intelligent recommendations for migration priorities, patterns, risks, and quick wins.
-            </p>
+            <Title headingLevel="h1" size="2xl">AI Insights</Title>
           </PageSection>
           <PageSection>
             <AIInsights data={data} />

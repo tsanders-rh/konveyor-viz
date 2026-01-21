@@ -1,9 +1,9 @@
-// Severity color mapping
+// Severity color mapping - PatternFly v6 status colors
 export const severityColors = {
-  critical: '#ff6b6b',
-  warning: '#ffd93d',
-  info: '#6c757d',
-  good: '#95e1d3',
+  critical: '#c9190b', // PatternFly danger red
+  warning: '#f0ab00',  // PatternFly warning orange
+  info: '#0066cc',     // PatternFly info blue
+  good: '#3e8635',     // PatternFly success green
 };
 
 // Get color based on issue count

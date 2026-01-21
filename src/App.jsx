@@ -32,24 +32,30 @@ function App() {
           onSidebarToggle={() => setIsSidebarOpen(!isSidebarOpen)}
           isSidebarOpen={isSidebarOpen}
         >
-          <BarsIcon />
+          <BarsIcon style={{ color: '#d2d2d2' }} />
         </PageToggleButton>
       </MastheadToggle>
       <MastheadMain>
         <MastheadBrand>
-          <Brand style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--sm)' }}>
-            <WrenchIcon size="md" />
-            <Title headingLevel="h1" size="xl">Konveyor Visual Analysis</Title>
+          <Brand style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <WrenchIcon size="md" style={{ color: '#d2d2d2' }} />
+            <Title headingLevel="h1" size="lg" style={{ color: '#ffffff', fontWeight: '500', margin: 0 }}>
+              Konveyor Visual Analysis
+            </Title>
           </Brand>
         </MastheadBrand>
       </MastheadMain>
       <MastheadContent>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--lg)', fontSize: 'var(--pf-v5-global--FontSize--sm)', color: 'var(--pf-v5-global--Color--light-100)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '0.875rem', color: '#d2d2d2' }}>
           {sampleData?.applicationName && (
-            <span><strong>Application:</strong> {sampleData.applicationName}</span>
+            <span>
+              <strong>Project:</strong> {sampleData.applicationName}
+            </span>
           )}
           {sampleData?.analysisDate && (
-            <span><strong>Analyzed:</strong> {new Date(sampleData.analysisDate).toLocaleDateString()}</span>
+            <span>
+              <strong>Analyzed:</strong> {new Date(sampleData.analysisDate).toLocaleDateString()}
+            </span>
           )}
         </div>
       </MastheadContent>
@@ -66,7 +72,7 @@ function App() {
               isActive={selectedNav === 'overview'}
               onClick={() => setSelectedNav('overview')}
             >
-              <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--sm)' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <ChartPieIcon />
                 <span>Overview</span>
               </span>
@@ -76,7 +82,7 @@ function App() {
               isActive={selectedNav === 'components'}
               onClick={() => setSelectedNav('components')}
             >
-              <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--sm)' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <CubeIcon />
                 <span>Components</span>
               </span>
@@ -86,7 +92,7 @@ function App() {
               isActive={selectedNav === 'analysis'}
               onClick={() => setSelectedNav('analysis')}
             >
-              <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--sm)' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <SearchIcon />
                 <span>Analysis</span>
               </span>
@@ -96,7 +102,7 @@ function App() {
               isActive={selectedNav === 'microservices'}
               onClick={() => setSelectedNav('microservices')}
             >
-              <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--sm)' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <CogIcon />
                 <span>Microservices</span>
               </span>
@@ -106,7 +112,7 @@ function App() {
               isActive={selectedNav === 'ai-insights'}
               onClick={() => setSelectedNav('ai-insights')}
             >
-              <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--sm)' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <BrainIcon />
                 <span>AI Insights</span>
               </span>

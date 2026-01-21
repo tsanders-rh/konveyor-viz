@@ -9,7 +9,16 @@ import {
   Spinner,
   Title
 } from '@patternfly/react-core';
-import { AngleDownIcon, AngleUpIcon } from '@patternfly/react-icons';
+import {
+  AngleDownIcon,
+  AngleUpIcon,
+  BrainIcon,
+  BullseyeIcon,
+  SearchIcon,
+  ExclamationTriangleIcon,
+  MapIcon,
+  BoltIcon
+} from '@patternfly/react-icons';
 import llmService from '../../services/llmService';
 import { getActiveProvider, LLM_PROVIDERS } from '../../config/llmConfig';
 
@@ -166,16 +175,6 @@ const AIInsights = ({ data }) => {
                        (insights.risks?.length || 0) + (insights.roadmap?.length || 0) +
                        (insights.quickWins?.length || 0);
 
-  const getTypeIcon = (type) => {
-    switch(type) {
-      case 'critical': return '🚨';
-      case 'warning': return '⚠️';
-      case 'info': return 'ℹ️';
-      case 'success': return '✅';
-      default: return '💡';
-    }
-  };
-
   const getProviderLabel = () => {
     switch(activeProvider) {
       case LLM_PROVIDERS.ANTHROPIC: return 'Claude';
@@ -186,50 +185,56 @@ const AIInsights = ({ data }) => {
   };
 
   const InsightCard = ({ insight }) => (
-    <Card isCompact style={{ marginBottom: 'var(--pf-v5-global--spacer--sm)' }}>
-      <CardBody>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--pf-v5-global--spacer--sm)' }}>
-          <span style={{ fontSize: '1.25rem' }}>{getTypeIcon(insight.type)}</span>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 'var(--pf-v5-global--FontWeight--semi-bold)', marginBottom: 'var(--pf-v5-global--spacer--xs)' }}>
-              {insight.title}
-            </div>
-            <div style={{ fontSize: 'var(--pf-v5-global--FontSize--sm)', color: 'var(--pf-v5-global--Color--200)' }}>
-              {insight.description}
-            </div>
-          </div>
-        </div>
-      </CardBody>
-    </Card>
+    <div style={{
+      marginBottom: '12px',
+      padding: '16px',
+      backgroundColor: '#ffffff',
+      border: '1px solid #d2d2d2',
+      borderRadius: '4px',
+      borderLeft: `4px solid ${insight.type === 'critical' ? '#c9190b' : insight.type === 'warning' ? '#f0ab00' : insight.type === 'success' ? '#3e8635' : '#0066cc'}`
+    }}>
+      <div style={{ fontWeight: '600', marginBottom: '8px', fontSize: '0.9375rem' }}>
+        {insight.title}
+      </div>
+      <div style={{ fontSize: '0.875rem', color: '#6a6e73', lineHeight: '1.5' }}>
+        {insight.description}
+      </div>
+    </div>
   );
 
   const RoadmapCard = ({ insight }) => (
-    <Card isCompact style={{ marginBottom: 'var(--pf-v5-global--spacer--sm)' }}>
-      <CardBody>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--pf-v5-global--spacer--sm)' }}>
-          <Label color="blue" isCompact>
-            Phase {insight.phase}
-          </Label>
-          <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 'var(--pf-v5-global--FontWeight--semi-bold)', marginBottom: 'var(--pf-v5-global--spacer--xs)' }}>
-              {insight.title}
-            </div>
-            <div style={{ fontSize: 'var(--pf-v5-global--FontSize--sm)', color: 'var(--pf-v5-global--Color--200)' }}>
-              {insight.description}
-            </div>
-          </div>
+    <div style={{
+      marginBottom: '12px',
+      padding: '16px',
+      backgroundColor: '#ffffff',
+      border: '1px solid #d2d2d2',
+      borderRadius: '4px',
+      borderLeft: '4px solid #0066cc'
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+        <Label color="blue" isCompact>
+          Phase {insight.phase}
+        </Label>
+        <div style={{ fontWeight: '600', fontSize: '0.9375rem' }}>
+          {insight.title}
         </div>
-      </CardBody>
-    </Card>
+      </div>
+      <div style={{ fontSize: '0.875rem', color: '#6a6e73', lineHeight: '1.5' }}>
+        {insight.description}
+      </div>
+    </div>
   );
 
   return (
     <Card isExpanded={expanded}>
       <CardTitle>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--sm)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Title headingLevel="h2" size="lg">
-              🤖 {useAI && aiInsights ? 'AI-Generated' : 'Smart Analysis'} Insights
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <BrainIcon />
+                <span>{useAI && aiInsights ? 'AI-Generated' : 'Smart Analysis'} Insights</span>
+              </span>
             </Title>
             <Label color="purple" isCompact>
               {totalInsights} recommendations
@@ -238,7 +243,7 @@ const AIInsights = ({ data }) => {
               {getProviderLabel()}
             </Label>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--sm)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {activeProvider !== LLM_PROVIDERS.NONE && (
               <Button
                 variant={useAI ? 'primary' : 'secondary'}
@@ -263,9 +268,12 @@ const AIInsights = ({ data }) => {
         <CardBody>
           {/* Priority Recommendations */}
           {insights.priority && insights.priority.length > 0 && (
-            <div style={{ marginBottom: 'var(--pf-v5-global--spacer--md)' }}>
-              <Title headingLevel="h3" size="md" style={{ marginBottom: 'var(--pf-v5-global--spacer--sm)' }}>
-                🎯 Priority Actions
+            <div style={{ marginBottom: '24px' }}>
+              <Title headingLevel="h3" size="md" style={{ marginBottom: '12px', paddingBottom: '8px', borderBottom: '2px solid #f0f0f0' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <BullseyeIcon />
+                  <span>Priority Actions</span>
+                </span>
               </Title>
               {insights.priority.map((insight, idx) => (
                 <InsightCard key={idx} insight={insight} />
@@ -275,9 +283,12 @@ const AIInsights = ({ data }) => {
 
           {/* Pattern Detection */}
           {insights.patterns && insights.patterns.length > 0 && (
-            <div style={{ marginBottom: 'var(--pf-v5-global--spacer--md)' }}>
-              <Title headingLevel="h3" size="md" style={{ marginBottom: 'var(--pf-v5-global--spacer--sm)' }}>
-                🔍 Patterns Detected
+            <div style={{ marginBottom: '24px' }}>
+              <Title headingLevel="h3" size="md" style={{ marginBottom: '12px', paddingBottom: '8px', borderBottom: '2px solid #f0f0f0' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <SearchIcon />
+                  <span>Patterns Detected</span>
+                </span>
               </Title>
               {insights.patterns.map((insight, idx) => (
                 <InsightCard key={idx} insight={insight} />
@@ -287,9 +298,12 @@ const AIInsights = ({ data }) => {
 
           {/* Risk Assessment */}
           {insights.risks && insights.risks.length > 0 && (
-            <div style={{ marginBottom: 'var(--pf-v5-global--spacer--md)' }}>
-              <Title headingLevel="h3" size="md" style={{ marginBottom: 'var(--pf-v5-global--spacer--sm)' }}>
-                ⚠️ Risk Assessment
+            <div style={{ marginBottom: '24px' }}>
+              <Title headingLevel="h3" size="md" style={{ marginBottom: '12px', paddingBottom: '8px', borderBottom: '2px solid #f0f0f0' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <ExclamationTriangleIcon />
+                  <span>Risk Assessment</span>
+                </span>
               </Title>
               {insights.risks.map((insight, idx) => (
                 <InsightCard key={idx} insight={insight} />
@@ -299,9 +313,12 @@ const AIInsights = ({ data }) => {
 
           {/* Migration Roadmap */}
           {insights.roadmap && insights.roadmap.length > 0 && (
-            <div style={{ marginBottom: 'var(--pf-v5-global--spacer--md)' }}>
-              <Title headingLevel="h3" size="md" style={{ marginBottom: 'var(--pf-v5-global--spacer--sm)' }}>
-                🗺️ Suggested Migration Roadmap
+            <div style={{ marginBottom: '24px' }}>
+              <Title headingLevel="h3" size="md" style={{ marginBottom: '12px', paddingBottom: '8px', borderBottom: '2px solid #f0f0f0' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <MapIcon />
+                  <span>Suggested Migration Roadmap</span>
+                </span>
               </Title>
               {insights.roadmap.map((insight, idx) => (
                 <RoadmapCard key={idx} insight={insight} />
@@ -311,9 +328,12 @@ const AIInsights = ({ data }) => {
 
           {/* Quick Wins */}
           {insights.quickWins && insights.quickWins.length > 0 && (
-            <div>
-              <Title headingLevel="h3" size="md" style={{ marginBottom: 'var(--pf-v5-global--spacer--sm)' }}>
-                ⚡ Quick Wins
+            <div style={{ marginBottom: '24px' }}>
+              <Title headingLevel="h3" size="md" style={{ marginBottom: '12px', paddingBottom: '8px', borderBottom: '2px solid #f0f0f0' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <BoltIcon />
+                  <span>Quick Wins</span>
+                </span>
               </Title>
               {insights.quickWins.map((insight, idx) => (
                 <InsightCard key={idx} insight={insight} />

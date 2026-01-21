@@ -52,26 +52,26 @@ const TechnologyStack = ({ technologies }) => {
             <GridItem key={status} md={4}>
               <Card isCompact>
                 <CardTitle>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--sm)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontSize: '1.25rem' }}>{config.emoji}</span>
                     <span>{config.label}</span>
                   </div>
                 </CardTitle>
                 <CardBody>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--pf-v5-global--spacer--sm)' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {techByStatus[status].length > 0 ? (
                       techByStatus[status].map((tech, idx) => (
                         <Card key={idx} isFlat isCompact>
                           <CardBody>
                             <div style={{
-                              fontSize: 'var(--pf-v5-global--FontSize--sm)',
-                              fontWeight: 'var(--pf-v5-global--FontWeight--semi-bold)'
+                              fontSize: '0.875rem',
+                              fontWeight: '600'
                             }}>
                               {tech.name}
                             </div>
                             <div style={{
-                              fontSize: 'var(--pf-v5-global--FontSize--xs)',
-                              color: 'var(--pf-v5-global--Color--200)'
+                              fontSize: '0.75rem',
+                              color: '#6a6e73'
                             }}>
                               {tech.component}
                             </div>
@@ -80,8 +80,8 @@ const TechnologyStack = ({ technologies }) => {
                       ))
                     ) : (
                       <div style={{
-                        fontSize: 'var(--pf-v5-global--FontSize--sm)',
-                        color: 'var(--pf-v5-global--Color--200)',
+                        fontSize: '0.875rem',
+                        color: '#6a6e73',
                         fontStyle: 'italic'
                       }}>
                         None

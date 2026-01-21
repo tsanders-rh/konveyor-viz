@@ -34,13 +34,13 @@ const ComponentDetail = ({ component, onClose }) => {
   return (
     <DrawerPanelContent widths={{ default: 'width_50', lg: 'width_33' }}>
       <DrawerHead>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--pf-v5-global--spacer--sm)', flex: 1 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
           <Title headingLevel="h2" size="xl">
             {component.name}
           </Title>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--sm)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Label color="blue">{component.type}</Label>
-            <span style={{ fontSize: 'var(--pf-v5-global--FontSize--sm)', color: 'var(--pf-v5-global--Color--200)' }}>
+            <span style={{ fontSize: '0.875rem', color: '#6a6e73' }}>
               {component.linesOfCode.toLocaleString()} lines of code
             </span>
           </div>
@@ -50,10 +50,10 @@ const ComponentDetail = ({ component, onClose }) => {
         </DrawerActions>
       </DrawerHead>
 
-      <div style={{ padding: 'var(--pf-v5-global--spacer--md)' }}>
+      <div style={{ padding: '16px' }}>
         {/* Issue Summary */}
-        <div style={{ marginBottom: 'var(--pf-v5-global--spacer--lg)' }}>
-          <Title headingLevel="h3" size="lg" style={{ marginBottom: 'var(--pf-v5-global--spacer--md)' }}>
+        <div style={{ marginBottom: '24px' }}>
+          <Title headingLevel="h3" size="lg" style={{ marginBottom: '16px' }}>
             Issue Summary
           </Title>
           <Grid hasGutter>
@@ -65,13 +65,13 @@ const ComponentDetail = ({ component, onClose }) => {
                 <CardBody>
                   <div style={{
                     fontSize: '2rem',
-                    fontWeight: 'var(--pf-v5-global--FontWeight--bold)',
+                    fontWeight: '700',
                     color: 'var(--pf-v5-global--danger-color--200)'
                   }}>
                     {issuesBySeverity.critical}
                   </div>
                   <div style={{
-                    fontSize: 'var(--pf-v5-global--FontSize--sm)',
+                    fontSize: '0.875rem',
                     color: 'var(--pf-v5-global--danger-color--100)'
                   }}>
                     Critical
@@ -87,13 +87,13 @@ const ComponentDetail = ({ component, onClose }) => {
                 <CardBody>
                   <div style={{
                     fontSize: '2rem',
-                    fontWeight: 'var(--pf-v5-global--FontWeight--bold)',
+                    fontWeight: '700',
                     color: 'var(--pf-v5-global--warning-color--200)'
                   }}>
                     {issuesBySeverity.warning}
                   </div>
                   <div style={{
-                    fontSize: 'var(--pf-v5-global--FontSize--sm)',
+                    fontSize: '0.875rem',
                     color: 'var(--pf-v5-global--warning-color--100)'
                   }}>
                     Warning
@@ -103,19 +103,19 @@ const ComponentDetail = ({ component, onClose }) => {
             </GridItem>
             <GridItem span={4}>
               <Card style={{
-                background: 'var(--pf-v5-global--BackgroundColor--200)',
+                background: '#f5f5f5',
                 borderLeft: '4px solid var(--pf-v5-global--BorderColor--100)'
               }}>
                 <CardBody>
                   <div style={{
                     fontSize: '2rem',
-                    fontWeight: 'var(--pf-v5-global--FontWeight--bold)',
+                    fontWeight: '700',
                   }}>
                     {issuesBySeverity.info}
                   </div>
                   <div style={{
-                    fontSize: 'var(--pf-v5-global--FontSize--sm)',
-                    color: 'var(--pf-v5-global--Color--200)'
+                    fontSize: '0.875rem',
+                    color: '#6a6e73'
                   }}>
                     Info
                   </div>
@@ -126,8 +126,8 @@ const ComponentDetail = ({ component, onClose }) => {
         </div>
 
         {/* Technology Stack */}
-        <div style={{ marginBottom: 'var(--pf-v5-global--spacer--lg)' }}>
-          <Title headingLevel="h3" size="lg" style={{ marginBottom: 'var(--pf-v5-global--spacer--md)' }}>
+        <div style={{ marginBottom: '24px' }}>
+          <Title headingLevel="h3" size="lg" style={{ marginBottom: '16px' }}>
             Technology Stack
           </Title>
           <Card>
@@ -146,7 +146,7 @@ const ComponentDetail = ({ component, onClose }) => {
                   <DescriptionListGroup>
                     <DescriptionListTerm>Framework</DescriptionListTerm>
                     <DescriptionListDescription>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--sm)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span>{component.technology.framework}</span>
                         {component.technology.frameworkStatus && (
                           <span>{statusEmoji[component.technology.frameworkStatus]}</span>
@@ -159,7 +159,7 @@ const ComponentDetail = ({ component, onClose }) => {
                   <DescriptionListGroup>
                     <DescriptionListTerm>Type</DescriptionListTerm>
                     <DescriptionListDescription>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--sm)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span>
                           {component.technology.type}
                           {component.technology.version && ` ${component.technology.version}`}
@@ -178,7 +178,7 @@ const ComponentDetail = ({ component, onClose }) => {
 
         {/* Issues List */}
         <div>
-          <Title headingLevel="h3" size="lg" style={{ marginBottom: 'var(--pf-v5-global--spacer--md)' }}>
+          <Title headingLevel="h3" size="lg" style={{ marginBottom: '16px' }}>
             Issues ({component.issues.length})
           </Title>
           <IssueList issues={component.issues} />
