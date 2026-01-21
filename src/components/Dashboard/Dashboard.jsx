@@ -1,4 +1,12 @@
 import { useState } from 'react';
+import {
+  PageSection,
+  PageSectionVariants,
+  Drawer,
+  DrawerContent,
+  DrawerContentBody,
+  Title
+} from '@patternfly/react-core';
 import MetricsOverview from './MetricsOverview';
 import TechnologyStack from './TechnologyStack';
 import AIInsights from './AIInsights';
@@ -13,7 +21,7 @@ import {
   getTechnologies,
 } from '../../utils/dataParser';
 
-const Dashboard = ({ data }) => {
+const Dashboard = ({ data, activeView }) => {
   const [selectedComponent, setSelectedComponent] = useState(null);
 
   // Parse and calculate data for visualizations
@@ -30,41 +38,98 @@ const Dashboard = ({ data }) => {
     setSelectedComponent(null);
   };
 
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Metrics Overview */}
-        <MetricsOverview metrics={metrics} />
+  const panelContent = (
+    <ComponentDetail
+      component={selectedComponent}
+      onClose={handleCloseDetail}
+    />
+  );
 
-        {/* AI Insights */}
-        <AIInsights data={data} />
+  const mainContent = (
+    <>
+      {/* Overview View */}
+      {activeView === 'overview' && (
+        <>
+          <PageSection variant={PageSectionVariants.light}>
+            <Title headingLevel="h1" size="2xl">Application Overview</Title>
+          </PageSection>
+          <PageSection variant={PageSectionVariants.light}>
+            <MetricsOverview metrics={metrics} />
+          </PageSection>
+          <PageSection>
+            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
+              <ArchitectureGraph data={graphData} onNodeClick={handleNodeClick} />
+              <IssueBreakdown issuesByType={issuesByType} />
+            </div>
+          </PageSection>
+        </>
+      )}
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Architecture Graph - Takes 2 columns */}
-          <div className="lg:col-span-2">
-            <ArchitectureGraph data={graphData} onNodeClick={handleNodeClick} />
-          </div>
+      {/* Components View - Placeholder for future implementation */}
+      {activeView === 'components' && (
+        <>
+          <PageSection variant={PageSectionVariants.light}>
+            <Title headingLevel="h1" size="2xl">Components</Title>
+          </PageSection>
+          <PageSection>
+            <div style={{ textAlign: 'center', padding: '3rem' }}>
+              <p style={{ color: '#6a6e73' }}>
+                This view will show a table of all components
+              </p>
+            </div>
+          </PageSection>
+        </>
+      )}
 
-          {/* Issue Breakdown - Takes 1 column */}
-          <div>
+      {/* Analysis View */}
+      {activeView === 'analysis' && (
+        <>
+          <PageSection variant={PageSectionVariants.light}>
+            <Title headingLevel="h1" size="2xl">Analysis</Title>
+          </PageSection>
+          <PageSection variant={PageSectionVariants.light}>
             <IssueBreakdown issuesByType={issuesByType} />
-          </div>
-        </div>
+          </PageSection>
+          <PageSection>
+            <TechnologyStack technologies={technologies} />
+          </PageSection>
+        </>
+      )}
 
-        {/* Technology Stack */}
-        <TechnologyStack technologies={technologies} />
+      {/* Microservices View */}
+      {activeView === 'microservices' && (
+        <>
+          <PageSection variant={PageSectionVariants.light}>
+            <Title headingLevel="h1" size="2xl">Microservices Decomposition</Title>
+          </PageSection>
+          <PageSection>
+            <MicroservicesDecomposition data={data} />
+          </PageSection>
+        </>
+      )}
 
-        {/* Microservices Decomposition */}
-        <MicroservicesDecomposition data={data} />
+      {/* AI Insights View */}
+      {activeView === 'ai-insights' && (
+        <>
+          <PageSection variant={PageSectionVariants.light}>
+            <Title headingLevel="h1" size="2xl">AI Insights</Title>
+          </PageSection>
+          <PageSection>
+            <AIInsights data={data} />
+          </PageSection>
+        </>
+      )}
+    </>
+  );
 
-        {/* Component Detail Panel */}
-        <ComponentDetail
-          component={selectedComponent}
-          onClose={handleCloseDetail}
-        />
-      </div>
-    </div>
+  return (
+    <Drawer isExpanded={selectedComponent !== null} isInline>
+      <DrawerContent panelContent={panelContent}>
+        <DrawerContentBody>
+          {mainContent}
+        </DrawerContentBody>
+      </DrawerContent>
+    </Drawer>
   );
 };
 

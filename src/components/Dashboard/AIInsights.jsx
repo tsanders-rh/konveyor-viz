@@ -1,4 +1,24 @@
 import { useState, useEffect } from 'react';
+import {
+  Card,
+  CardTitle,
+  CardBody,
+  CardExpandableContent,
+  Button,
+  Label,
+  Spinner,
+  Title
+} from '@patternfly/react-core';
+import {
+  AngleDownIcon,
+  AngleUpIcon,
+  BrainIcon,
+  BullseyeIcon,
+  SearchIcon,
+  ExclamationTriangleIcon,
+  MapIcon,
+  BoltIcon
+} from '@patternfly/react-icons';
 import llmService from '../../services/llmService';
 import { getActiveProvider, LLM_PROVIDERS } from '../../config/llmConfig';
 
@@ -129,26 +149,18 @@ const AIInsights = ({ data }) => {
   // Fetch AI-powered insights if provider is available
   useEffect(() => {
     const fetchAIInsights = async () => {
-      console.log('useAI state:', useAI);
-      console.log('activeProvider:', activeProvider);
-      console.log('LLM_PROVIDERS.NONE:', LLM_PROVIDERS.NONE);
-
       if (activeProvider === LLM_PROVIDERS.NONE || !useAI) {
-        console.log('Skipping AI fetch - provider:', activeProvider, 'useAI:', useAI);
         return;
       }
 
-      console.log('Fetching AI insights...');
       setLoading(true);
       try {
         const aiResult = await llmService.generateInsights(data);
-        console.log('AI result:', aiResult);
         if (aiResult) {
           setAiInsights(aiResult);
         }
       } catch (error) {
         console.error('Failed to fetch AI insights:', error);
-        // Fall back to rule-based insights
       } finally {
         setLoading(false);
       }
@@ -163,26 +175,6 @@ const AIInsights = ({ data }) => {
                        (insights.risks?.length || 0) + (insights.roadmap?.length || 0) +
                        (insights.quickWins?.length || 0);
 
-  const getTypeIcon = (type) => {
-    switch(type) {
-      case 'critical': return '🚨';
-      case 'warning': return '⚠️';
-      case 'info': return 'ℹ️';
-      case 'success': return '✅';
-      default: return '💡';
-    }
-  };
-
-  const getTypeBadge = (type) => {
-    const classes = {
-      critical: 'bg-red-100 text-red-800 border-red-300',
-      warning: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-      info: 'bg-blue-100 text-blue-800 border-blue-300',
-      success: 'bg-green-100 text-green-800 border-green-300'
-    };
-    return classes[type] || classes.info;
-  };
-
   const getProviderLabel = () => {
     switch(activeProvider) {
       case LLM_PROVIDERS.ANTHROPIC: return 'Claude';
@@ -192,150 +184,165 @@ const AIInsights = ({ data }) => {
     }
   };
 
-  return (
-    <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200 mb-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-2">
-          <h2 className="text-lg font-semibold text-gray-800">
-            🤖 {useAI && aiInsights ? 'AI-Generated' : 'Smart Analysis'} Insights
-          </h2>
-          <span className="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-medium">
-            {totalInsights} recommendations
-          </span>
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-            activeProvider !== LLM_PROVIDERS.NONE
-              ? 'bg-green-100 text-green-800'
-              : 'bg-gray-100 text-gray-600'
-          }`}>
-            {getProviderLabel()}
-          </span>
-        </div>
-        <div className="flex items-center space-x-2">
-          {activeProvider !== LLM_PROVIDERS.NONE && (
-            <button
-              onClick={() => setUseAI(!useAI)}
-              disabled={loading}
-              className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
-                useAI
-                  ? 'bg-purple-600 text-white hover:bg-purple-700'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
-            >
-              {loading ? 'Loading...' : useAI ? 'AI Mode' : 'Use AI'}
-            </button>
-          )}
-          <button
-            onClick={() => setExpanded(!expanded)}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
-          >
-            <svg
-              className={`w-5 h-5 transition-transform ${expanded ? 'rotate-180' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
+  const InsightCard = ({ insight }) => (
+    <div style={{
+      marginBottom: '12px',
+      padding: '16px',
+      backgroundColor: '#ffffff',
+      border: '1px solid #d2d2d2',
+      borderRadius: '4px',
+      borderLeft: `4px solid ${insight.type === 'critical' ? '#c9190b' : insight.type === 'warning' ? '#f0ab00' : insight.type === 'success' ? '#3e8635' : '#0066cc'}`
+    }}>
+      <div style={{ fontWeight: '600', marginBottom: '8px', fontSize: '0.9375rem' }}>
+        {insight.title}
+      </div>
+      <div style={{ fontSize: '0.875rem', color: '#6a6e73', lineHeight: '1.5' }}>
+        {insight.description}
+      </div>
+    </div>
+  );
+
+  const RoadmapCard = ({ insight }) => (
+    <div style={{
+      marginBottom: '12px',
+      padding: '16px',
+      backgroundColor: '#ffffff',
+      border: '1px solid #d2d2d2',
+      borderRadius: '4px',
+      borderLeft: '4px solid #0066cc'
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+        <Label color="blue" isCompact>
+          Phase {insight.phase}
+        </Label>
+        <div style={{ fontWeight: '600', fontSize: '0.9375rem' }}>
+          {insight.title}
         </div>
       </div>
+      <div style={{ fontSize: '0.875rem', color: '#6a6e73', lineHeight: '1.5' }}>
+        {insight.description}
+      </div>
+    </div>
+  );
 
-      {expanded && (
-        <div className="space-y-4">
+  return (
+    <Card isExpanded={expanded}>
+      <CardTitle>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Title headingLevel="h2" size="lg">
+              <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <BrainIcon />
+                <span>{useAI && aiInsights ? 'AI-Generated' : 'Smart Analysis'} Insights</span>
+              </span>
+            </Title>
+            <Label color="purple" isCompact>
+              {totalInsights} recommendations
+            </Label>
+            <Label color={activeProvider !== LLM_PROVIDERS.NONE ? 'green' : 'grey'} isCompact>
+              {getProviderLabel()}
+            </Label>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {activeProvider !== LLM_PROVIDERS.NONE && (
+              <Button
+                variant={useAI ? 'primary' : 'secondary'}
+                onClick={() => setUseAI(!useAI)}
+                isDisabled={loading}
+                isSmall
+              >
+                {loading ? <Spinner size="sm" /> : null}
+                {loading ? ' Loading...' : useAI ? 'AI Mode' : 'Use AI'}
+              </Button>
+            )}
+            <Button
+              variant="plain"
+              onClick={() => setExpanded(!expanded)}
+              icon={expanded ? <AngleUpIcon /> : <AngleDownIcon />}
+              aria-label={expanded ? 'Collapse' : 'Expand'}
+            />
+          </div>
+        </div>
+      </CardTitle>
+      <CardExpandableContent>
+        <CardBody>
           {/* Priority Recommendations */}
-          {insights.priority.length > 0 && (
-            <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">🎯 Priority Actions</h3>
+          {insights.priority && insights.priority.length > 0 && (
+            <div style={{ marginBottom: '24px' }}>
+              <Title headingLevel="h3" size="md" style={{ marginBottom: '12px', paddingBottom: '8px', borderBottom: '2px solid #f0f0f0' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <BullseyeIcon />
+                  <span>Priority Actions</span>
+                </span>
+              </Title>
               {insights.priority.map((insight, idx) => (
-                <div key={idx} className={`p-3 rounded-lg border ${getTypeBadge(insight.type)} mb-2`}>
-                  <div className="flex items-start space-x-2">
-                    <span className="text-lg">{getTypeIcon(insight.type)}</span>
-                    <div className="flex-1">
-                      <h4 className="font-medium">{insight.title}</h4>
-                      <p className="text-sm mt-1 opacity-90">{insight.description}</p>
-                    </div>
-                  </div>
-                </div>
+                <InsightCard key={idx} insight={insight} />
               ))}
             </div>
           )}
 
           {/* Pattern Detection */}
-          {insights.patterns.length > 0 && (
-            <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">🔍 Patterns Detected</h3>
+          {insights.patterns && insights.patterns.length > 0 && (
+            <div style={{ marginBottom: '24px' }}>
+              <Title headingLevel="h3" size="md" style={{ marginBottom: '12px', paddingBottom: '8px', borderBottom: '2px solid #f0f0f0' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <SearchIcon />
+                  <span>Patterns Detected</span>
+                </span>
+              </Title>
               {insights.patterns.map((insight, idx) => (
-                <div key={idx} className={`p-3 rounded-lg border ${getTypeBadge(insight.type)} mb-2`}>
-                  <div className="flex items-start space-x-2">
-                    <span className="text-lg">{getTypeIcon(insight.type)}</span>
-                    <div className="flex-1">
-                      <h4 className="font-medium">{insight.title}</h4>
-                      <p className="text-sm mt-1 opacity-90">{insight.description}</p>
-                    </div>
-                  </div>
-                </div>
+                <InsightCard key={idx} insight={insight} />
               ))}
             </div>
           )}
 
           {/* Risk Assessment */}
-          {insights.risks.length > 0 && (
-            <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">⚠️ Risk Assessment</h3>
+          {insights.risks && insights.risks.length > 0 && (
+            <div style={{ marginBottom: '24px' }}>
+              <Title headingLevel="h3" size="md" style={{ marginBottom: '12px', paddingBottom: '8px', borderBottom: '2px solid #f0f0f0' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <ExclamationTriangleIcon />
+                  <span>Risk Assessment</span>
+                </span>
+              </Title>
               {insights.risks.map((insight, idx) => (
-                <div key={idx} className={`p-3 rounded-lg border ${getTypeBadge(insight.type)} mb-2`}>
-                  <div className="flex items-start space-x-2">
-                    <span className="text-lg">{getTypeIcon(insight.type)}</span>
-                    <div className="flex-1">
-                      <h4 className="font-medium">{insight.title}</h4>
-                      <p className="text-sm mt-1 opacity-90">{insight.description}</p>
-                    </div>
-                  </div>
-                </div>
+                <InsightCard key={idx} insight={insight} />
               ))}
             </div>
           )}
 
           {/* Migration Roadmap */}
-          {insights.roadmap.length > 0 && (
-            <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">🗺️ Suggested Migration Roadmap</h3>
+          {insights.roadmap && insights.roadmap.length > 0 && (
+            <div style={{ marginBottom: '24px' }}>
+              <Title headingLevel="h3" size="md" style={{ marginBottom: '12px', paddingBottom: '8px', borderBottom: '2px solid #f0f0f0' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <MapIcon />
+                  <span>Suggested Migration Roadmap</span>
+                </span>
+              </Title>
               {insights.roadmap.map((insight, idx) => (
-                <div key={idx} className="p-3 rounded-lg border border-blue-300 bg-blue-50 mb-2">
-                  <div className="flex items-start space-x-2">
-                    <span className="px-2 py-1 bg-blue-600 text-white rounded text-xs font-bold">
-                      Phase {insight.phase}
-                    </span>
-                    <div className="flex-1">
-                      <h4 className="font-medium text-blue-900">{insight.title}</h4>
-                      <p className="text-sm mt-1 text-blue-800">{insight.description}</p>
-                    </div>
-                  </div>
-                </div>
+                <RoadmapCard key={idx} insight={insight} />
               ))}
             </div>
           )}
 
-          {/* Quick Wins (rule-based only) */}
+          {/* Quick Wins */}
           {insights.quickWins && insights.quickWins.length > 0 && (
-            <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">⚡ Quick Wins</h3>
+            <div style={{ marginBottom: '24px' }}>
+              <Title headingLevel="h3" size="md" style={{ marginBottom: '12px', paddingBottom: '8px', borderBottom: '2px solid #f0f0f0' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <BoltIcon />
+                  <span>Quick Wins</span>
+                </span>
+              </Title>
               {insights.quickWins.map((insight, idx) => (
-                <div key={idx} className={`p-3 rounded-lg border ${getTypeBadge(insight.type)} mb-2`}>
-                  <div className="flex items-start space-x-2">
-                    <span className="text-lg">{getTypeIcon(insight.type)}</span>
-                    <div className="flex-1">
-                      <h4 className="font-medium">{insight.title}</h4>
-                      <p className="text-sm mt-1 opacity-90">{insight.description}</p>
-                    </div>
-                  </div>
-                </div>
+                <InsightCard key={idx} insight={insight} />
               ))}
             </div>
           )}
-        </div>
-      )}
-    </div>
+        </CardBody>
+      </CardExpandableContent>
+    </Card>
   );
 };
 

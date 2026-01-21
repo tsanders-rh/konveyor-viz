@@ -1,25 +1,28 @@
+import {
+  Grid,
+  GridItem,
+  Card,
+  CardTitle,
+  CardBody,
+  Title
+} from '@patternfly/react-core';
+
 const TechnologyStack = ({ technologies }) => {
   const statusConfig = {
     eol: {
       emoji: '🔴',
-      label: 'EOL',
-      bgColor: 'bg-red-50',
-      borderColor: 'border-red-200',
-      textColor: 'text-red-800',
+      label: 'End of Life',
+      color: 'red',
     },
     outdated: {
       emoji: '🟡',
       label: 'Outdated',
-      bgColor: 'bg-yellow-50',
-      borderColor: 'border-yellow-200',
-      textColor: 'text-yellow-800',
+      color: 'orange',
     },
     current: {
       emoji: '🟢',
       label: 'Current',
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200',
-      textColor: 'text-green-800',
+      color: 'green',
     },
   };
 
@@ -37,42 +40,61 @@ const TechnologyStack = ({ technologies }) => {
   });
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-      <h2 className="text-lg font-semibold mb-4 text-gray-800">
-        Technology Stack Status
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {Object.entries(statusConfig).map(([status, config]) => (
-          <div key={status}>
-            <div
-              className={`${config.bgColor} ${config.borderColor} border-2 rounded-lg p-4`}
-            >
-              <div className="flex items-center mb-3">
-                <span className="text-xl mr-2">{config.emoji}</span>
-                <span className={`font-semibold ${config.textColor}`}>
-                  {config.label}
-                </span>
-              </div>
-              <div className="space-y-2">
-                {techByStatus[status].length > 0 ? (
-                  techByStatus[status].map((tech, idx) => (
-                    <div
-                      key={idx}
-                      className="text-sm bg-white rounded px-2 py-1 border border-gray-200"
-                    >
-                      <div className="font-medium text-gray-900">{tech.name}</div>
-                      <div className="text-xs text-gray-500">{tech.component}</div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="text-sm text-gray-500 italic">None</div>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+    <Card>
+      <CardTitle>
+        <Title headingLevel="h2" size="lg">
+          Technology Stack Status
+        </Title>
+      </CardTitle>
+      <CardBody>
+        <Grid hasGutter>
+          {Object.entries(statusConfig).map(([status, config]) => (
+            <GridItem key={status} md={4}>
+              <Card isCompact>
+                <CardTitle>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '1.25rem' }}>{config.emoji}</span>
+                    <span>{config.label}</span>
+                  </div>
+                </CardTitle>
+                <CardBody>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {techByStatus[status].length > 0 ? (
+                      techByStatus[status].map((tech, idx) => (
+                        <Card key={idx} isFlat isCompact>
+                          <CardBody>
+                            <div style={{
+                              fontSize: '0.875rem',
+                              fontWeight: '600'
+                            }}>
+                              {tech.name}
+                            </div>
+                            <div style={{
+                              fontSize: '0.75rem',
+                              color: '#6a6e73'
+                            }}>
+                              {tech.component}
+                            </div>
+                          </CardBody>
+                        </Card>
+                      ))
+                    ) : (
+                      <div style={{
+                        fontSize: '0.875rem',
+                        color: '#6a6e73',
+                        fontStyle: 'italic'
+                      }}>
+                        None
+                      </div>
+                    )}
+                  </div>
+                </CardBody>
+              </Card>
+            </GridItem>
+          ))}
+        </Grid>
+      </CardBody>
+    </Card>
   );
 };
 
