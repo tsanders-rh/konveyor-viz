@@ -12,6 +12,9 @@ This tool addresses the challenge of digesting lengthy Konveyor analysis reports
 - **Issue Dashboard**: Visual metrics and breakdowns of issues by type and severity
 - **Component Details**: Detailed view of each component with issue lists and technology stack
 - **Technology Status**: At-a-glance view of technology stack health (EOL/Outdated/Current)
+- **AI-Powered Microservices Decomposition**: Intelligent analysis of monolithic applications with recommendations for breaking them into microservices
+- **Business Logic Extraction**: Reverse-engineering of business capabilities from legacy code for teams with zero domain knowledge
+- **Spec-Kit Export**: Downloadable specifications for each proposed microservice, ready to use with AI coding agents (Claude Code, Cursor, Copilot, etc.)
 
 ## Features
 
@@ -39,6 +42,37 @@ This tool addresses the challenge of digesting lengthy Konveyor analysis reports
 - Visual indicators (🔴 🟡 🟢) for quick assessment
 - Shows which components use each technology
 
+### 5. AI-Powered Microservices Decomposition
+- **Intelligent Service Boundaries**: AI analyzes component relationships to identify natural bounded contexts
+- **Business Logic Discovery**: Extracts business capabilities from legacy code (operations, entities, rules, workflows)
+- **Architecture Patterns**: Recommends proven patterns (Circuit Breaker, Saga, API Gateway, Outbox, etc.)
+- **Tiered Architecture Diagram**: Visual representation of proposed microservices organized by tier (Gateway → API → Worker → Data-Service)
+- **Migration Strategy**: Phased approach using Strangler Fig pattern with specific services per phase
+- **Kubernetes Best Practices**: Deployment recommendations, resource configurations, scaling strategies
+- **Data Management**: Database-per-service strategy with CDC and event-driven architecture
+- **Critical for Zero-Knowledge Teams**: Designed for teams migrating legacy apps without domain expertise
+
+### 6. Spec-Kit Export for AI-Driven Implementation
+Export executable specifications following the [GitHub Spec-Kit](https://github.com/github/spec-kit) format:
+
+**Individual Service Export**: Click "Spec-Kit" button on any microservice card
+**Bulk Export**: "Download All Spec-Kits" downloads specifications for all services
+
+Each export includes:
+- **constitution.md**: Development principles, architecture patterns, testing standards, K8s deployment rules
+- **spec.md**: Business capabilities, operations, entities, rules, migration compliance requirements with Konveyor violations
+- **plan.md**: Technical implementation plan, architecture patterns, technical debt assessment with effort breakdown
+- **tasks.md**: Phased task breakdown with actionable items per Konveyor rule violation
+
+**Konveyor Integration**: Each specification includes:
+- Specific rule violations mapped to the service (e.g., `hibernate-00005`, `cdi-to-quarkus-00030`)
+- Exact file locations and line numbers
+- Effort estimates (story points) per violation
+- Detailed remediation guidance
+- Total technical debt by component
+
+**Ready for AI Agents**: Works with Claude Code, Cursor, GitHub Copilot, Windsurf, and other AI coding assistants
+
 ## Tech Stack
 
 - **React** - UI framework
@@ -47,6 +81,8 @@ This tool addresses the challenge of digesting lengthy Konveyor analysis reports
 - **React Force Graph** - Network graph visualization
 - **Recharts** - Charts and metrics
 - **Tailwind CSS** - Styling
+- **JSZip** - ZIP file generation for Spec-Kit export
+- **Express** - Backend proxy for LLM API calls
 
 ## Getting Started
 
@@ -65,8 +101,11 @@ cd konveyor-viz
 # Install dependencies
 npm install
 
-# Run development server
+# Run development server (frontend)
 npm run dev
+
+# Run backend server (for AI features) in a separate terminal
+npm run server
 
 # Build for production
 npm run build
@@ -74,11 +113,19 @@ npm run build
 
 ### Development
 
-The development server will start at `http://localhost:5173`
+The application has two parts:
 
+1. **Frontend**: Development server at `http://localhost:5173`
 ```bash
 npm run dev
 ```
+
+2. **Backend** (for AI features): Server at `http://localhost:3001`
+```bash
+npm run server
+```
+
+Run both in separate terminals for full functionality.
 
 ### Building
 
@@ -95,25 +142,38 @@ konveyor-viz/
 ├── src/
 │   ├── components/
 │   │   ├── Dashboard/
-│   │   │   ├── Dashboard.jsx          # Main container
-│   │   │   ├── MetricsOverview.jsx    # Metrics cards
-│   │   │   └── TechnologyStack.jsx    # Tech status grid
+│   │   │   ├── Dashboard.jsx                    # Main container
+│   │   │   ├── MetricsOverview.jsx              # Metrics cards
+│   │   │   ├── AIInsights.jsx                   # AI-powered recommendations
+│   │   │   └── TechnologyStack.jsx              # Tech status grid
 │   │   ├── Visualizations/
-│   │   │   ├── ArchitectureGraph.jsx  # Force-directed graph
-│   │   │   └── IssueBreakdown.jsx     # Bar chart
+│   │   │   ├── ArchitectureGraph.jsx            # Force-directed graph
+│   │   │   ├── IssueBreakdown.jsx               # Bar chart
+│   │   │   ├── MicroservicesDecomposition.jsx   # AI microservices strategy
+│   │   │   ├── MicroservicesTierDiagram.jsx     # D3 tier visualization
+│   │   │   ├── BusinessLogicDocumentation.jsx   # Business logic extraction
+│   │   │   └── SpecKitExportButton.jsx          # Spec-Kit download button
 │   │   ├── DetailPanel/
-│   │   │   ├── ComponentDetail.jsx    # Slide-in panel
-│   │   │   └── IssueList.jsx          # Issue list
+│   │   │   ├── ComponentDetail.jsx              # Slide-in panel
+│   │   │   └── IssueList.jsx                    # Issue list
 │   │   └── Layout/
-│   │       └── Header.jsx             # App header
+│   │       └── Header.jsx                       # App header
 │   ├── data/
-│   │   └── sampleData.json            # Mock Konveyor report
+│   │   └── sampleData.json                      # Mock Konveyor report
+│   ├── services/
+│   │   └── llmService.js                        # LLM API integration
+│   ├── config/
+│   │   └── llmConfig.js                         # LLM provider configuration
 │   ├── utils/
-│   │   ├── colorUtils.js              # Severity colors
-│   │   └── dataParser.js              # Data transformations
+│   │   ├── colorUtils.js                        # Severity colors
+│   │   ├── dataParser.js                        # Data transformations
+│   │   ├── specKitGenerator.js                  # Spec-Kit file generation
+│   │   └── downloadUtils.js                     # ZIP creation and download
 │   ├── App.jsx
 │   └── main.jsx
+├── server.js                                    # Express backend for LLM calls
 ├── package.json
+├── .env.example                                 # Environment template
 └── README.md
 ```
 
@@ -149,7 +209,9 @@ The tool expects Konveyor analysis reports in JSON format with the following str
           "type": "Security|Configuration|etc",
           "severity": "critical|warning|info",
           "description": "Issue description",
-          "location": "file.java:123"
+          "location": "file.java:123",
+          "effort": 3,
+          "ruleId": "hibernate-00005"
         }
       ],
       "dependencies": ["other-component-id"]
@@ -190,6 +252,42 @@ The application loads sample data automatically from `src/data/sampleData.json`.
   - Warnings: Yellow (#ffd93d)
   - Info: Gray (#6c757d)
   - Good: Green (#95e1d3)
+
+### Using Microservices Decomposition
+
+1. **Configure AI Provider**: Set up API key in `.env` file (Anthropic, OpenAI, or Ollama)
+2. **Navigate to Decomposition Tab**: Click "Microservices Decomposition" in the dashboard
+3. **Generate Strategy**: Click "Generate Microservices Strategy" button
+4. **Review Results**:
+   - **Strategy Overview**: High-level summary of the recommended approach
+   - **Discovered Business Logic**: Reverse-engineered business capabilities from code
+   - **Proposed Architecture**: Interactive tier diagram showing service relationships
+   - **Proposed Microservices**: Detailed cards for each service with responsibilities and patterns
+   - **Migration Strategy**: Phased rollout plan with Strangler Fig pattern
+   - **Kubernetes Recommendations**: Deployment best practices
+   - **Data Management Strategy**: Database and event-driven architecture guidance
+
+5. **Export Spec-Kits**:
+   - **Individual Service**: Click "Spec-Kit" button on any microservice card
+   - **All Services**: Click "Download All Spec-Kits" button at the bottom
+   - Each export contains 4 markdown files + README ready for AI coding agents
+
+### Using Spec-Kit Files with AI Agents
+
+After exporting Spec-Kit files:
+
+1. **Extract the ZIP** to your workspace
+2. **Review the specifications**:
+   - `constitution.md`: Understand the principles and patterns
+   - `spec.md`: Review business requirements and Konveyor violations to fix
+   - `plan.md`: Check technical debt and effort estimates
+   - `tasks.md`: See actionable implementation tasks
+3. **Use with your AI coding agent**:
+   - **Claude Code**: Open the folder and start implementing
+   - **Cursor**: Load specs and ask for implementation
+   - **GitHub Copilot**: Reference specs while coding
+4. **Track progress**: Check off tasks in `tasks.md` as you complete them
+5. **Fix violations**: Each Konveyor violation has specific location, effort, and fix description
 
 ## AI-Powered Insights
 
@@ -237,21 +335,36 @@ npm run dev
 
 ### What AI Provides
 
+**General Insights**:
 - Priority recommendations based on architectural impact
 - Risk assessment with nuanced understanding of issue context
 - Migration roadmap with phased approach
 - Pattern insights that go beyond simple counting
 
+**Microservices Decomposition** (click "Generate Microservices Strategy"):
+- Intelligent service boundary identification using Domain-Driven Design
+- Business logic extraction from legacy components (for zero-knowledge teams)
+- Architecture pattern recommendations (Circuit Breaker, Saga, API Gateway, etc.)
+- Phased migration strategy with Strangler Fig pattern
+- Kubernetes deployment best practices
+- Data management strategy (Database-per-service, CDC, event-driven)
+- Downloadable Spec-Kit files for each microservice with Konveyor violations integrated
+
 ## Future Enhancements
 
 - [x] AI-generated insights and recommendations
+- [x] Microservices decomposition visualizer with tiered architecture diagram
+- [x] Business logic extraction from legacy code
+- [x] Spec-Kit export for AI-driven implementation
+- [x] Integration of Konveyor rule violations into implementation tasks
 - [ ] Upload real Konveyor report files
-- [ ] Microservices decomposition visualizer
-- [ ] Migration roadmap timeline
+- [ ] Migration roadmap timeline visualization
 - [ ] Export visualizations (PNG/PDF)
 - [ ] Integration with GitHub for code browsing
 - [ ] Search and filter functionality
 - [ ] Comparison between multiple analysis runs
+- [ ] Real-time collaboration features
+- [ ] Cost estimation for migration effort
 
 ## Contributing
 
