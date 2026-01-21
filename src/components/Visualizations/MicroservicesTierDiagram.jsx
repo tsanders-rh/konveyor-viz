@@ -26,7 +26,7 @@ const MicroservicesTierDiagram = ({ microservices }) => {
     const tierNames = Object.keys(tiers);
     const margin = { top: 40, right: 40, bottom: 40, left: 40 };
     const width = 1000 - margin.left - margin.right;
-    const height = 600 - margin.top - margin.bottom;
+    const height = 750 - margin.top - margin.bottom; // Increased from 600 to 750
     const tierHeight = height / tierNames.length;
 
     const svg = d3.select(svgRef.current)
@@ -89,7 +89,7 @@ const MicroservicesTierDiagram = ({ microservices }) => {
       services.forEach((service, index) => {
         const x = startX + index * (serviceWidth + 20);
         const serviceY = y + 50;
-        const boxHeight = tierHeight - 50; // Make boxes taller to fit text
+        const boxHeight = tierHeight - 55; // Make boxes slightly shorter
 
         // Service box
         const serviceGroup = svg.append('g')
@@ -249,7 +249,7 @@ const MicroservicesTierDiagram = ({ microservices }) => {
         services.forEach((_, index) => {
           const x = startX + index * (serviceWidth + 20);
           const serviceY = y + 50;
-          const boxHeight = tierHeight - 50; // Match box height from above
+          const boxHeight = tierHeight - 55; // Match box height from above
 
           // Connect to all services in next tier
           nextTierServices.forEach((_, nextIndex) => {

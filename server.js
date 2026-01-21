@@ -195,72 +195,99 @@ ${componentDetails.map(c =>
 DEPENDENCIES:
 ${dependencies.map(d => `${d.from} → ${d.to}`).join('\n')}
 
-Using Domain-Driven Design principles and Kubernetes best practices, provide a comprehensive microservices decomposition strategy:
+Using Domain-Driven Design principles, proven microservices patterns, and Kubernetes best practices, provide a comprehensive decomposition strategy:
 
 1. IDENTIFY BOUNDED CONTEXTS
    - Analyze component relationships and identify natural service boundaries
    - Consider business capabilities and domain models
    - Group related components into logical microservices
+   - Apply Single Responsibility Principle at service level
 
-2. PROPOSE MICROSERVICES (4-7 services)
+2. PROPOSE MICROSERVICES (4-7 services) - APPLY PATTERNS IN DESIGN
    - Name each microservice clearly (e.g., "User Management Service", "Product Catalog Service")
    - Assign a type (api, worker, gateway, data-service)
    - List which components belong to each microservice
    - Define 3-5 key responsibilities for each service
+   - Specify which architecture patterns this service implements (e.g., "Uses Circuit Breaker for resilience", "Implements Saga for transactions")
+   - Include specific pattern application (e.g., "API Gateway routes to this service", "Publishes events via Outbox pattern")
    - Ensure services are loosely coupled and highly cohesive
 
-3. MIGRATION STRATEGY (3-5 phases)
-   - Use strangler fig pattern - incrementally replace monolith
-   - Start with stateless, leaf services
+3. MIGRATION STRATEGY (3-5 phases using proven patterns)
+   - STRANGLER FIG PATTERN: Incrementally replace monolith functionality
+   - Start with stateless, leaf services (lowest risk)
+   - Use ANTI-CORRUPTION LAYER to interface with monolith during transition
    - Progress to core business logic
    - Consider data migration complexity
-   - Each phase should include specific services to migrate
+   - Each phase should include specific services to migrate and rollback strategy
 
-4. KUBERNETES RECOMMENDATIONS (3-5 items)
+4. ARCHITECTURE PATTERNS (specify which patterns to use)
+   - API GATEWAY: Single entry point, routing, authentication, rate limiting
+   - BACKEND FOR FRONTEND (BFF): UI-specific APIs if needed
+   - SERVICE MESH: For service-to-service communication (Istio/Linkerd)
+   - CIRCUIT BREAKER: Prevent cascading failures (resilience4j, Hystrix)
+   - SAGA PATTERN: Distributed transaction management (choreography vs orchestration)
+   - EVENT SOURCING & CQRS: If complex domain or audit requirements
+   - OUTBOX PATTERN: Reliable event publishing from database transactions
+
+5. DATA MANAGEMENT STRATEGY
+   - DATABASE PER SERVICE pattern for true service autonomy
+   - SHARED DATABASE during migration with database views for logical separation
+   - CHANGE DATA CAPTURE (CDC) with Debezium for data synchronization
+   - EVENT-DRIVEN ARCHITECTURE with Apache Kafka/RabbitMQ
+   - SAGA PATTERN for distributed transactions (specify choreography or orchestration)
+   - Dual-write pattern during migration, then cutover
+   - CQRS for read-heavy services with separate read models
+
+6. KUBERNETES RECOMMENDATIONS (3-5 items)
    - Deployment patterns (StatefulSet vs Deployment)
    - Service discovery and networking (ClusterIP, LoadBalancer, Ingress)
    - Configuration management (ConfigMaps, Secrets)
    - Storage (PersistentVolumeClaims for stateful services)
-   - Health checks, resource limits, and scaling policies
+   - Health checks (liveness, readiness, startup probes)
+   - Resource limits and Horizontal Pod Autoscaler (HPA)
    - Include specific implementation examples
 
-5. DATA MANAGEMENT STRATEGY
-   - Database per service vs shared database
-   - Data synchronization and eventual consistency
-   - Event-driven architecture for cross-service communication
-   - Migration approach for existing data
+IMPORTANT: Return ONLY valid JSON. No markdown, no code blocks, no explanations - just pure JSON.
 
-Return your response as JSON in this EXACT format:
+Return your response in this EXACT format:
 {
-  "overview": "Brief 2-3 sentence summary of the decomposition strategy",
+  "overview": "Brief 2-3 sentence summary including which key patterns are used",
   "microservices": [
     {
       "name": "Service Name",
       "description": "What this service does",
-      "type": "api|worker|gateway|data-service",
+      "type": "api",
       "components": ["component1", "component2"],
-      "responsibilities": ["responsibility1", "responsibility2", "responsibility3"]
+      "responsibilities": ["resp1", "resp2", "resp3"],
+      "patterns": ["Circuit Breaker for resilience", "Outbox pattern for events"],
+      "communication": "How it communicates with other services"
     }
   ],
   "migrationStrategy": [
     {
       "phase": 1,
       "title": "Phase name",
-      "description": "What happens in this phase and why",
-      "services": ["service1", "service2"]
+      "description": "What happens",
+      "services": ["service1"],
+      "patterns": ["Strangler Fig"]
     }
   ],
   "kubernetesRecommendations": [
     {
-      "title": "Recommendation title",
-      "description": "Why this is important",
-      "implementation": "Specific Kubernetes resource or pattern to use"
+      "title": "Recommendation",
+      "description": "Why important",
+      "implementation": "How to implement"
     }
   ],
-  "dataStrategy": "Comprehensive description of data management approach including database strategy, event sourcing, and migration plan"
+  "dataStrategy": "Description of data management approach"
 }
 
-Be specific and practical. Focus on actionable recommendations that follow cloud-native and Kubernetes best practices.`;
+Rules for JSON:
+- Use double quotes for all strings
+- No trailing commas
+- Escape special characters properly
+- Keep descriptions concise (under 200 chars each)
+- Return pure JSON only, no markdown formatting`;
 }
 
 // Call Anthropic API
@@ -387,15 +414,24 @@ async function callAnthropicDecomposition(data) {
   }
 
   const result = await response.json();
-  const content = result.content[0].text;
+  let content = result.content[0].text;
+
+  // Remove markdown code blocks if present
+  content = content.replace(/```json\s*/g, '').replace(/```\s*/g, '');
 
   // Extract JSON from response
   const jsonMatch = content.match(/\{[\s\S]*\}/);
   if (jsonMatch) {
-    return JSON.parse(jsonMatch[0]);
+    try {
+      return JSON.parse(jsonMatch[0]);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError.message);
+      console.error('Raw content sample:', jsonMatch[0].substring(0, 500));
+      throw new Error(`Invalid JSON from AI: ${parseError.message}`);
+    }
   }
 
-  throw new Error('Failed to parse Anthropic response');
+  throw new Error('Failed to find JSON in Anthropic response');
 }
 
 // Call OpenAI API for decomposition

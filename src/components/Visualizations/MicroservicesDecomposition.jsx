@@ -127,13 +127,33 @@ const MicroservicesDecomposition = ({ data }) => {
                     )}
 
                     {service.responsibilities && service.responsibilities.length > 0 && (
-                      <div>
+                      <div className="mb-3">
                         <p className="text-xs font-medium text-gray-500 mb-1">Responsibilities:</p>
                         <ul className="text-xs text-gray-600 space-y-1">
                           {service.responsibilities.slice(0, 3).map((resp, i) => (
                             <li key={i}>• {resp}</li>
                           ))}
                         </ul>
+                      </div>
+                    )}
+
+                    {service.patterns && service.patterns.length > 0 && (
+                      <div className="mb-2">
+                        <p className="text-xs font-medium text-gray-500 mb-1">Patterns Applied:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {service.patterns.map((pattern, i) => (
+                            <span key={i} className="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded border border-indigo-200">
+                              🏛️ {pattern}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {service.communication && (
+                      <div>
+                        <p className="text-xs font-medium text-gray-500 mb-1">Communication:</p>
+                        <p className="text-xs text-gray-600">{service.communication}</p>
                       </div>
                     )}
                   </div>
@@ -156,13 +176,28 @@ const MicroservicesDecomposition = ({ data }) => {
                       <div className="flex-1">
                         <h4 className="font-semibold text-purple-900 mb-1">{phase.title}</h4>
                         <p className="text-sm text-purple-800">{phase.description}</p>
+                        {phase.patterns && phase.patterns.length > 0 && (
+                          <div className="mt-2 mb-2">
+                            <p className="text-xs font-medium text-purple-700 mb-1">Patterns:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {phase.patterns.map((pattern, i) => (
+                                <span key={i} className="px-2 py-1 bg-indigo-100 text-indigo-800 text-xs rounded border border-indigo-300">
+                                  📐 {pattern}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                         {phase.services && phase.services.length > 0 && (
-                          <div className="mt-2 flex flex-wrap gap-1">
-                            {phase.services.map((svc, i) => (
-                              <span key={i} className="px-2 py-1 bg-purple-200 text-purple-900 text-xs rounded">
-                                {svc}
-                              </span>
-                            ))}
+                          <div className="mt-2">
+                            <p className="text-xs font-medium text-purple-700 mb-1">Services:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {phase.services.map((svc, i) => (
+                                <span key={i} className="px-2 py-1 bg-purple-200 text-purple-900 text-xs rounded">
+                                  {svc}
+                                </span>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>
@@ -196,8 +231,18 @@ const MicroservicesDecomposition = ({ data }) => {
           {/* Data Considerations */}
           {decomposition.dataStrategy && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-yellow-900 mb-3">💾 Data Management Strategy</h3>
-              <p className="text-yellow-800">{decomposition.dataStrategy}</p>
+              <h3 className="text-lg font-semibold text-yellow-900 mb-4">💾 Data Management Strategy</h3>
+              <div className="text-yellow-800 text-sm leading-relaxed space-y-3">
+                {decomposition.dataStrategy.split('. ').map((sentence, idx) => {
+                  if (!sentence.trim()) return null;
+                  const text = sentence.trim() + (sentence.endsWith('.') ? '' : '.');
+                  return (
+                    <p key={idx} className="pl-4 border-l-2 border-yellow-300">
+                      {text}
+                    </p>
+                  );
+                })}
+              </div>
             </div>
           )}
 
