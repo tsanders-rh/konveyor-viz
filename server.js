@@ -1,6 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
+import { transformKantraReport } from './src/utils/kantraTransformer.js';
 
 dotenv.config();
 
@@ -85,6 +88,93 @@ app.post('/api/decomposition', async (req, res) => {
   } catch (error) {
     console.error('Error generating decomposition:', error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Load kantra report from directory
+app.post('/api/load-kantra', async (req, res) => {
+  try {
+    const { directoryPath } = req.body;
+
+    if (!directoryPath) {
+      return res.status(400).json({ error: 'Directory path is required' });
+    }
+
+    // Security: Validate path to prevent directory traversal attacks
+    const normalizedPath = path.normalize(directoryPath);
+    if (normalizedPath.includes('..')) {
+      return res.status(400).json({ error: 'Invalid directory path: path traversal not allowed' });
+    }
+
+    // Check if directory exists
+    if (!fs.existsSync(normalizedPath)) {
+      return res.status(404).json({ error: `Directory not found: ${directoryPath}` });
+    }
+
+    // Check if it's a directory
+    const stats = fs.statSync(normalizedPath);
+    if (!stats.isDirectory()) {
+      return res.status(400).json({ error: `Path is not a directory: ${directoryPath}` });
+    }
+
+    // Look for output.yaml or output.yml
+    const outputYamlPath = path.join(normalizedPath, 'output.yaml');
+    const outputYmlPath = path.join(normalizedPath, 'output.yml');
+
+    let yamlPath;
+    if (fs.existsSync(outputYamlPath)) {
+      yamlPath = outputYamlPath;
+    } else if (fs.existsSync(outputYmlPath)) {
+      yamlPath = outputYmlPath;
+    } else {
+      return res.status(404).json({
+        error: 'output.yaml not found in directory',
+        hint: 'Make sure this is a valid kantra output directory containing output.yaml'
+      });
+    }
+
+    // Check file size (limit to 50MB to prevent memory issues)
+    const fileStats = fs.statSync(yamlPath);
+    const fileSizeMB = fileStats.size / (1024 * 1024);
+    if (fileSizeMB > 50) {
+      return res.status(413).json({
+        error: `File too large: ${fileSizeMB.toFixed(1)}MB (max 50MB)`,
+        hint: 'Try analyzing a smaller portion of your codebase'
+      });
+    }
+
+    console.log(`Loading kantra report from: ${yamlPath} (${fileSizeMB.toFixed(1)}MB)`);
+
+    // Read and parse the YAML file
+    const yamlContent = fs.readFileSync(yamlPath, 'utf8');
+
+    // Extract application name from directory name
+    const applicationName = path.basename(normalizedPath) || 'Konveyor Analysis';
+
+    // Transform to visualization format
+    const transformedData = transformKantraReport(yamlContent, {
+      applicationName: `${applicationName} (Konveyor Analysis)`,
+      analysisDate: new Date().toISOString().split('T')[0]
+    });
+
+    console.log(`Successfully loaded report: ${transformedData.summary.totalComponents} components, ${transformedData.summary.totalIssues} issues`);
+
+    res.json(transformedData);
+  } catch (error) {
+    console.error('Error loading kantra report:', error);
+
+    // Provide more helpful error messages
+    if (error.message.includes('Failed to parse YAML')) {
+      return res.status(400).json({
+        error: 'Invalid YAML format',
+        details: error.message
+      });
+    }
+
+    res.status(500).json({
+      error: 'Failed to load kantra report',
+      details: error.message
+    });
   }
 });
 

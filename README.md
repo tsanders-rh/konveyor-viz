@@ -80,6 +80,84 @@ Each export includes:
 
 **Ready for AI Agents**: Works with Claude Code, Cursor, GitHub Copilot, Windsurf, and other AI coding assistants
 
+## Loading Kantra Reports
+
+The visualization tool supports loading your own Konveyor (kantra) analysis reports in addition to the sample data. There are two methods available:
+
+### Method 1: Load from Directory Path (Server-Side)
+
+Best for local development with access to the filesystem.
+
+1. **Run kantra analysis** on your application:
+   ```bash
+   kantra analyze --input /path/to/your/app --output /path/to/output
+   ```
+
+2. **Start the backend server** (if not already running):
+   ```bash
+   npm run server
+   ```
+
+3. **Load the report in the UI**:
+   - Click the "Load Report" button in the masthead (top-right)
+   - Enter the absolute path to your kantra output directory
+   - Click "Load" to parse and visualize
+
+**Example paths:**
+- macOS/Linux: `/Users/username/kantra-output` or `~/kantra-analysis/output`
+- Windows: `C:\Users\username\kantra-output`
+
+### Method 2: Upload Directory (Browser-Based)
+
+Works anywhere without requiring backend server access.
+
+1. **Run kantra analysis** (same as above)
+
+2. **Load the report in the UI**:
+   - Click the "Load Report" button in the masthead
+   - Click "Browse Directory"
+   - Select your kantra output directory in the file picker
+   - The report will be parsed in the browser
+
+**Note:** Large reports (>100MB) may perform better with Method 1.
+
+### Expected Directory Structure
+
+Your kantra output directory should contain:
+
+```
+kantra-output/
+├── output.yaml       (required - main analysis file)
+├── analysis.log      (optional - execution log)
+└── static-report/    (optional - HTML report, not used by this tool)
+```
+
+### Switching Between Reports
+
+- The masthead shows which data source is active: "Sample Data" or "Custom Report"
+- Load a new report at any time using the "Load Report" button
+- Refresh the page to return to sample data
+
+### Troubleshooting
+
+**"output.yaml not found"**
+- Ensure you're selecting the correct directory containing `output.yaml`
+- Kantra outputs to the specified `--output` directory
+
+**"Cannot connect to backend server"**
+- Start the backend: `npm run server`
+- Or use Method 2 (Browser Upload) instead
+
+**"File too large"**
+- Server-side limit: 50MB
+- Browser limit: 100MB
+- Consider analyzing a smaller codebase or using filters with kantra
+
+**"Invalid YAML format"**
+- Ensure the file is a valid kantra output
+- Try re-running kantra analysis
+- Check for file corruption
+
 ## Tech Stack
 
 - **React 19** - UI framework
