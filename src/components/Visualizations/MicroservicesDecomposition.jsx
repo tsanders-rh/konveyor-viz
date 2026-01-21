@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
   Card,
   CardTitle,
@@ -26,10 +25,15 @@ import JSZip from 'jszip';
 import { generateAllSpecKitFiles } from '../../utils/specKitGenerator';
 import { sanitizeFilename, downloadZip } from '../../utils/downloadUtils';
 
-const MicroservicesDecomposition = ({ data }) => {
-  const [decomposition, setDecomposition] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+const MicroservicesDecomposition = ({
+  data,
+  decomposition,
+  setDecomposition,
+  loading,
+  setLoading,
+  error,
+  setError
+}) => {
   const activeProvider = getActiveProvider();
 
   const generateDecomposition = async () => {

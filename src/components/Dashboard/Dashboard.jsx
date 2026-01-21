@@ -24,6 +24,11 @@ import {
 const Dashboard = ({ data, activeView }) => {
   const [selectedComponent, setSelectedComponent] = useState(null);
 
+  // Microservices decomposition state (persists across navigation)
+  const [decomposition, setDecomposition] = useState(null);
+  const [decompositionLoading, setDecompositionLoading] = useState(false);
+  const [decompositionError, setDecompositionError] = useState(null);
+
   // Parse and calculate data for visualizations
   const graphData = parseGraphData(data);
   const metrics = calculateMetrics(data);
@@ -103,7 +108,15 @@ const Dashboard = ({ data, activeView }) => {
             <Title headingLevel="h1" size="2xl">Microservices Decomposition</Title>
           </PageSection>
           <PageSection>
-            <MicroservicesDecomposition data={data} />
+            <MicroservicesDecomposition
+              data={data}
+              decomposition={decomposition}
+              setDecomposition={setDecomposition}
+              loading={decompositionLoading}
+              setLoading={setDecompositionLoading}
+              error={decompositionError}
+              setError={setDecompositionError}
+            />
           </PageSection>
         </>
       )}
