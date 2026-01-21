@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
+import { Card, CardTitle, CardBody, Title } from '@patternfly/react-core';
 
 const MicroservicesTierDiagram = ({ microservices }) => {
   const svgRef = useRef();
@@ -283,30 +284,36 @@ const MicroservicesTierDiagram = ({ microservices }) => {
   }
 
   return (
-    <div className="mt-6 bg-white rounded-lg border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">🏗️ Proposed Architecture</h3>
-      <div className="overflow-x-auto">
-        <svg ref={svgRef} className="mx-auto"></svg>
-      </div>
-      <div className="mt-4 flex flex-wrap gap-4 justify-center text-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-purple-600 rounded"></div>
-          <span className="text-gray-600">Gateway</span>
+    <Card style={{ marginTop: 'var(--pf-v5-global--spacer--lg)' }}>
+      <CardTitle>
+        <Title headingLevel="h3" size="lg">
+          🏗️ Proposed Architecture
+        </Title>
+      </CardTitle>
+      <CardBody>
+        <div style={{ overflowX: 'auto' }}>
+          <svg ref={svgRef} style={{ margin: '0 auto', display: 'block' }}></svg>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-blue-600 rounded"></div>
-          <span className="text-gray-600">API Service</span>
+        <div style={{ marginTop: 'var(--pf-v5-global--spacer--md)', display: 'flex', flexWrap: 'wrap', gap: 'var(--pf-v5-global--spacer--md)', justifyContent: 'center', fontSize: 'var(--pf-v5-global--FontSize--sm)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--xs)' }}>
+            <div style={{ width: '16px', height: '16px', backgroundColor: '#8b5cf6', borderRadius: 'var(--pf-v5-global--BorderRadius--sm)' }}></div>
+            <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>Gateway</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--xs)' }}>
+            <div style={{ width: '16px', height: '16px', backgroundColor: '#3b82f6', borderRadius: 'var(--pf-v5-global--BorderRadius--sm)' }}></div>
+            <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>API Service</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--xs)' }}>
+            <div style={{ width: '16px', height: '16px', backgroundColor: '#10b981', borderRadius: 'var(--pf-v5-global--BorderRadius--sm)' }}></div>
+            <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>Worker</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--xs)' }}>
+            <div style={{ width: '16px', height: '16px', backgroundColor: '#f59e0b', borderRadius: 'var(--pf-v5-global--BorderRadius--sm)' }}></div>
+            <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>Data Service</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-green-600 rounded"></div>
-          <span className="text-gray-600">Worker</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-orange-600 rounded"></div>
-          <span className="text-gray-600">Data Service</span>
-        </div>
-      </div>
-    </div>
+      </CardBody>
+    </Card>
   );
 };
 

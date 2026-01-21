@@ -1,4 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Card, CardTitle, CardBody, Title } from '@patternfly/react-core';
 
 const IssueBreakdown = ({ issuesByType }) => {
   // Transform data for recharts
@@ -8,9 +9,14 @@ const IssueBreakdown = ({ issuesByType }) => {
   }));
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
-      <h2 className="text-lg font-semibold mb-4 text-gray-800">Issues by Type</h2>
-      <ResponsiveContainer width="100%" height={300}>
+    <Card>
+      <CardTitle>
+        <Title headingLevel="h2" size="lg">
+          Issues by Type
+        </Title>
+      </CardTitle>
+      <CardBody>
+        <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
@@ -31,8 +37,9 @@ const IssueBreakdown = ({ issuesByType }) => {
           <Legend />
           <Bar dataKey="count" fill="#3b82f6" name="Issues" radius={[8, 8, 0, 0]} />
         </BarChart>
-      </ResponsiveContainer>
-    </div>
+        </ResponsiveContainer>
+      </CardBody>
+    </Card>
   );
 };
 

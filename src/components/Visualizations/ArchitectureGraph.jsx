@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
+import { Card, CardTitle, CardBody, Title } from '@patternfly/react-core';
 import { getNodeColor } from '../../utils/colorUtils';
 
 const ArchitectureGraph = ({ data, onNodeClick }) => {
@@ -99,11 +100,14 @@ const ArchitectureGraph = ({ data, onNodeClick }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 border border-gray-200">
-      <h2 className="text-lg font-semibold mb-4 text-gray-800">
-        Application Architecture
-      </h2>
-      <div ref={containerRef} className="relative bg-gray-50 rounded">
+    <Card>
+      <CardTitle>
+        <Title headingLevel="h2" size="lg">
+          Application Architecture
+        </Title>
+      </CardTitle>
+      <CardBody>
+        <div ref={containerRef} style={{ position: 'relative', backgroundColor: 'var(--pf-v5-global--BackgroundColor--200)', borderRadius: 'var(--pf-v5-global--BorderRadius--sm)' }}>
         {data.nodes && data.nodes.length > 0 ? (
           <ForceGraph2D
             ref={fgRef}
@@ -135,64 +139,67 @@ const ArchitectureGraph = ({ data, onNodeClick }) => {
           />
         ) : (
           <div
-            className="flex items-center justify-center text-gray-500"
-            style={{ height: dimensions.height }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--pf-v5-global--Color--200)',
+              height: dimensions.height
+            }}
           >
             No graph data available
           </div>
         )}
-      </div>
-
-      {/* Legends */}
-      <div className="mt-4 flex flex-col items-center space-y-3">
-        {/* Color Legend */}
-        <div className="flex items-center space-x-6 text-sm">
-          <span className="text-gray-500 font-medium mr-2">Issue Severity:</span>
-          <div className="flex items-center">
-            <div
-              className="w-4 h-4 rounded-full mr-2"
-              style={{ backgroundColor: '#ff6b6b' }}
-            ></div>
-            <span className="text-gray-600">&gt;20 issues</span>
-          </div>
-          <div className="flex items-center">
-            <div
-              className="w-4 h-4 rounded-full mr-2"
-              style={{ backgroundColor: '#ffd93d' }}
-            ></div>
-            <span className="text-gray-600">5-20 issues</span>
-          </div>
-          <div className="flex items-center">
-            <div
-              className="w-4 h-4 rounded-full mr-2"
-              style={{ backgroundColor: '#95e1d3' }}
-            ></div>
-            <span className="text-gray-600">&lt;5 issues</span>
-          </div>
         </div>
 
-        {/* Icon Legend */}
-        <div className="flex items-center space-x-6 text-sm">
-          <span className="text-gray-500 font-medium mr-2">Component Type:</span>
-          <div className="flex items-center">
-            <span className="mr-2">🌐</span>
-            <span className="text-gray-600">Frontend</span>
+        {/* Legends */}
+        <div style={{ marginTop: 'var(--pf-v5-global--spacer--md)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--sm)' }}>
+          {/* Color Legend */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--lg)', fontSize: 'var(--pf-v5-global--FontSize--sm)' }}>
+            <span style={{ color: 'var(--pf-v5-global--Color--200)', fontWeight: 'var(--pf-v5-global--FontWeight--semi-bold)', marginRight: 'var(--pf-v5-global--spacer--xs)' }}>Issue Severity:</span>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div
+                style={{ width: '16px', height: '16px', borderRadius: '50%', marginRight: 'var(--pf-v5-global--spacer--xs)', backgroundColor: '#ff6b6b' }}
+              ></div>
+              <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>&gt;20 issues</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div
+                style={{ width: '16px', height: '16px', borderRadius: '50%', marginRight: 'var(--pf-v5-global--spacer--xs)', backgroundColor: '#ffd93d' }}
+              ></div>
+              <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>5-20 issues</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div
+                style={{ width: '16px', height: '16px', borderRadius: '50%', marginRight: 'var(--pf-v5-global--spacer--xs)', backgroundColor: '#95e1d3' }}
+              ></div>
+              <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>&lt;5 issues</span>
+            </div>
           </div>
-          <div className="flex items-center">
-            <span className="mr-2">⚙️</span>
-            <span className="text-gray-600">Backend</span>
-          </div>
-          <div className="flex items-center">
-            <span className="mr-2">🔌</span>
-            <span className="text-gray-600">Middleware</span>
-          </div>
-          <div className="flex items-center">
-            <span className="mr-2">🔧</span>
-            <span className="text-gray-600">Infrastructure</span>
+
+          {/* Icon Legend */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--pf-v5-global--spacer--lg)', fontSize: 'var(--pf-v5-global--FontSize--sm)' }}>
+            <span style={{ color: 'var(--pf-v5-global--Color--200)', fontWeight: 'var(--pf-v5-global--FontWeight--semi-bold)', marginRight: 'var(--pf-v5-global--spacer--xs)' }}>Component Type:</span>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span style={{ marginRight: 'var(--pf-v5-global--spacer--xs)' }}>🌐</span>
+              <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>Frontend</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span style={{ marginRight: 'var(--pf-v5-global--spacer--xs)' }}>⚙️</span>
+              <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>Backend</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span style={{ marginRight: 'var(--pf-v5-global--spacer--xs)' }}>🔌</span>
+              <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>Middleware</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span style={{ marginRight: 'var(--pf-v5-global--spacer--xs)' }}>🔧</span>
+              <span style={{ color: 'var(--pf-v5-global--Color--100)' }}>Infrastructure</span>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </CardBody>
+    </Card>
   );
 };
 
