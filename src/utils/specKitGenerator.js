@@ -18,6 +18,53 @@ export const filterBusinessLogicForService = (businessLogic, serviceName) => {
   return safeArray(businessLogic).filter(bl => bl.targetService === serviceName);
 };
 
+// Helper to get all violations for a service based on its components
+export const getViolationsForService = (service, data) => {
+  if (!data || !data.components || !service.components) {
+    return [];
+  }
+
+  const violations = [];
+  const serviceComponentNames = safeArray(service.components);
+
+  // Find all components that belong to this service
+  data.components.forEach(component => {
+    if (serviceComponentNames.includes(component.name)) {
+      safeArray(component.issues).forEach(issue => {
+        violations.push({
+          ...issue,
+          componentName: component.name
+        });
+      });
+    }
+  });
+
+  return violations;
+};
+
+// Helper to calculate total effort for violations
+export const calculateTotalEffort = (violations) => {
+  return violations.reduce((sum, v) => sum + (v.effort || 0), 0);
+};
+
+// Helper to group violations by severity
+export const groupViolationsBySeverity = (violations) => {
+  const groups = {
+    critical: [],
+    warning: [],
+    info: []
+  };
+
+  violations.forEach(v => {
+    const severity = v.severity || 'info';
+    if (groups[severity]) {
+      groups[severity].push(v);
+    }
+  });
+
+  return groups;
+};
+
 /**
  * Generate constitution.md - Service development principles
  */
@@ -192,6 +239,48 @@ ${safeString(service.communication)}
 ## Data Strategy
 ${safeString(decomposition.dataStrategy)}
 
+## Migration Compliance Requirements
+
+${(() => {
+  const violations = getViolationsForService(service, data);
+
+  if (violations.length === 0) {
+    return '*No specific Konveyor rule violations identified for this service.*';
+  }
+
+  const bySeverity = groupViolationsBySeverity(violations);
+  const totalEffort = calculateTotalEffort(violations);
+  const uniqueRules = [...new Set(violations.map(v => v.ruleId))].filter(Boolean);
+
+  let section = `This service must address **${violations.length} rule violations** from the Konveyor analysis (Total Effort: **${totalEffort} story points**).\n\n`;
+
+  section += `### Affected Rules\n`;
+  section += `${uniqueRules.map(ruleId => `- \`${ruleId}\``).join('\n')}\n\n`;
+
+  if (bySeverity.critical.length > 0) {
+    section += `### Critical Violations (${bySeverity.critical.length} issues, ${calculateTotalEffort(bySeverity.critical)} effort)\n\n`;
+    bySeverity.critical.forEach(v => {
+      section += `#### ${v.title}\n`;
+      section += `- **Rule**: \`${v.ruleId}\`\n`;
+      section += `- **Location**: \`${v.componentName}\` - ${v.location}\n`;
+      section += `- **Effort**: ${v.effort} story points\n`;
+      section += `- **Description**: ${safeString(v.description).split('\n')[0]}\n\n`;
+    });
+  }
+
+  if (bySeverity.warning.length > 0) {
+    section += `### Warning Violations (${bySeverity.warning.length} issues, ${calculateTotalEffort(bySeverity.warning)} effort)\n\n`;
+    section += `${bySeverity.warning.map(v => `- **[${v.ruleId}]** ${v.title} (\`${v.componentName}\` - ${v.location}, Effort: ${v.effort})`).join('\n')}\n\n`;
+  }
+
+  if (bySeverity.info.length > 0) {
+    section += `### Info Violations (${bySeverity.info.length} issues, ${calculateTotalEffort(bySeverity.info)} effort)\n\n`;
+    section += `${bySeverity.info.map(v => `- **[${v.ruleId}]** ${v.title} (Effort: ${v.effort})`).join('\n')}\n\n`;
+  }
+
+  return section;
+})()}
+
 ## Dependencies
 
 ### Internal Services
@@ -211,10 +300,13 @@ ${safeArray(decomposition.microservices)
 /**
  * Generate plan.md - Technical implementation plan
  */
-export const generatePlan = (service, businessLogic, decomposition) => {
+export const generatePlan = (service, businessLogic, decomposition, data) => {
   const relevantBusinessLogic = filterBusinessLogicForService(businessLogic, service.name);
   const migrationPhase = safeArray(decomposition.migrationStrategy)
     .find(phase => safeArray(phase.services).includes(service.name));
+  const violations = getViolationsForService(service, data);
+  const bySeverity = groupViolationsBySeverity(violations);
+  const totalEffort = calculateTotalEffort(violations);
 
   let content = `# ${service.name} - Technical Implementation Plan
 
@@ -225,6 +317,48 @@ export const generatePlan = (service, businessLogic, decomposition) => {
 **Communication Pattern**: ${safeString(service.communication)}
 
 **Description**: ${safeString(service.description)}
+
+## Technical Debt Assessment
+
+${violations.length > 0 ? `### Migration Violations Summary
+
+This service has **${violations.length} Konveyor rule violations** that must be addressed during migration:
+
+- **Critical Issues**: ${bySeverity.critical.length} (${calculateTotalEffort(bySeverity.critical)} effort points)
+- **Warnings**: ${bySeverity.warning.length} (${calculateTotalEffort(bySeverity.warning)} effort points)
+- **Info**: ${bySeverity.info.length} (${calculateTotalEffort(bySeverity.info)} effort points)
+- **Total Migration Effort**: ${totalEffort} story points
+
+### High-Priority Violations
+
+${bySeverity.critical.slice(0, 5).map(v => `#### \`${v.ruleId}\` - ${v.title}
+- **Component**: \`${v.componentName}\`
+- **Location**: ${v.location}
+- **Effort**: ${v.effort} points
+- **Type**: ${v.type}
+`).join('\n')}
+
+${bySeverity.critical.length > 5 ? `*... and ${bySeverity.critical.length - 5} more critical violations. See spec.md for complete list.*\n` : ''}
+
+### Effort Breakdown by Component
+
+${(() => {
+  const byComponent = {};
+  violations.forEach(v => {
+    if (!byComponent[v.componentName]) {
+      byComponent[v.componentName] = { count: 0, effort: 0, violations: [] };
+    }
+    byComponent[v.componentName].count++;
+    byComponent[v.componentName].effort += v.effort || 0;
+    byComponent[v.componentName].violations.push(v);
+  });
+
+  return Object.entries(byComponent)
+    .sort(([,a], [,b]) => b.effort - a.effort)
+    .map(([comp, stats]) => `- **${comp}**: ${stats.count} violations, ${stats.effort} effort points`)
+    .join('\n');
+})()}
+` : '*No Konveyor violations identified for this service.*'}
 
 ## Applied Architecture Patterns
 
@@ -370,10 +504,12 @@ ${safeArray(service.patterns).filter(p => p.toLowerCase().includes('event') || p
 /**
  * Generate tasks.md - Implementation task breakdown
  */
-export const generateTasks = (service, businessLogic, decomposition) => {
+export const generateTasks = (service, businessLogic, decomposition, data) => {
   const relevantBusinessLogic = filterBusinessLogicForService(businessLogic, service.name);
   const migrationPhase = safeArray(decomposition.migrationStrategy)
     .find(phase => safeArray(phase.services).includes(service.name));
+  const violations = getViolationsForService(service, data);
+  const bySeverity = groupViolationsBySeverity(violations);
 
   let content = `# ${service.name} - Implementation Tasks
 
@@ -390,7 +526,30 @@ export const generateTasks = (service, businessLogic, decomposition) => {
 - [ ] Create Kubernetes manifests (Deployment, Service, ConfigMap, Secrets)
 - [ ] Configure development environment
 
-### Phase 2: Business Logic Migration
+### Phase 2: Fix Konveyor Migration Violations
+
+${violations.length > 0 ? `**Total Violations**: ${violations.length} issues | **Total Effort**: ${calculateTotalEffort(violations)} story points
+
+${bySeverity.critical.length > 0 ? `#### Critical Violations (${bySeverity.critical.length} issues, ${calculateTotalEffort(bySeverity.critical)} effort)
+
+${bySeverity.critical.map(v => `- [ ] **[${v.ruleId}]** ${v.title}
+  - **Component**: \`${v.componentName}\`
+  - **Location**: ${v.location}
+  - **Effort**: ${v.effort} points
+  - **Fix**: ${safeString(v.description).split('\n')[0].substring(0, 200)}...
+`).join('\n')}` : ''}
+
+${bySeverity.warning.length > 0 ? `#### Warning Violations (${bySeverity.warning.length} issues, ${calculateTotalEffort(bySeverity.warning)} effort)
+
+${bySeverity.warning.map(v => `- [ ] **[${v.ruleId}]** ${v.title} (\`${v.componentName}\`, ${v.location}, Effort: ${v.effort})`).join('\n')}
+` : ''}
+
+${bySeverity.info.length > 0 ? `#### Info Violations (${bySeverity.info.length} issues, ${calculateTotalEffort(bySeverity.info)} effort)
+
+${bySeverity.info.map(v => `- [ ] **[${v.ruleId}]** ${v.title} (Effort: ${v.effort})`).join('\n')}
+` : ''}` : '*No Konveyor violations to fix for this service.*'}
+
+### Phase 3: Business Logic Migration
 
 ${relevantBusinessLogic.length > 0 ? relevantBusinessLogic.map(bl => `#### Domain: ${bl.domain}
 
@@ -420,17 +579,17 @@ ${safeArray(service.responsibilities).map(resp => `- [ ] Implement: ${resp}`).jo
 ---
 `}
 
-### Phase 3: Service Responsibilities
+### Phase 4: Service Responsibilities
 
 ${safeArray(service.responsibilities).map(resp => `- [ ] Implement responsibility: ${resp}`).join('\n')}
 
-### Phase 4: Architecture Pattern Implementation
+### Phase 5: Architecture Pattern Implementation
 
 ${safeArray(service.patterns).map(pattern => `- [ ] Implement ${pattern}
 - [ ] Write tests for ${pattern} behavior
 - [ ] Document ${pattern} usage`).join('\n')}
 
-### Phase 5: Communication Layer
+### Phase 6: Communication Layer
 
 - [ ] Define API contracts (OpenAPI/gRPC proto)
 - [ ] Implement ${service.communication}
@@ -442,7 +601,7 @@ ${safeArray(service.patterns).filter(p => p.toLowerCase().includes('event')).len
 - [ ] Setup event consumption
 - [ ] Implement event schema validation` : ''}
 
-### Phase 6: Data Layer Implementation
+### Phase 7: Data Layer Implementation
 
 ${relevantBusinessLogic.flatMap(bl => safeArray(bl.entities)).length > 0 ? `- [ ] Setup database (PostgreSQL/MySQL/MongoDB)
 - [ ] Create database migrations
@@ -455,7 +614,7 @@ ${relevantBusinessLogic.flatMap(bl => safeArray(bl.entities)).map(entity => `- [
 - [ ] Setup caching layer (Redis/Memcached)
 - [ ] Implement data persistence strategy`}
 
-### Phase 7: Kubernetes Deployment
+### Phase 8: Kubernetes Deployment
 
 ${safeArray(decomposition.kubernetesRecommendations).map(rec => `- [ ] ${rec.title}
   - Implementation: ${safeString(rec.implementation)}`).join('\n')}
@@ -470,7 +629,7 @@ ${safeArray(decomposition.kubernetesRecommendations).map(rec => `- [ ] ${rec.tit
 ${service.type === 'data-service' ? `- [ ] Configure PersistentVolumeClaims
 - [ ] Setup StatefulSet for data persistence` : ''}
 
-### Phase 8: Security Implementation
+### Phase 9: Security Implementation
 
 - [ ] Implement authentication mechanism
 - [ ] Setup authorization (RBAC)
@@ -481,7 +640,7 @@ ${service.type === 'data-service' ? `- [ ] Configure PersistentVolumeClaims
 - [ ] Implement audit logging
 - [ ] Conduct security scan
 
-### Phase 9: Testing & Quality Assurance
+### Phase 10: Testing & Quality Assurance
 
 **Unit Tests**:
 ${relevantBusinessLogic.flatMap(bl => safeArray(bl.operations)).map(op => `- [ ] Unit test for: ${op}`).join('\n')}
@@ -504,7 +663,7 @@ ${relevantBusinessLogic.flatMap(bl => safeArray(bl.operations)).map(op => `- [ ]
 - [ ] Implement contract tests (Pact/Spring Cloud Contract)
 - [ ] Verify backward compatibility
 
-### Phase 10: Monitoring & Observability
+### Phase 11: Monitoring & Observability
 
 - [ ] Implement metrics collection (Prometheus)
 - [ ] Setup structured logging
@@ -514,7 +673,7 @@ ${relevantBusinessLogic.flatMap(bl => safeArray(bl.operations)).map(op => `- [ ]
 - [ ] Implement health check endpoints
 - [ ] Add correlation IDs to requests
 
-### Phase 11: Migration & Cutover
+### Phase 12: Migration & Cutover
 
 ${migrationPhase ? `**Migration Phase**: ${migrationPhase.phase} - ${safeString(migrationPhase.title)}
 
@@ -538,7 +697,7 @@ ${safeString(migrationPhase.description)}
 - [ ] Gradual traffic increase
 `}
 
-### Phase 12: Documentation & Handoff
+### Phase 13: Documentation & Handoff
 
 - [ ] Write API documentation
 - [ ] Document architecture decisions
@@ -567,6 +726,7 @@ ${migrationPhase ? `**Migration Phase**: ${migrationPhase.phase}
 
 - [ ] All business operations are functional
 - [ ] All critical business logic is preserved
+${violations.length > 0 ? `- [ ] All ${violations.length} Konveyor rule violations fixed (${calculateTotalEffort(violations)} effort points)` : ''}
 - [ ] All tests passing (unit, integration, contract)
 - [ ] Performance meets SLA requirements
 - [ ] Security audit passed
@@ -586,7 +746,7 @@ export const generateAllSpecKitFiles = (service, businessLogic, decomposition, d
   return {
     constitution: generateConstitution(service, businessLogic, decomposition),
     spec: generateSpec(service, businessLogic, decomposition, data),
-    plan: generatePlan(service, businessLogic, decomposition),
-    tasks: generateTasks(service, businessLogic, decomposition)
+    plan: generatePlan(service, businessLogic, decomposition, data),
+    tasks: generateTasks(service, businessLogic, decomposition, data)
   };
 };
