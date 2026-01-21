@@ -4,6 +4,7 @@
  */
 
 import yaml from 'js-yaml';
+import { analyzeFrontendComponent } from './frontendAnalyzer.js';
 
 /**
  * Parse YAML content into JavaScript object
@@ -514,6 +515,12 @@ export function transformToVizFormat(kantraData, options = {}) {
         totalFiles: component.codeContext.files.size
       }
     };
+
+    // Analyze frontend components for UI patterns (language-agnostic)
+    const frontendContext = analyzeFrontendComponent(component);
+    if (frontendContext) {
+      component.frontendContext = frontendContext;
+    }
   });
 
   // Create dependencies
