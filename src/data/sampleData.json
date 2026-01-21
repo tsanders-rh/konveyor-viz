@@ -1,0 +1,402 @@
+{
+  "applicationName": "E-Commerce Platform",
+  "analysisDate": "2026-01-20",
+  "summary": {
+    "totalComponents": 8,
+    "totalIssues": 237,
+    "linesOfCode": 85000
+  },
+  "components": [
+    {
+      "id": "web-ui",
+      "name": "Web UI",
+      "type": "frontend",
+      "linesOfCode": 15000,
+      "technology": {
+        "language": "JavaScript",
+        "framework": "React 16",
+        "frameworkStatus": "outdated"
+      },
+      "issues": [
+        {
+          "id": "issue-1",
+          "title": "React 16 is outdated",
+          "type": "Deprecated APIs",
+          "severity": "warning",
+          "description": "React 16 reached end of life. Upgrade to React 18.",
+          "location": "package.json:12"
+        },
+        {
+          "id": "issue-2",
+          "title": "Unsafe lifecycle methods used",
+          "type": "Deprecated APIs",
+          "severity": "warning",
+          "description": "componentWillMount and componentWillReceiveProps are deprecated.",
+          "location": "src/components/ProductList.jsx:45"
+        },
+        {
+          "id": "issue-3",
+          "title": "Missing PropTypes validation",
+          "type": "Code Quality",
+          "severity": "info",
+          "description": "Component props are not validated.",
+          "location": "src/components/Cart.jsx:12"
+        }
+      ],
+      "dependencies": ["order-controller", "user-controller"]
+    },
+    {
+      "id": "order-service",
+      "name": "Order Service",
+      "type": "backend",
+      "linesOfCode": 25000,
+      "technology": {
+        "language": "Java",
+        "version": "8",
+        "framework": "Spring Boot 1.5",
+        "frameworkStatus": "eol"
+      },
+      "issues": [
+        {
+          "id": "issue-10",
+          "title": "Java 8 is end of life",
+          "type": "Technology Upgrade",
+          "severity": "critical",
+          "description": "Java 8 is no longer supported. Upgrade to Java 11 or 17.",
+          "location": "pom.xml:8"
+        },
+        {
+          "id": "issue-11",
+          "title": "Spring Boot 1.5 is EOL",
+          "type": "Technology Upgrade",
+          "severity": "critical",
+          "description": "Spring Boot 1.5 reached end of life. Upgrade to 2.7 or 3.x.",
+          "location": "pom.xml:15"
+        },
+        {
+          "id": "issue-12",
+          "title": "Hardcoded database connection",
+          "type": "Configuration",
+          "severity": "critical",
+          "description": "Database URL is hardcoded. Should use environment variables.",
+          "location": "src/main/java/config/DatabaseConfig.java:42"
+        },
+        {
+          "id": "issue-13",
+          "title": "SQL injection vulnerability",
+          "type": "Security",
+          "severity": "critical",
+          "description": "Raw SQL query construction with user input.",
+          "location": "src/main/java/repository/OrderRepository.java:128"
+        },
+        {
+          "id": "issue-14",
+          "title": "Missing error handling",
+          "type": "Code Quality",
+          "severity": "warning",
+          "description": "Exception not properly caught and logged.",
+          "location": "src/main/java/service/OrderService.java:89"
+        },
+        {
+          "id": "issue-15",
+          "title": "Deprecated StringUtils.isEmpty()",
+          "type": "Deprecated APIs",
+          "severity": "warning",
+          "description": "Use StringUtils.hasText() instead.",
+          "location": "src/main/java/util/Validator.java:34"
+        }
+      ],
+      "dependencies": ["payment-service", "inventory-service", "database"]
+    },
+    {
+      "id": "payment-service",
+      "name": "Payment Service",
+      "type": "backend",
+      "linesOfCode": 8000,
+      "technology": {
+        "language": "Java",
+        "version": "11",
+        "framework": "Spring Boot 2.7",
+        "frameworkStatus": "current"
+      },
+      "issues": [
+        {
+          "id": "issue-50",
+          "title": "Missing input validation",
+          "type": "Security",
+          "severity": "warning",
+          "description": "Payment amount not validated on server side.",
+          "location": "src/main/java/payment/PaymentController.java:78"
+        },
+        {
+          "id": "issue-51",
+          "title": "Sensitive data in logs",
+          "type": "Security",
+          "severity": "critical",
+          "description": "Credit card numbers logged in plain text.",
+          "location": "src/main/java/payment/PaymentService.java:145"
+        },
+        {
+          "id": "issue-52",
+          "title": "High cyclomatic complexity",
+          "type": "Code Complexity",
+          "severity": "warning",
+          "description": "Method has complexity of 25, should be under 10.",
+          "location": "src/main/java/payment/PaymentProcessor.java:56"
+        }
+      ],
+      "dependencies": ["database", "notification-service"]
+    },
+    {
+      "id": "user-controller",
+      "name": "User Service",
+      "type": "backend",
+      "linesOfCode": 12000,
+      "technology": {
+        "language": "Java",
+        "version": "8",
+        "framework": "Spring Boot 1.5",
+        "frameworkStatus": "eol"
+      },
+      "issues": [
+        {
+          "id": "issue-60",
+          "title": "Java 8 is end of life",
+          "type": "Technology Upgrade",
+          "severity": "critical",
+          "description": "Java 8 is no longer supported. Upgrade to Java 11 or 17.",
+          "location": "pom.xml:8"
+        },
+        {
+          "id": "issue-61",
+          "title": "Weak password hashing",
+          "type": "Security",
+          "severity": "critical",
+          "description": "Using MD5 for password hashing. Use bcrypt or Argon2.",
+          "location": "src/main/java/user/PasswordService.java:23"
+        },
+        {
+          "id": "issue-62",
+          "title": "Missing authentication check",
+          "type": "Security",
+          "severity": "critical",
+          "description": "Endpoint allows unauthenticated access.",
+          "location": "src/main/java/user/UserController.java:67"
+        },
+        {
+          "id": "issue-63",
+          "title": "Deprecated @RequestMapping",
+          "type": "Deprecated APIs",
+          "severity": "info",
+          "description": "Use @GetMapping or @PostMapping instead.",
+          "location": "src/main/java/user/UserController.java:45"
+        }
+      ],
+      "dependencies": ["database"]
+    },
+    {
+      "id": "inventory-service",
+      "name": "Inventory Service",
+      "type": "backend",
+      "linesOfCode": 10000,
+      "technology": {
+        "language": "Java",
+        "version": "8",
+        "framework": "Spring Boot 1.5",
+        "frameworkStatus": "eol"
+      },
+      "issues": [
+        {
+          "id": "issue-70",
+          "title": "Java 8 is end of life",
+          "type": "Technology Upgrade",
+          "severity": "critical",
+          "description": "Java 8 is no longer supported. Upgrade to Java 11 or 17.",
+          "location": "pom.xml:8"
+        },
+        {
+          "id": "issue-71",
+          "title": "Race condition in stock update",
+          "type": "Code Quality",
+          "severity": "critical",
+          "description": "Concurrent stock updates may cause data inconsistency.",
+          "location": "src/main/java/inventory/StockManager.java:112"
+        },
+        {
+          "id": "issue-72",
+          "title": "Missing transaction boundary",
+          "type": "Configuration",
+          "severity": "warning",
+          "description": "Database operations not wrapped in transaction.",
+          "location": "src/main/java/inventory/InventoryService.java:89"
+        }
+      ],
+      "dependencies": ["database"]
+    },
+    {
+      "id": "notification-service",
+      "name": "Notification Service",
+      "type": "backend",
+      "linesOfCode": 6000,
+      "technology": {
+        "language": "Python",
+        "version": "3.7",
+        "framework": "Flask 1.1",
+        "frameworkStatus": "outdated"
+      },
+      "issues": [
+        {
+          "id": "issue-80",
+          "title": "Python 3.7 approaching EOL",
+          "type": "Technology Upgrade",
+          "severity": "warning",
+          "description": "Python 3.7 will reach end of life soon. Upgrade to 3.11+.",
+          "location": "requirements.txt:1"
+        },
+        {
+          "id": "issue-81",
+          "title": "Flask 1.1 is outdated",
+          "type": "Technology Upgrade",
+          "severity": "warning",
+          "description": "Flask 1.1 has known vulnerabilities. Upgrade to 2.x or 3.x.",
+          "location": "requirements.txt:5"
+        },
+        {
+          "id": "issue-82",
+          "title": "Email credentials in code",
+          "type": "Security",
+          "severity": "critical",
+          "description": "SMTP credentials hardcoded in source file.",
+          "location": "notification/email_sender.py:18"
+        }
+      ],
+      "dependencies": []
+    },
+    {
+      "id": "order-controller",
+      "name": "API Gateway",
+      "type": "middleware",
+      "linesOfCode": 4000,
+      "technology": {
+        "language": "Node.js",
+        "version": "14",
+        "framework": "Express 4.17",
+        "frameworkStatus": "outdated"
+      },
+      "issues": [
+        {
+          "id": "issue-90",
+          "title": "Node.js 14 is EOL",
+          "type": "Technology Upgrade",
+          "severity": "critical",
+          "description": "Node.js 14 reached end of life. Upgrade to 18 LTS or 20 LTS.",
+          "location": "package.json:3"
+        },
+        {
+          "id": "issue-91",
+          "title": "Missing rate limiting",
+          "type": "Security",
+          "severity": "warning",
+          "description": "API endpoints lack rate limiting, vulnerable to DDoS.",
+          "location": "routes/orders.js:12"
+        },
+        {
+          "id": "issue-92",
+          "title": "CORS misconfiguration",
+          "type": "Security",
+          "severity": "warning",
+          "description": "CORS allows all origins (*), should be restricted.",
+          "location": "app.js:23"
+        }
+      ],
+      "dependencies": ["order-service", "user-controller"]
+    },
+    {
+      "id": "database",
+      "name": "Database Layer",
+      "type": "data",
+      "linesOfCode": 5000,
+      "technology": {
+        "type": "PostgreSQL",
+        "version": "9.6",
+        "status": "outdated"
+      },
+      "issues": [
+        {
+          "id": "issue-100",
+          "title": "PostgreSQL 9.6 approaching EOL",
+          "type": "Technology Upgrade",
+          "severity": "warning",
+          "description": "PostgreSQL 9.6 will reach end of life soon. Plan upgrade to 14+.",
+          "location": "docker-compose.yml:15"
+        },
+        {
+          "id": "issue-101",
+          "title": "Missing database indexes",
+          "type": "Performance",
+          "severity": "warning",
+          "description": "Foreign key columns lack indexes, causing slow queries.",
+          "location": "migrations/001_initial_schema.sql:45"
+        }
+      ],
+      "dependencies": []
+    }
+  ],
+  "dependencies": [
+    {
+      "source": "web-ui",
+      "target": "order-controller",
+      "type": "http"
+    },
+    {
+      "source": "web-ui",
+      "target": "user-controller",
+      "type": "http"
+    },
+    {
+      "source": "order-controller",
+      "target": "order-service",
+      "type": "internal"
+    },
+    {
+      "source": "order-controller",
+      "target": "user-controller",
+      "type": "internal"
+    },
+    {
+      "source": "order-service",
+      "target": "payment-service",
+      "type": "internal"
+    },
+    {
+      "source": "order-service",
+      "target": "inventory-service",
+      "type": "internal"
+    },
+    {
+      "source": "order-service",
+      "target": "database",
+      "type": "jdbc"
+    },
+    {
+      "source": "payment-service",
+      "target": "database",
+      "type": "jdbc"
+    },
+    {
+      "source": "payment-service",
+      "target": "notification-service",
+      "type": "http"
+    },
+    {
+      "source": "user-controller",
+      "target": "database",
+      "type": "jdbc"
+    },
+    {
+      "source": "inventory-service",
+      "target": "database",
+      "type": "jdbc"
+    }
+  ]
+}
