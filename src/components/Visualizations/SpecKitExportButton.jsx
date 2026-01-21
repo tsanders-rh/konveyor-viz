@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Button, Spinner } from '@patternfly/react-core';
+import { DownloadIcon } from '@patternfly/react-icons';
 import { generateAllSpecKitFiles } from '../../utils/specKitGenerator';
 import { createSpecKitZip, downloadZip, generateSpecKitFilename } from '../../utils/downloadUtils';
 
@@ -35,32 +37,23 @@ const SpecKitExportButton = ({ service, businessLogic, decomposition, data }) =>
   };
 
   return (
-    <div className="flex flex-col items-end">
-      <button
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+      <Button
+        variant="secondary"
         onClick={handleExport}
-        disabled={loading}
-        className="px-3 py-1 bg-indigo-600 text-white text-xs rounded hover:bg-indigo-700 transition-colors flex items-center gap-1 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        isDisabled={loading}
+        isSmall
+        icon={loading ? <Spinner size="sm" /> : <DownloadIcon />}
         title="Download Spec-Kit for this microservice"
       >
-        {loading ? (
-          <>
-            <svg className="animate-spin h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span>...</span>
-          </>
-        ) : (
-          <>
-            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            Spec-Kit
-          </>
-        )}
-      </button>
+        {loading ? 'Exporting...' : 'Spec-Kit'}
+      </Button>
       {error && (
-        <div className="text-xs text-red-600 mt-1">
+        <div style={{
+          fontSize: 'var(--pf-v5-global--FontSize--xs)',
+          color: 'var(--pf-v5-global--danger-color--100)',
+          marginTop: 'var(--pf-v5-global--spacer--xs)'
+        }}>
           {error}
         </div>
       )}
