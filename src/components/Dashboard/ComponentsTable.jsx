@@ -141,108 +141,97 @@ const ComponentsTable = ({ data, onComponentClick }) => {
           </ToolbarContent>
         </Toolbar>
 
-        <Table aria-label="Components table" variant="compact">
-          <Thead>
-            <Tr>
-              <Th sort={getSortParams(0)}>Component</Th>
-              <Th sort={getSortParams(1)}>Type</Th>
-              <Th sort={getSortParams(2)}>Lines of Code</Th>
-              <Th sort={getSortParams(3)}>Total Issues</Th>
-              <Th sort={getSortParams(4)}>Critical</Th>
-              <Th sort={getSortParams(5)}>Warning</Th>
-              <Th sort={getSortParams(6)}>Info</Th>
-              <Th sort={getSortParams(7)}>Language</Th>
-              <Th sort={getSortParams(8)}>Framework</Th>
-              <Th sort={getSortParams(9)}>Dependencies</Th>
-              <Th></Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {sortedData.length === 0 ? (
+        <div style={{ overflowX: 'auto' }}>
+          <Table aria-label="Components table" variant="compact" isStickyHeader>
+            <Thead>
               <Tr>
-                <Td colSpan={11}>
-                  <div style={{ textAlign: 'center', padding: '2rem', color: '#6a6e73' }}>
-                    {searchValue ? `No components found matching "${searchValue}"` : 'No components available'}
-                  </div>
-                </Td>
+                <Th sort={getSortParams(0)} width={20}>Component</Th>
+                <Th sort={getSortParams(1)} width={10}>Type</Th>
+                <Th sort={getSortParams(2)} width={10}>LOC</Th>
+                <Th sort={getSortParams(3)} width={15}>Issues (C/W/I)</Th>
+                <Th sort={getSortParams(7)} width={10}>Language</Th>
+                <Th sort={getSortParams(8)} width={20}>Framework</Th>
+                <Th sort={getSortParams(9)} width={10}>Dependencies</Th>
+                <Th width={5}></Th>
               </Tr>
-            ) : (
-              sortedData.map((row, rowIndex) => (
-                <Tr key={rowIndex}>
-                  <Td dataLabel="Component">
-                    <div style={{ fontWeight: '600' }}>{row.name}</div>
-                  </Td>
-                  <Td dataLabel="Type">
-                    <Label color={getTypeColor(row.type)} isCompact>
-                      {row.type}
-                    </Label>
-                  </Td>
-                  <Td dataLabel="Lines of Code">
-                    {row.linesOfCode.toLocaleString()}
-                  </Td>
-                  <Td dataLabel="Total Issues">
-                    <Badge isRead={row.totalIssues === 0}>
-                      {row.totalIssues}
-                    </Badge>
-                  </Td>
-                  <Td dataLabel="Critical">
-                    {row.critical > 0 ? (
-                      <Badge style={{ backgroundColor: 'var(--pf-v5-global--danger-color--100)' }}>
-                        {row.critical}
-                      </Badge>
-                    ) : (
-                      <span style={{ color: '#6a6e73' }}>0</span>
-                    )}
-                  </Td>
-                  <Td dataLabel="Warning">
-                    {row.warning > 0 ? (
-                      <Badge style={{ backgroundColor: 'var(--pf-v5-global--warning-color--100)' }}>
-                        {row.warning}
-                      </Badge>
-                    ) : (
-                      <span style={{ color: '#6a6e73' }}>0</span>
-                    )}
-                  </Td>
-                  <Td dataLabel="Info">
-                    {row.info > 0 ? (
-                      <Badge style={{ backgroundColor: 'var(--pf-v5-global--info-color--100)' }}>
-                        {row.info}
-                      </Badge>
-                    ) : (
-                      <span style={{ color: '#6a6e73' }}>0</span>
-                    )}
-                  </Td>
-                  <Td dataLabel="Language">
-                    {row.language}
-                  </Td>
-                  <Td dataLabel="Framework">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span>{row.framework}</span>
-                      {row.frameworkStatus !== 'current' && (
-                        <Label color={getFrameworkStatusColor(row.frameworkStatus)} isCompact>
-                          {row.frameworkStatus}
-                        </Label>
-                      )}
+            </Thead>
+            <Tbody>
+              {sortedData.length === 0 ? (
+                <Tr>
+                  <Td colSpan={8}>
+                    <div style={{ textAlign: 'center', padding: '2rem', color: '#6a6e73' }}>
+                      {searchValue ? `No components found matching "${searchValue}"` : 'No components available'}
                     </div>
                   </Td>
-                  <Td dataLabel="Dependencies">
-                    {row.dependencies}
-                  </Td>
-                  <Td dataLabel="Actions">
-                    <Button
-                      variant="link"
-                      icon={<ExternalLinkAltIcon />}
-                      onClick={() => onComponentClick(row.component)}
-                      style={{ padding: 0 }}
-                    >
-                      View
-                    </Button>
-                  </Td>
                 </Tr>
-              ))
-            )}
-          </Tbody>
-        </Table>
+              ) : (
+                sortedData.map((row, rowIndex) => (
+                  <Tr key={rowIndex}>
+                    <Td dataLabel="Component">
+                      <div style={{ fontWeight: '600' }}>{row.name}</div>
+                    </Td>
+                    <Td dataLabel="Type">
+                      <Label color={getTypeColor(row.type)} isCompact>
+                        {row.type}
+                      </Label>
+                    </Td>
+                    <Td dataLabel="LOC">
+                      {row.linesOfCode.toLocaleString()}
+                    </Td>
+                    <Td dataLabel="Issues">
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        {row.critical > 0 && (
+                          <Badge style={{ backgroundColor: '#c9190b', color: '#fff', fontWeight: '600' }}>
+                            {row.critical}
+                          </Badge>
+                        )}
+                        {row.warning > 0 && (
+                          <Badge style={{ backgroundColor: '#f0ab00', color: '#151515', fontWeight: '600' }}>
+                            {row.warning}
+                          </Badge>
+                        )}
+                        {row.info > 0 && (
+                          <Badge style={{ backgroundColor: '#2b9af3', color: '#fff', fontWeight: '600' }}>
+                            {row.info}
+                          </Badge>
+                        )}
+                        {row.totalIssues === 0 && (
+                          <span style={{ color: '#6a6e73', fontSize: '0.875rem' }}>—</span>
+                        )}
+                      </div>
+                    </Td>
+                    <Td dataLabel="Language">
+                      {row.language}
+                    </Td>
+                    <Td dataLabel="Framework">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span>{row.framework}</span>
+                        {row.frameworkStatus !== 'current' && (
+                          <Label color={getFrameworkStatusColor(row.frameworkStatus)} isCompact>
+                            {row.frameworkStatus}
+                          </Label>
+                        )}
+                      </div>
+                    </Td>
+                    <Td dataLabel="Dependencies">
+                      {row.dependencies}
+                    </Td>
+                    <Td dataLabel="Actions">
+                      <Button
+                        variant="link"
+                        icon={<ExternalLinkAltIcon />}
+                        onClick={() => onComponentClick(row.component)}
+                        style={{ padding: 0 }}
+                      >
+                        View
+                      </Button>
+                    </Td>
+                  </Tr>
+                ))
+              )}
+            </Tbody>
+          </Table>
+        </div>
       </CardBody>
     </Card>
   );
