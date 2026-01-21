@@ -1,18 +1,17 @@
-@import "tailwindcss";
+/* PatternFly CSS */
+@import '@patternfly/react-core/dist/styles/base.css';
 
-@theme {
-  --color-critical: #ff6b6b;
-  --color-warning: #ffd93d;
-  --color-good: #95e1d3;
-  --color-background: #f8f9fa;
+/* Custom theme variables (map to PatternFly tokens) */
+:root {
+  --app-color-critical: var(--pf-v5-global--danger-color--100);
+  --app-color-warning: var(--pf-v5-global--warning-color--100);
+  --app-color-good: var(--pf-v5-global--success-color--100);
+  --app-color-info: var(--pf-v5-global--info-color--100);
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: var(--pf-v5-global--FontFamily--sans-serif);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f8f9fa;
 }
