@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import llmService from '../../services/llmService';
 import { getActiveProvider, LLM_PROVIDERS } from '../../config/llmConfig';
 import MicroservicesTierDiagram from './MicroservicesTierDiagram';
+import BusinessLogicDocumentation from './BusinessLogicDocumentation';
 
 const MicroservicesDecomposition = ({ data }) => {
   const [decomposition, setDecomposition] = useState(null);
@@ -91,6 +92,11 @@ const MicroservicesDecomposition = ({ data }) => {
               <h3 className="text-lg font-semibold text-blue-900 mb-3">📋 Strategy Overview</h3>
               <p className="text-blue-800">{decomposition.overview}</p>
             </div>
+          )}
+
+          {/* Business Logic Documentation */}
+          {decomposition.businessLogic && decomposition.businessLogic.length > 0 && (
+            <BusinessLogicDocumentation businessLogic={decomposition.businessLogic} />
           )}
 
           {/* Tiered Architecture Diagram */}

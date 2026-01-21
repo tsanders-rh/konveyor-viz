@@ -197,13 +197,21 @@ ${dependencies.map(d => `${d.from} → ${d.to}`).join('\n')}
 
 Using Domain-Driven Design principles, proven microservices patterns, and Kubernetes best practices, provide a comprehensive decomposition strategy:
 
-1. IDENTIFY BOUNDED CONTEXTS
+1. EXTRACT BUSINESS LOGIC FROM LEGACY CODE (Critical for teams with zero domain knowledge)
+   - Analyze component/class names to infer business capabilities
+   - Identify business operations from method names and patterns
+   - Extract business entities from model/persistence layers
+   - Document business workflows from component dependencies
+   - Identify business rules, validations, and calculations in code
+   - Map source components to business domains
+
+2. IDENTIFY BOUNDED CONTEXTS
    - Analyze component relationships and identify natural service boundaries
    - Consider business capabilities and domain models
    - Group related components into logical microservices
    - Apply Single Responsibility Principle at service level
 
-2. PROPOSE MICROSERVICES (4-7 services) - APPLY PATTERNS IN DESIGN
+3. PROPOSE MICROSERVICES (4-7 services) - APPLY PATTERNS IN DESIGN
    - Name each microservice clearly (e.g., "User Management Service", "Product Catalog Service")
    - Assign a type (api, worker, gateway, data-service)
    - List which components belong to each microservice
@@ -212,7 +220,7 @@ Using Domain-Driven Design principles, proven microservices patterns, and Kubern
    - Include specific pattern application (e.g., "API Gateway routes to this service", "Publishes events via Outbox pattern")
    - Ensure services are loosely coupled and highly cohesive
 
-3. MIGRATION STRATEGY (3-5 phases using proven patterns)
+4. MIGRATION STRATEGY (3-5 phases using proven patterns)
    - STRANGLER FIG PATTERN: Incrementally replace monolith functionality
    - Start with stateless, leaf services (lowest risk)
    - Use ANTI-CORRUPTION LAYER to interface with monolith during transition
@@ -220,7 +228,7 @@ Using Domain-Driven Design principles, proven microservices patterns, and Kubern
    - Consider data migration complexity
    - Each phase should include specific services to migrate and rollback strategy
 
-4. ARCHITECTURE PATTERNS (specify which patterns to use)
+5. ARCHITECTURE PATTERNS (specify which patterns to use)
    - API GATEWAY: Single entry point, routing, authentication, rate limiting
    - BACKEND FOR FRONTEND (BFF): UI-specific APIs if needed
    - SERVICE MESH: For service-to-service communication (Istio/Linkerd)
@@ -229,7 +237,7 @@ Using Domain-Driven Design principles, proven microservices patterns, and Kubern
    - EVENT SOURCING & CQRS: If complex domain or audit requirements
    - OUTBOX PATTERN: Reliable event publishing from database transactions
 
-5. DATA MANAGEMENT STRATEGY
+6. DATA MANAGEMENT STRATEGY
    - DATABASE PER SERVICE pattern for true service autonomy
    - SHARED DATABASE during migration with database views for logical separation
    - CHANGE DATA CAPTURE (CDC) with Debezium for data synchronization
@@ -238,7 +246,7 @@ Using Domain-Driven Design principles, proven microservices patterns, and Kubern
    - Dual-write pattern during migration, then cutover
    - CQRS for read-heavy services with separate read models
 
-6. KUBERNETES RECOMMENDATIONS (3-5 items)
+7. KUBERNETES RECOMMENDATIONS (3-5 items)
    - Deployment patterns (StatefulSet vs Deployment)
    - Service discovery and networking (ClusterIP, LoadBalancer, Ingress)
    - Configuration management (ConfigMaps, Secrets)
@@ -252,6 +260,19 @@ IMPORTANT: Return ONLY valid JSON. No markdown, no code blocks, no explanations 
 Return your response in this EXACT format:
 {
   "overview": "Brief 2-3 sentence summary including which key patterns are used",
+  "businessLogic": [
+    {
+      "domain": "Business Domain Name",
+      "description": "What this domain does",
+      "operations": ["Operation1", "Operation2"],
+      "entities": ["Entity1", "Entity2"],
+      "rules": ["Business rule or validation"],
+      "sourceComponents": ["component1", "component2"],
+      "targetService": "Target Microservice Name",
+      "complexity": "Low|Medium|High",
+      "criticalLogic": "Key business logic that must be preserved"
+    }
+  ],
   "microservices": [
     {
       "name": "Service Name",
@@ -423,10 +444,32 @@ async function callAnthropicDecomposition(data) {
   const jsonMatch = content.match(/\{[\s\S]*\}/);
   if (jsonMatch) {
     try {
-      return JSON.parse(jsonMatch[0]);
+      let jsonStr = jsonMatch[0];
+
+      // Fix common JSON issues
+      // Remove trailing commas before closing brackets/braces
+      jsonStr = jsonStr.replace(/,(\s*[}\]])/g, '$1');
+      // Remove comments
+      jsonStr = jsonStr.replace(/\/\/.*$/gm, '');
+      jsonStr = jsonStr.replace(/\/\*[\s\S]*?\*\//g, '');
+
+      return JSON.parse(jsonStr);
     } catch (parseError) {
       console.error('JSON parse error:', parseError.message);
-      console.error('Raw content sample:', jsonMatch[0].substring(0, 500));
+
+      // Log context around the error position if available
+      const errorMatch = parseError.message.match(/position (\d+)/);
+      if (errorMatch) {
+        const pos = parseInt(errorMatch[1]);
+        const start = Math.max(0, pos - 200);
+        const end = Math.min(jsonMatch[0].length, pos + 200);
+        console.error('Context around error:');
+        console.error(jsonMatch[0].substring(start, end));
+        console.error(' '.repeat(Math.min(pos - start, 200)) + '^');
+      } else {
+        console.error('Raw content sample:', jsonMatch[0].substring(0, 500));
+      }
+
       throw new Error(`Invalid JSON from AI: ${parseError.message}`);
     }
   }
