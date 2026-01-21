@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PageSection, PageSectionVariants } from '@patternfly/react-core';
+import { PageSection, PageSectionVariants, Drawer, DrawerContent, DrawerContentBody } from '@patternfly/react-core';
 import MetricsOverview from './MetricsOverview';
 import TechnologyStack from './TechnologyStack';
 import AIInsights from './AIInsights';
@@ -31,7 +31,14 @@ const Dashboard = ({ data, activeView }) => {
     setSelectedComponent(null);
   };
 
-  return (
+  const panelContent = (
+    <ComponentDetail
+      component={selectedComponent}
+      onClose={handleCloseDetail}
+    />
+  );
+
+  const mainContent = (
     <>
       {/* Overview View */}
       {activeView === 'overview' && (
@@ -87,13 +94,17 @@ const Dashboard = ({ data, activeView }) => {
           <AIInsights data={data} />
         </PageSection>
       )}
-
-      {/* Component Detail Panel - shown across all views */}
-      <ComponentDetail
-        component={selectedComponent}
-        onClose={handleCloseDetail}
-      />
     </>
+  );
+
+  return (
+    <Drawer isExpanded={selectedComponent !== null} isInline>
+      <DrawerContent panelContent={panelContent}>
+        <DrawerContentBody>
+          {mainContent}
+        </DrawerContentBody>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
