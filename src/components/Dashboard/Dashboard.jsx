@@ -6,7 +6,6 @@ import {
   DrawerContent,
   DrawerContentBody,
   Title,
-  Text,
   TextContent
 } from '@patternfly/react-core';
 import MetricsOverview from './MetricsOverview';
@@ -55,9 +54,9 @@ const Dashboard = ({ data, activeView }) => {
           <PageSection variant={PageSectionVariants.light}>
             <TextContent>
               <Title headingLevel="h1">Application Overview</Title>
-              <Text component="p">
+              <p>
                 Comprehensive analysis of your application's architecture, issues, and migration readiness.
-              </Text>
+              </p>
             </TextContent>
           </PageSection>
           <PageSection variant={PageSectionVariants.light}>
@@ -78,16 +77,16 @@ const Dashboard = ({ data, activeView }) => {
           <PageSection variant={PageSectionVariants.light}>
             <TextContent>
               <Title headingLevel="h1">Components</Title>
-              <Text component="p">
+              <p>
                 Browse and filter all application components with detailed analysis.
-              </Text>
+              </p>
             </TextContent>
           </PageSection>
           <PageSection>
             <div style={{ textAlign: 'center', padding: '3rem' }}>
-              <Text component="p" style={{ color: 'var(--pf-v5-global--Color--200)' }}>
+              <p style={{ color: 'var(--pf-v5-global--Color--200)' }}>
                 This view will show a table of all components
-              </Text>
+              </p>
             </div>
           </PageSection>
         </>
@@ -99,9 +98,9 @@ const Dashboard = ({ data, activeView }) => {
           <PageSection variant={PageSectionVariants.light}>
             <TextContent>
               <Title headingLevel="h1">Analysis</Title>
-              <Text component="p">
+              <p>
                 Detailed breakdown of issues and technology stack analysis.
-              </Text>
+              </p>
             </TextContent>
           </PageSection>
           <PageSection variant={PageSectionVariants.light}>
@@ -119,9 +118,9 @@ const Dashboard = ({ data, activeView }) => {
           <PageSection variant={PageSectionVariants.light}>
             <TextContent>
               <Title headingLevel="h1">Microservices Decomposition</Title>
-              <Text component="p">
+              <p>
                 AI-powered analysis to break down your monolith into microservices using Kubernetes best practices.
-              </Text>
+              </p>
             </TextContent>
           </PageSection>
           <PageSection>
@@ -136,9 +135,9 @@ const Dashboard = ({ data, activeView }) => {
           <PageSection variant={PageSectionVariants.light}>
             <TextContent>
               <Title headingLevel="h1">AI Insights</Title>
-              <Text component="p">
+              <p>
                 Intelligent recommendations for migration priorities, patterns, risks, and quick wins.
-              </Text>
+              </p>
             </TextContent>
           </PageSection>
           <PageSection>
