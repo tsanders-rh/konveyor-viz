@@ -365,13 +365,51 @@ The application loads sample data automatically from `src/data/sampleData.json`.
   - Info: Blue (#0066cc) - PatternFly info
   - Good: Green (#3e8635) - PatternFly success
 
+### Tiered Business Logic Extraction
+
+The tool uses a **3-tier system** for extracting business logic from legacy code, with progressively better quality based on available data:
+
+#### Tier 1: Structure Only
+- Uses component names, file paths, and issue counts
+- **Quality**: Basic architectural guidance through inference
+- **Use case**: Quick analysis without additional setup
+- **Limitation**: Cannot extract actual business logic, only guesses from names
+
+#### Tier 2: Code Snippets (Recommended Minimum)
+- Uses code snippets from Kantra analysis reports
+- Extracts imports, class names, and method signatures
+- **Quality**: Good business logic inference from actual code
+- **How to enable**: Load a real Kantra report (automatic if report includes code snippets)
+- **What it provides**:
+  - Domain entities from class definitions (e.g., Order, Customer, Invoice)
+  - Service responsibilities from class structure
+  - Database patterns from JPA/Hibernate imports
+  - API patterns from REST/JAX-RS annotations
+
+#### Tier 3: Full Source (Production Quality) ⭐
+- Fetches complete source files from GitHub
+- Full method implementations with business logic
+- **Quality**: Production-ready specifications for zero-knowledge teams
+- **How to enable**: Configure GitHub repository URL in Settings
+- **What it provides**:
+  - **EXACT** business logic from method implementations
+  - Complete entity definitions with all fields and annotations
+  - Precise business rules from if/switch statements
+  - Full workflows from service method implementations
+  - Complete API contracts from REST controllers
+  - Business calculations and formulas from actual code
+
+**Recommendation**: Use **Tier 3** for production migration projects. Configure your GitHub URL in Settings to enable full source code analysis.
+
 ### Using Microservices Decomposition
 
 1. **Configure AI Provider**: Set up API key in `.env` file (Anthropic, OpenAI, or Ollama)
-2. **Navigate to Microservices Tab**: Click "Microservices" in the sidebar navigation
-3. **Generate Strategy**: Click "Generate Microservices Strategy" button
-4. **Navigate Freely**: Generated decomposition persists across tab navigation - you can switch to other views and return without losing your data
-5. **Review Results**:
+2. **(Optional) Configure GitHub URL**: For Tier 3 analysis, add your repository URL in Settings
+3. **Navigate to Microservices Tab**: Click "Microservices" in the sidebar navigation
+4. **Check Analysis Tier**: View the tier indicator to see what data is available
+5. **Generate Strategy**: Click "Generate Microservices Strategy" button
+6. **Navigate Freely**: Generated decomposition persists across tab navigation - you can switch to other views and return without losing your data
+7. **Review Results**:
    - **Strategy Overview**: High-level summary of the recommended approach
    - **Discovered Business Logic**: Reverse-engineered business capabilities from code
    - **Proposed Architecture**: Interactive tier diagram showing service relationships
@@ -380,7 +418,7 @@ The application loads sample data automatically from `src/data/sampleData.json`.
    - **Kubernetes Recommendations**: Deployment best practices
    - **Data Management Strategy**: Database and event-driven architecture guidance
 
-6. **Export Spec-Kits**:
+8. **Export Spec-Kits**:
    - **Individual Service**: Click "Spec-Kit" button on any microservice card
    - **All Services**: Click "Download All Spec-Kits" button at the bottom
    - Each export contains 4 markdown files + README ready for AI coding agents
