@@ -25,6 +25,9 @@ const ComponentsTable = ({ data, onComponentClick }) => {
   const [activeSortIndex, setActiveSortIndex] = useState(0);
   const [activeSortDirection, setActiveSortDirection] = useState('asc');
 
+  // Define column mapping
+  const columnNames = ['name', 'type', 'linesOfCode', 'totalIssues', 'critical', 'warning', 'info', 'language', 'framework', 'dependencies'];
+
   // Prepare table data
   const tableData = useMemo(() => {
     return data.components.map(component => ({
@@ -80,9 +83,7 @@ const ComponentsTable = ({ data, onComponentClick }) => {
     });
 
     return sorted;
-  }, [filteredData, activeSortIndex, activeSortDirection]);
-
-  const columnNames = ['name', 'type', 'linesOfCode', 'totalIssues', 'critical', 'warning', 'info', 'language', 'framework', 'dependencies'];
+  }, [filteredData, activeSortIndex, activeSortDirection, columnNames]);
 
   const getSortParams = (columnIndex) => ({
     sortBy: {
